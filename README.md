@@ -13,3 +13,5 @@ zustand (state handler)
 eslint (linter)
 
 react-native-dotenv (security enviornment)
+
+supabase (DB)
