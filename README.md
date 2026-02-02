@@ -17,3 +17,5 @@ react-native-dotenv (security enviornment)
 supabase (DB)
 
 jest (unit tests)
+
+husky (code check)
