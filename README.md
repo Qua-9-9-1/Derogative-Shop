@@ -1,6 +1,6 @@
 react native-expo (core)
 
-android studio (TEST)
+android studio (real test)
 
 react navigation (UI)
 
@@ -15,3 +15,5 @@ eslint (linter)
 react-native-dotenv (security enviornment)
 
 supabase (DB)
+
+jest (unit tests)
