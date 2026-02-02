@@ -76,5 +76,11 @@
     "typescript": "~5.9.2",
     "husky": "^8.0.0"
   },
-  "private": true
+  "private": true,
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "npm run lint",
+      "npm test -- --findRelatedTests" 
+    ]
+  }
 }
