@@ -5,8 +5,8 @@ import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  
-  const activeColor = '#2f95dc'; 
+
+  const activeColor = '#2f95dc';
   const inactiveColor = colorScheme === 'dark' ? '#888' : 'gray';
 
   return (
@@ -16,11 +16,11 @@ export default function TabLayout() {
         tabBarInactiveTintColor: inactiveColor,
         headerShown: true,
         tabBarStyle: {
-            paddingBottom: 5,
-            height: 60,
-        }
-      }}>
-      
+          paddingBottom: 5,
+          height: 60,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
