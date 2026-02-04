@@ -1,14 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import ScanScreen from '@/screens/ScanScreen';
 
-export default function ScanScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Scanner screen</Text>
-    </View>
-  );
+export default function ScanScreenRoute() {
+  return <ScanScreen />;
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  text: { fontSize: 20 },
-});

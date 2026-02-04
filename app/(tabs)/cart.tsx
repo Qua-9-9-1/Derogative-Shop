@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function CartScreen() {
+export default function CartScreenRoute() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Cart screen</Text>

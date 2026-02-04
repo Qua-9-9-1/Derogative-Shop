@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ProductsScreen() {
+export default function ProductsScreenRoute() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Available products list</Text>

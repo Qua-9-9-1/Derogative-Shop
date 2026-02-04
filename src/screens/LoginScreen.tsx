@@ -1,3 +1,4 @@
+import { authService } from '@/services/authService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -5,7 +6,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { Button, HelperText, TextInput, Title } from 'react-native-paper';
 import { z } from 'zod';
-import { authService } from '../services/authService';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid Email' }),
