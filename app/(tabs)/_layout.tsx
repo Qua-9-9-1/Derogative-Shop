@@ -1,3 +1,4 @@
+import { useCartStore } from '@/store/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
@@ -5,6 +6,7 @@ import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const cartItemCount = useCartStore((state) => state.getItemCount());
 
   const activeColor = '#2f95dc';
   const inactiveColor = colorScheme === 'dark' ? '#888' : 'gray';
@@ -55,7 +57,7 @@ export default function TabLayout() {
         name="cart"
         options={{
           title: 'Cart',
-          tabBarBadge: 0,
+          tabBarBadge: cartItemCount > 0 ? cartItemCount : undefined,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'cart' : 'cart-outline'} size={24} color={color} />
           ),

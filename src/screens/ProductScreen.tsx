@@ -15,7 +15,7 @@ import { useCartStore } from '../store/cartStore';
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchQuery, setSearchQuery] = useState('Snack');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
