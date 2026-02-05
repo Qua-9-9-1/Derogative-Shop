@@ -44,4 +44,6 @@ supabase (DB)
 
 prisma (ORM)
 
+bcrypt (hashing)
+
 zod (validation)
