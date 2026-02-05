@@ -1,4 +1,4 @@
-frontend:
+## frontend:
 
 react native-expo (core)
 
@@ -24,7 +24,7 @@ husky (code check)
 
 prettier (code format)
 
-backend:
+## backend:
 
 express (server)
 
