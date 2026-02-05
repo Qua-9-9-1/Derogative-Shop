@@ -46,4 +46,8 @@ prisma (ORM)
 
 bcrypt (hashing)
 
+jest (unit tests)
+
 zod (validation)
+
+prettier (code format)
