@@ -44,6 +44,8 @@ supabase (DB)
 
 prisma (ORM)
 
+eslint (linter)
+
 bcrypt (hashing)
 
 jest (unit tests)

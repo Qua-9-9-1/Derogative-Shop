@@ -8,6 +8,7 @@
     "start": "node dist/app.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
     "format": "prettier --write ."
   },
   "keywords": [],
@@ -26,19 +27,26 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.2.1",
     "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
     "dotenv": "^17.2.3",
+    "eslint": "^9.39.2",
+    "globals": "^17.3.0",
     "jest": "^30.2.0",
+    "jiti": "^2.6.1",
     "nodemon": "^3.1.11",
     "prisma": "^6.19.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
   }
 }

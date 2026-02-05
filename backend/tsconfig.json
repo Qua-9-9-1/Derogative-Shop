@@ -8,5 +8,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "prisma.config.ts"]
+  "exclude": ["node_modules", "prisma.config.ts", "jest.config.js", "eslint.config.mts"]
 }
