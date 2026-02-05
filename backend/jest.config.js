@@ -10,9 +10,5 @@ module.exports = {
       statements: 20,
     },
   },
-  collectCoverageFrom: [
-    "src/**/*.{ts,tsx}",
-    "!src/app.ts",
-    "!src/**/*.d.ts"
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/app.ts', '!src/**/*.d.ts'],
 };
