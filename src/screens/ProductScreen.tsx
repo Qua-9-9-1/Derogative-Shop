@@ -1,3 +1,6 @@
+import { Product, productService } from '@/services/productService';
+import { useCartStore } from '@/store/cartStore';
+import { useToastStore } from '@/store/toastStore';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, View } from 'react-native';
 import {
@@ -5,23 +8,18 @@ import {
   Card,
   IconButton,
   Searchbar,
-  Snackbar,
   Surface,
   Text,
   useTheme,
 } from 'react-native-paper';
-import { Product, productService } from '../services/productService';
-import { useCartStore } from '../store/cartStore';
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [lastAddedItem, setLastAddedItem] = useState<Product | null>(null);
-
   const theme = useTheme();
+  const { showToast } = useToastStore();
 
   const { addToCart, decreaseQuantity } = useCartStore();
 
@@ -38,15 +36,9 @@ export default function ProductScreen() {
 
   const handleAddToCart = (item: Product) => {
     addToCart(item);
-    setLastAddedItem(item);
-    setSnackbarVisible(true);
-  };
-
-  const handleUndo = () => {
-    if (lastAddedItem) {
-      decreaseQuantity(lastAddedItem.id);
-      setSnackbarVisible(false);
-    }
+    showToast(`Item "${item.name}" added to cart`, () => {
+      decreaseQuantity(item.id);
+    });
   };
 
   const renderProduct = ({ item }: { item: Product }) => (
@@ -119,20 +111,6 @@ export default function ProductScreen() {
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
         />
       )}
-
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        duration={8000}
-        action={{
-          label: 'Undo',
-          onPress: handleUndo,
-          textColor: theme.colors.inversePrimary,
-        }}
-        style={{ marginBottom: 20 }}
-      >
-        Product added to cart!
-      </Snackbar>
     </Surface>
   );
 }
