@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "pg": "^8.18.0",
+    "prettier": "^3.8.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
