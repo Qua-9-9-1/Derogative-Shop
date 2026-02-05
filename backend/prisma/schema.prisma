@@ -1,15 +1,72 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  passwordHash    String
+  firstName       String?
+  lastName        String?
+  phone           String?
+
+  billingAddress  Json?
+
+  createdAt       DateTime @default(now())
+
+  invoices        Invoice[] 
+}
+
+model Product {
+  id              String   @id
+  name            String
+  brand           String?
+  imageUrl        String?
+  price           Decimal  @db.Decimal(10, 2)
+  category        String?
+  quantity        Int      @default(0)
+
+  nutritionalInfo Json?
+
+  lastUpdated     DateTime @default(now())
+
+  invoiceItems    ProductList[]
+}
+
+model Invoice {
+  id              String         @id @default(uuid())
+  date            DateTime       @default(now())
+  totalAmount     Decimal        @db.Decimal(10, 2)
+  status          PaymentStatus  @default(PENDING)
+  paymentMethod   PaymentMethod  @default(PAYPAL)
+
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+
+  items           ProductList[]
+}
+
+model ProductList {
+  id          String   @id @default(uuid())
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum PaymentMethod {
+  PAYPAL
 }
