@@ -16,3 +16,7 @@ app.get('/users', async (req, res) => {
   const users = await prisma.user.findMany();
   res.json(users);
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+});
