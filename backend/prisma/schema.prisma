@@ -29,7 +29,7 @@ model Product {
   imageUrl        String?
   price           Decimal  @db.Decimal(10, 2)
   category        String?
-  quantity        Int      @default(0)
+  stockQuantity   Int      @default(0)
 
   nutritionalInfo Json?
 
