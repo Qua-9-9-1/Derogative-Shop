@@ -1,3 +1,5 @@
+frontend:
+
 react native-expo (core)
 
 android studio (real test)
@@ -14,10 +16,26 @@ eslint (linter)
 
 react-native-dotenv (security enviornment)
 
-supabase (DB)
+zod (validation)
 
 jest (unit tests)
 
 husky (code check)
 
 prettier (code format)
+
+backend:
+
+express (server)
+
+cors (security)
+
+dotenv (security environment)
+
+pg (DB)
+
+supabase (DB)
+
+prisma (ORM)
+
+zod (validation)
