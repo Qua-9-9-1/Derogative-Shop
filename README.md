@@ -19,3 +19,5 @@ supabase (DB)
 jest (unit tests)
 
 husky (code check)
+
+prettier (code format)
