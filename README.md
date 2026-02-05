@@ -1,5 +1,8 @@
 ## frontend:
 
+how to run:
+```npm run dev```
+
 react native-expo (core)
 
 android studio (real test)
@@ -25,6 +28,9 @@ husky (code check)
 prettier (code format)
 
 ## backend:
+
+how to run:
+```npm run start```
 
 express (server)
 
