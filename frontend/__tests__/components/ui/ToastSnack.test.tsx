@@ -1,3 +1,14 @@
+jest.mock('react-native/Libraries/Animated/AnimatedImplementation', () => {
+  return {
+    ...jest.requireActual('react-native/Libraries/Animated/AnimatedImplementation'),
+    timing: () => ({
+      start: jest.fn(),
+    }),
+    parallel: () => ({
+      start: jest.fn(),
+    }),
+  };
+});
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
 import ToastStack from '@/components/ui/ToastSnack';
