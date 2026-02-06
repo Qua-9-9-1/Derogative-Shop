@@ -79,6 +79,8 @@ jobs:
         run: npm ci
 
       - name: Prisma client generation
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Lint Check (Backend)
