@@ -1,26 +1,39 @@
 import { Alert } from 'react-native';
-import { supabase } from './supabase';
+import { config } from '../config';
+import axios from 'axios';
 
 export const authService = {
   async register(email: string, pass: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: pass,
-    });
-    if (error) Alert.alert('Registration Error', error.message);
-    return { data, error };
+    try {
+      const response = await axios.post(`${config.api.baseUrl}/auth/register`, {
+        email,
+        password: pass,
+      });
+      return response.data;
+    } catch (error: any) {
+      Alert.alert('Registration Error', error.response?.data?.message || error.message);
+      return null;
+    }
   },
 
   async login(email: string, pass: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pass,
-    });
-    if (error) Alert.alert('Login Error', error.message);
-    return { data, error };
+    try {
+      const response = await axios.post(`${config.api.baseUrl}/auth/login`, {
+        email,
+        password: pass,
+      });
+      return response.data;
+    } catch (error: any) {
+      Alert.alert('Login Error', error.response?.data?.message || error.message);
+      return null;
+    }
   },
 
   async logout() {
-    await supabase.auth.signOut();
+      try {
+          await axios.post(`${config.api.baseUrl}/auth/logout`);
+      } catch (error: any) {
+          Alert.alert('Logout Error', error.response?.data?.message || error.message);
+      }
   },
 };

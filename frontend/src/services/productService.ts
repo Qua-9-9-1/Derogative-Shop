@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { config } from '../config';
 
 export interface Product {
   id: string;
@@ -9,13 +10,10 @@ export interface Product {
   price: number;
 }
 
-const API_URL = 'https://world.openfoodfacts.org/api/v0/product';
-const SEARCH_API_URL = 'https://world.openfoodfacts.org/cgi/search.pl';
-
 export const productService = {
   async getProductByBarcode(barcode: string): Promise<Product | null> {
     try {
-      const response = await axios.get(`${API_URL}/${barcode}.json`);
+      const response = await axios.get(`${config.api.baseUrl}/${barcode}.json`);
 
       if (response.data.status === 1) {
         const p = response.data.product;
@@ -30,21 +28,19 @@ export const productService = {
       }
       return null;
     } catch (error) {
-      console.error('Erreur API OFF', error);
+      console.error('Error API OFF', error);
       return null;
     }
   },
 
   async searchProducts(query: string, page: number = 1): Promise<Product[]> {
     try {
-      const response = await axios.get(SEARCH_API_URL, {
+      const response = await axios.get(`${config.api.baseUrl}/products`, {
         params: {
           search_terms: query,
-          search_simple: 1,
-          action: 'process',
-          json: 1,
-          page: page,
+          page,
           page_size: 20,
+          json: true,
         },
       });
 
@@ -52,7 +48,7 @@ export const productService = {
         return response.data.products.map((p: any) => ({
           id: p.code,
           name: p.product_name || 'Unknown',
-          brands: p.brands || 'Unknown',
+          brands: p.brands,
           image_url: p.image_front_small_url,
           nutriscore: p.nutriscore_grade,
           price: 999,
@@ -60,7 +56,7 @@ export const productService = {
       }
       return [];
     } catch (error) {
-      console.error('Erreur Search OFF', error);
+      console.error('Error API OFF', error);
       return [];
     }
   },

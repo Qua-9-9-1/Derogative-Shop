@@ -26,13 +26,11 @@ zod (validation)
 
 jest (unit tests)
 
-husky (code check)
-
 prettier (code format)
 
 ## backend:
 
-how to run:
+how to run (local only):
 
 > Make sure to be in the root of the repository when running this command
 
