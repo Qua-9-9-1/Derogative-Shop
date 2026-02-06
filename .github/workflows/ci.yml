@@ -15,7 +15,7 @@ jobs:
         working-directory: ./frontend
 
     steps:
-      - name: Récupération du code
+      - name: Code Retrieval
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -42,7 +42,7 @@ jobs:
         working-directory: ./backend
 
     steps:
-      - name: Récupération du code
+      - name: Code Retrieval
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -54,6 +54,9 @@ jobs:
 
       - name: Dependancies (Backend)
         run: npm ci
+
+      - name: Prisma client generation
+        run: npx prisma generate
 
       - name: Lint Check (Backend)
         run: npm run lint
