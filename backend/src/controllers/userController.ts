@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { userService } from '../services/userService';
-import { Prisma } from '@prisma/client';
 
 export const userController = {
   getOne: async (req: Request, res: Response) => {

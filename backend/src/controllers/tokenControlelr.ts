@@ -13,8 +13,8 @@ export const tokenController = {
     }
     try {
       tokenService.verifyToken(token);
-    } catch (err) {
-      return res.status(401).json({ message: 'Invalid or expired token' });
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid or expired token', error: (error as Error).message });
     }
     if (await tokenService.isTokenRevoked(token)) {
       return res.status(401).json({ message: 'Token has been revoked' });

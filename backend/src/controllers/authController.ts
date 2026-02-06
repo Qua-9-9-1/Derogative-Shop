@@ -44,7 +44,7 @@ export const authController = {
       }
       res.json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Server error during login' });
+      res.status(500).json({ message: 'Server error during login', error: (error as Error).message });
     }
   },
 
@@ -59,21 +59,21 @@ export const authController = {
         return res.status(401).json({ message: 'Invalid token format' });
       }
 
-      let payload: any;
+      let payload: string | Record<string, string>;
       try {
         payload = tokenService.verifyToken(token);
-      } catch (err) {
-        return res.status(401).json({ message: 'Invalid or expired token' });
+      } catch (error) {
+        return res.status(401).json({ message: 'Invalid or expired token', error: (error as Error).message });
       }
       if (await tokenService.isTokenRevoked(token)) {
         return res.status(401).json({ message: 'Token has been revoked' });
       }
 
-      const { userId, email } = payload;
+      const { userId, email } = payload as Record<string, string>;
       const newToken = tokenService.generateToken({ userId, email });
       res.json({ token: newToken });
     } catch (error) {
-      res.status(500).json({ message: 'Server error during token refresh' });
+      res.status(500).json({ message: 'Server error during token refresh', error: (error as Error).message });
     }
   },
 
@@ -87,7 +87,7 @@ export const authController = {
 
       res.json({ message: 'Logged out successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'Server error during logout' });
+      res.status(500).json({ message: 'Server error during logout', error: (error as Error).message });
     }
   },
 };

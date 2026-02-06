@@ -1,12 +1,13 @@
+import { JwtPayload } from 'jsonwebtoken';
 import { tokenService } from '../services/tokenService';
 
 describe('tokenService', () => {
 	it('should generate and verify a token', () => {
 		const payload = { userId: '123', email: 'test@example.com' };
 		const token = tokenService.generateToken(payload);
-		const decoded: any = tokenService.verifyToken(token);
-		expect(decoded.userId).toBe('123');
-		expect(decoded.email).toBe('test@example.com');
+		const decoded: string | JwtPayload = tokenService.verifyToken(token);
+		expect(decoded).toHaveProperty('userId', '123');
+		expect(decoded).toHaveProperty('email', 'test@example.com');
 	});
 
 	it('should return false for a non-revoked token', async () => {
