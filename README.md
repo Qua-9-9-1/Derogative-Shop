@@ -1,6 +1,9 @@
 ## frontend:
 
 how to run:
+
+> Make sure to enter this command in the frontend directory
+
 ```npm run dev```
 
 react native-expo (core)
@@ -30,7 +33,10 @@ prettier (code format)
 ## backend:
 
 how to run:
-```npm run start```
+
+> Make sure to be in the root of the repository when running this command
+
+```docker-compose up --build```
 
 express (server)
 
