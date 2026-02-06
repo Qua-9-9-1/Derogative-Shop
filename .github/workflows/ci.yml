@@ -1,4 +1,4 @@
-name: CI Derogative Shop
+name: CI/CD Derogative Shop
 
 on:
   push:
@@ -7,19 +7,39 @@ on:
     branches: [main, master]
 
 jobs:
-  mobile-check:
-    name: Frontend Check
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+
+  frontend-check:
+    name: Frontend Check
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./frontend
-
     steps:
       - name: Code Retrieval
         uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
+
         with:
           node-version: 20
           cache: 'npm'
@@ -36,7 +56,10 @@ jobs:
 
   backend-check:
     name: Backend Check
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./backend
@@ -62,4 +85,12 @@ jobs:
         run: npm run lint
 
       - name: Tests and Coverage (Backend)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run test:coverage
+
+      - name: Deploy to Render
+        if: github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
