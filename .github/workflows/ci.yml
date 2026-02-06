@@ -93,7 +93,6 @@ jobs:
 
   mirror-to-epitech-repo:
     name: Mirror to Epitech Repo
-    needs: [frontend-check, backend-check]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
