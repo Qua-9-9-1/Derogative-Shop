@@ -20,7 +20,7 @@ zustand (state handler)
 
 eslint (linter)
 
-react-native-dotenv (security enviornment)
+react-native-dotenv (security environment)
 
 zod (validation)
 
@@ -36,11 +36,17 @@ how to run (local only):
 
 ```docker-compose up --build```
 
+> Or make sure to enter this command in the backend directory
+
+```npm run dev```
+
 express (server)
 
 cors (security)
 
 dotenv (security environment)
+
+jsonwebtoken (JWT)
 
 pg (DB)
 

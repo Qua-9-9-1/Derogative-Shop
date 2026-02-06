@@ -38,6 +38,12 @@ model Product {
   invoiceItems    ProductList[]
 }
 
+model RevokedToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  revokedAt DateTime @default(now())
+}
+
 model Invoice {
   id              String         @id @default(uuid())
   date            DateTime       @default(now())

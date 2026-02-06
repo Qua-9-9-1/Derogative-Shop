@@ -3,25 +3,6 @@ import { userService } from '../services/userService';
 import { Prisma } from '@prisma/client';
 
 export const userController = {
-  create: async (req: Request, res: Response) => {
-    try {
-      const newUser = await userService.createUser(req.body);
-      res.status(201).json(newUser);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          res.status(409).json({ message: 'This email already exists.' });
-          return;
-        }
-      }
-
-      res.status(500).json({
-        message: 'Error during creation',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
-  },
-
   getOne: async (req: Request, res: Response) => {
     try {
       const id = req.params.id as string;

@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { userController } from '../controllers/userController';
+import { tokenController } from '../controllers/tokenControlelr';
 
 const router = Router();
 
-router.post('/', userController.create);
-router.get('/:id', userController.getOne);
-router.put('/:id', userController.update);
-router.delete('/:id', userController.delete);
+router.get('/:id', tokenController.authenticateAndCheckRevoked, userController.getOne);
+router.put('/:id', tokenController.authenticateAndCheckRevoked, userController.update);
+router.delete('/:id', tokenController.authenticateAndCheckRevoked, userController.delete);
 
 export default router;
