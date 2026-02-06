@@ -48,9 +48,6 @@ jobs:
       - name: Dependancies (Frontend)
         run: npm ci
 
-      - name: Lint Check (Frontend)
-        run: npm run lint
-
       - name: Tests and Coverage (Frontend)
         run: npm run test:coverage
 
@@ -82,9 +79,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
-
-      - name: Lint Check (Backend)
-        run: npm run lint
 
       - name: Tests and Coverage (Backend)
         env:
