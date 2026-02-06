@@ -59,3 +59,5 @@ jest (unit tests)
 zod (validation)
 
 prettier (code format)
+
+render (hosting)
