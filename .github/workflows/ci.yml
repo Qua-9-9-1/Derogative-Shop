@@ -104,9 +104,12 @@ jobs:
 
         - name: Mirror push to Epitech
           env:
-            TARGET_URL: ${{ secrets.MIRROR_URL }}
+            TARGET_URL: "https://github.com/EpitechPGE45-2025/G-DER-800-PAR-8-1-derogdev801-4.git"
+            TOKEN: ${{ secrets.MIRROR_TOKEN }}
           run: |
-            git config --global --add safe.directory /github/workspace            
+            git config --global --add safe.directory /github/workspace
             git remote remove epitech || true
-            git remote add epitech "$TARGET_URL"
+            CLEAN_URL=${TARGET_URL#"https://"}
+            AUTH_URL="https://oauth2:${TOKEN}@${CLEAN_URL}"
+            git remote add epitech "$AUTH_URL"
             git push --mirror epitech
