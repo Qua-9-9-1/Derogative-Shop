@@ -7,7 +7,16 @@ on:
     branches: [main, master]
 
 jobs:
+  skip-if-not-main-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check repository
+        if: ${{ github.repository != 'Qua-9-9-1/Derogative-Shop' }}
+        run: |
+          exit 0
+
   detect-changes:
+    needs: skip-if-not-main-repo
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
@@ -93,6 +102,7 @@ jobs:
 
   mirror-to-epitech-repo:
     name: Mirror to Epitech Repo
+    needs: [frontend-check, backend-check]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
