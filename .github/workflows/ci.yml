@@ -107,6 +107,8 @@ jobs:
             TARGET_URL: "https://github.com/EpitechPGE45-2025/G-DER-800-PAR-8-1-derogdev801-4.git"
             TOKEN: ${{ secrets.MIRROR_TOKEN }}
           run: |
+            git config --global --unset-all credential.helper || true
+            git config --system --unset-all credential.helper || true
             git config --global --add safe.directory /github/workspace
             git remote remove epitech || true
             CLEAN_URL=${TARGET_URL#"https://"}
