@@ -92,27 +92,24 @@ jobs:
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
 
   mirror-to-epitech-repo:
-      name: Mirror to Epitech Repo
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      runs-on: ubuntu-latest
+    name: Mirror to Epitech Repo
+    needs: [frontend-check, backend-check]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
-          with:
-            fetch-depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
-        - name: Mirror push to Epitech
-          env:
-            TARGET_URL: "https://github.com/EpitechPGE45-2025/G-DER-800-PAR-8-1-derogdev801-4.git"
-            TOKEN: ${{ secrets.MIRROR_TOKEN }}
-          run: |
-            git config --global --unset-all credential.helper || true
-            git config --system --unset-all credential.helper || true
-            git config --global --add safe.directory /github/workspace
-            git remote remove epitech || true
-            CLEAN_URL=${TARGET_URL#"https://"}
-            echo "Clean URL: $CLEAN_URL"
-            AUTH_URL="https://oauth2:${TOKEN}@${CLEAN_URL}"
-            git remote add epitech "$AUTH_URL"
-            git push --mirror epitech
+      - name: Mirror push to Epitech
+        env:
+          TARGET_URL: "https://github.com/EpitechPGE45-2025/G-DER-800-PAR-8-1-derogdev801-4.git"
+          TOKEN: ${{ secrets.MIRROR_TOKEN }}
+        run: |
+          git config --global --add safe.directory /github/workspace
+          CLEAN_URL=${TARGET_URL#"https://"}
+          AUTH_URL="https://oauth2:${TOKEN}@${CLEAN_URL}"          
+          git push --mirror "$AUTH_URL"
