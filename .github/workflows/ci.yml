@@ -110,6 +110,7 @@ jobs:
             git config --global --add safe.directory /github/workspace
             git remote remove epitech || true
             CLEAN_URL=${TARGET_URL#"https://"}
+            echo "Clean URL: $CLEAN_URL"
             AUTH_URL="https://oauth2:${TOKEN}@${CLEAN_URL}"
             git remote add epitech "$AUTH_URL"
             git push --mirror epitech
