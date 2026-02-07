@@ -92,22 +92,21 @@ jobs:
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
 
   mirror-to-epitech-repo:
-    name: Mirror to Epitech Repo
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
+      name: Mirror to Epitech Repo
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
 
-      - name: Mirror push to Epitech
-        env:
-          MIRROR_URL: ${{ secrets.MIRROR_URL }}
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git remote remove epitech || true
-          git remote add epitech "$MIRROR_URL"
-          git push --mirror epitech
+        - name: Mirror push to Epitech
+          env:
+            TARGET_URL: ${{ secrets.MIRROR_URL }}
+          run: |
+            git config --global --add safe.directory /github/workspace            
+            git remote remove epitech || true
+            git remote add epitech "$TARGET_URL"
+            git push --mirror epitech
