@@ -100,6 +100,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check secret length
+        env:
+          MIRROR_URL: ${{ secrets.MIRROR_URL }}
+        run: echo "${#MIRROR_URL}"
+
       - name: Test remote access
         env:
           MIRROR_URL: ${{ secrets.MIRROR_URL }}
