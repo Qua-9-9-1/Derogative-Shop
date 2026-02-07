@@ -100,21 +100,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check secret length
-        env:
-          MIRROR_URL: ${{ secrets.MIRROR_URL }}
-        run: echo "${#MIRROR_URL}"
-
-      - name: Test remote access
-        env:
-          MIRROR_URL: ${{ secrets.MIRROR_URL }}
-        run: git ls-remote "$MIRROR_URL"
-
       - name: Mirror push to Epitech
         env:
           MIRROR_URL: ${{ secrets.MIRROR_URL }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          git remote remove epitech || true
           git remote add epitech "$MIRROR_URL"
           git push --mirror epitech
