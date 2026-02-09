@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { Button, HelperText, TextInput, Title } from 'react-native-paper';
 import { z } from 'zod';
+import { useAuth } from '@/context/authContext';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid Email' }),
@@ -17,6 +18,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const {
     control,
@@ -29,14 +31,14 @@ export default function LoginScreen() {
 
   const onSubmit = async (dataForm: LoginForm) => {
     setLoading(true);
-    const data = await authService.login(dataForm.email, dataForm.password);
-
-    if (data && data.token) {
-      router.replace('/(tabs)');
-    } else {
-      alert("Login failed");
+    try {
+      await login(dataForm.email, dataForm.password);
+      router.push('/');
+    } catch (error) {
+      // Nothing to do
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
