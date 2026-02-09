@@ -13,7 +13,7 @@ export interface Product {
 export const productService = {
   async getProductByBarcode(barcode: string): Promise<Product | null> {
     try {
-      const response = await axios.get(`${config.api.baseUrl}/${barcode}.json`);
+      const response = await axios.get(`${config.api.foodfactsUrl}/${barcode}.json`);
 
       if (response.data.status === 1) {
         const p = response.data.product;
@@ -35,7 +35,7 @@ export const productService = {
 
   async searchProducts(query: string, page: number = 1): Promise<Product[]> {
     try {
-      const response = await axios.get(`${config.api.baseUrl}/products`, {
+      const response = await axios.get(`${config.api.foodfactsUrl}/products.json`, {
         params: {
           search_terms: query,
           page,
@@ -44,6 +44,7 @@ export const productService = {
         },
       });
 
+      console.log('OFF search response', response.data);
       if (response.data.products) {
         return response.data.products.map((p: any) => ({
           id: p.code,

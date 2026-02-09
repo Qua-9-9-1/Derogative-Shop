@@ -12,6 +12,7 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
+import LoadingContent from '@/components/ui/LoadingContent';
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,7 +21,6 @@ export default function ProductScreen() {
 
   const theme = useTheme();
   const { showToast } = useToastStore();
-
   const { addToCart, decreaseQuantity } = useCartStore();
 
   const loadProducts = async () => {
@@ -100,9 +100,7 @@ export default function ProductScreen() {
       />
 
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <ActivityIndicator animating={true} size="large" />
-        </View>
+        <LoadingContent />
       ) : (
         <FlatList
           data={products}
