@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Surface, Text, Button } from 'react-native-paper';
 import { useAuth } from '@/context/authContext';
 import { userService } from '@/services/userService';
+import LoadingContent from '@/components/ui/LoadingContent';
+import ErrorContent from '@/components/ui/ErrorContent';
 
 export default function UserScreen() {
   const { userId, token, logout } = useAuth();
@@ -20,7 +22,7 @@ export default function UserScreen() {
         const data = await userService.getUserProfile(userId, token);
         setUserData(data);
       } catch (error) {
-        setError('Failed to load user data');
+        setError('Failed to load user profile');
         setUserData(null);
       }
     };
@@ -28,8 +30,8 @@ export default function UserScreen() {
   }, [userId, token]);
 
   if (error)
-    return <Text>Error: {error}</Text>; // todo: error content
-  else if (!userData) return <Text>Loading...</Text>; // todo: loading content
+    return <ErrorContent message={error} />;
+  else if (!userData) return <LoadingContent />;
 
   return (
     <Surface style={{ padding: 20 }}>
