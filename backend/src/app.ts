@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
-app.use('/users', userRoutes);
+app.use('/user', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
