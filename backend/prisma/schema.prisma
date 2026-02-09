@@ -19,7 +19,8 @@ model User {
 
   createdAt       DateTime @default(now())
 
-  invoices        Invoice[] 
+  invoices        Invoice[]
+  cartItems       CartItem[]
 }
 
 model Product {
@@ -35,13 +36,25 @@ model Product {
 
   lastUpdated     DateTime @default(now())
 
-  invoiceItems    ProductList[]
+  cartItems       CartItem[]
+  invoiceItems    InvoiceItem[]
 }
 
 model RevokedToken {
   id        String   @id @default(uuid())
   token     String   @unique
   revokedAt DateTime @default(now())
+}
+
+model CartItem {
+  id          String   @id @default(uuid())
+  quantity    Int
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
 }
 
 model Invoice {
@@ -54,10 +67,10 @@ model Invoice {
   userId          String
   user            User           @relation(fields: [userId], references: [id])
 
-  items           ProductList[]
+  items           InvoiceItem[]
 }
 
-model ProductList {
+model InvoiceItem {
   id          String   @id @default(uuid())
   quantity    Int
   unitPrice   Decimal  @db.Decimal(10, 2)
