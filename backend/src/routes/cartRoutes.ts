@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { productController } from '../controllers/productController';
+import { cartController } from '@/controllers/cartController';
+import { tokenController } from '@/controllers/tokenControlelr';
 
 const router = Router();
 
-router.get('/', productController.getCatalogue);
-router.get('/:barcode', productController.getProduct);
+router.get('/', tokenController.authenticateAndCheckRevoked, cartController.getCart);
+router.put('/sync', tokenController.authenticateAndCheckRevoked, cartController.syncCart);
 
 export default router;
