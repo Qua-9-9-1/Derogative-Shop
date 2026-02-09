@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { config } from '../config';
+import { config } from '@/config';
 import axios from 'axios';
 
 export const authService = {
@@ -30,10 +30,10 @@ export const authService = {
   },
 
   async logout() {
-      try {
-          await axios.post(`${config.api.baseUrl}/auth/logout`);
-      } catch (error: any) {
-          Alert.alert('Logout Error', error.response?.data?.message || error.message);
-      }
+    try {
+      await axios.post(`${config.api.baseUrl}/auth/logout`);
+    } catch (error: any) {
+      Alert.alert('Logout Error', error.response?.data?.message || error.message);
+    }
   },
 };

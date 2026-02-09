@@ -4,7 +4,17 @@ const axios = require('axios');
 
 describe('productService', () => {
   it('getProductByBarcode returns product on status 1', async () => {
-    axios.get.mockResolvedValue({ data: { status: 1, product: { product_name: 'Test', brands: 'Brand', image_front_small_url: 'img', nutriscore_grade: 'b' } } });
+    axios.get.mockResolvedValue({
+      data: {
+        status: 1,
+        product: {
+          product_name: 'Test',
+          brands: 'Brand',
+          image_front_small_url: 'img',
+          nutriscore_grade: 'b',
+        },
+      },
+    });
     const res = await productService.getProductByBarcode('123');
     expect(res?.name).toBe('Test');
   });
