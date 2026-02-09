@@ -27,14 +27,14 @@ export default function LoginScreen() {
     defaultValues: { email: '', password: '' },
   });
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (dataForm: LoginForm) => {
     setLoading(true);
-    const { error } = await authService.login(data.email, data.password);
+    const data = await authService.login(dataForm.email, dataForm.password);
 
-    if (!error) {
+    if (data && data.token) {
       router.replace('/(tabs)');
     } else {
-      alert(error.message);
+      alert("Login failed");
     }
     setLoading(false);
   };
