@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { userService } from '../services/userService';
+import { userService } from '@/services/userService';
 
 export const userController = {
   getOne: async (req: Request, res: Response) => {

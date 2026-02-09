@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { authService } from '../services/authService';
-import { userService } from '../services/userService';
-import { tokenService } from '../services/tokenService';
+import { authService } from '@/services/authService';
+import { userService } from '@/services/userService';
+import { tokenService } from '@/services/tokenService';
 import { Prisma } from '@prisma/client';
 
 export const authController = {
@@ -44,7 +44,9 @@ export const authController = {
       }
       res.json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Server error during login', error: (error as Error).message });
+      res
+        .status(500)
+        .json({ message: 'Server error during login', error: (error as Error).message });
     }
   },
 
@@ -63,7 +65,9 @@ export const authController = {
       try {
         payload = tokenService.verifyToken(token);
       } catch (error) {
-        return res.status(401).json({ message: 'Invalid or expired token', error: (error as Error).message });
+        return res
+          .status(401)
+          .json({ message: 'Invalid or expired token', error: (error as Error).message });
       }
       if (await tokenService.isTokenRevoked(token)) {
         return res.status(401).json({ message: 'Token has been revoked' });
@@ -73,7 +77,9 @@ export const authController = {
       const newToken = tokenService.generateToken({ userId, email });
       res.json({ token: newToken });
     } catch (error) {
-      res.status(500).json({ message: 'Server error during token refresh', error: (error as Error).message });
+      res
+        .status(500)
+        .json({ message: 'Server error during token refresh', error: (error as Error).message });
     }
   },
 
@@ -87,7 +93,9 @@ export const authController = {
 
       res.json({ message: 'Logged out successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'Server error during logout', error: (error as Error).message });
+      res
+        .status(500)
+        .json({ message: 'Server error during logout', error: (error as Error).message });
     }
   },
 };

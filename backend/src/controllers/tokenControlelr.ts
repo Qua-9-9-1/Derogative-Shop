@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { tokenService } from '../services/tokenService';
+import { tokenService } from '@/services/tokenService';
 
 export const tokenController = {
   async authenticateAndCheckRevoked(req: Request, res: Response, next: NextFunction) {
@@ -14,7 +14,9 @@ export const tokenController = {
     try {
       tokenService.verifyToken(token);
     } catch (error) {
-      return res.status(401).json({ message: 'Invalid or expired token', error: (error as Error).message });
+      return res
+        .status(401)
+        .json({ message: 'Invalid or expired token', error: (error as Error).message });
     }
     if (await tokenService.isTokenRevoked(token)) {
       return res.status(401).json({ message: 'Token has been revoked' });
