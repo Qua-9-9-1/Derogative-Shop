@@ -28,6 +28,8 @@ jest (unit tests)
 
 prettier (code format)
 
+expo secure store (secure storage)
+
 ## backend:
 
 how to run (local only):

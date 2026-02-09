@@ -53,7 +53,8 @@
         {
           "cameraPermission": "The application needs access to the camera to scan products."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
