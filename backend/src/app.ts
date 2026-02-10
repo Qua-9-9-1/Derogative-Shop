@@ -16,8 +16,8 @@ app.use('/user', userRoutes);
 app.use('/cart', cartRoutes);
 
 if (require.main === module) {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT);
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT);
 }
 
 export default app;

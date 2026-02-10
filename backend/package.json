@@ -9,7 +9,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage --runInBand",
     "lint": "eslint src --ext .ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seed": "prisma db seed"
   },
   "keywords": [],
   "author": "",
@@ -51,5 +52,8 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

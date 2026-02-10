@@ -32,7 +32,6 @@ describe('User API', () => {
     expect(res.status).toBe(404);
   });
 
-
   it('should get the user by id', async () => {
     if (!userId) return;
     const res = await request(app).get(`/user/${userId}`).set('Authorization', `Bearer ${token}`);

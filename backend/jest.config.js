@@ -14,5 +14,5 @@ module.exports = {
     },
   },
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/app.ts', '!src/**/*.d.ts'],
-  testPathIgnorePatterns: ["/node_modules/", "/dist/"]
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
 };
