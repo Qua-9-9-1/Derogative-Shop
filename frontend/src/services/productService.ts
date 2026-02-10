@@ -7,23 +7,24 @@ export interface Product {
   brands?: string;
   image_url?: string;
   nutriscore?: string;
+  quantity: number;
   price: number;
 }
 
 export const productService = {
   async getProductByBarcode(barcode: string): Promise<Product | null> {
     try {
-      const response = await axios.get(`${config.api.foodfactsUrl}/${barcode}.json`);
+      const response = await axios.get(`${config.api.baseUrl}/${barcode}.json`);
 
       if (response.data.status === 1) {
         const p = response.data.product;
         return {
           id: barcode,
-          name: p.product_name || 'Unknown',
-          brands: p.brands,
-          image_url: p.image_front_small_url,
-          nutriscore: p.nutriscore_grade,
-          price: 999,
+          name: p.name || 'Unknown',
+          brands: p.brand,
+          image_url: p.imageUrl,
+          quantity: p.stockQuantity,
+          price: p.price,
         };
       }
       return null;
@@ -35,24 +36,16 @@ export const productService = {
 
   async searchProducts(query: string, page: number = 1): Promise<Product[]> {
     try {
-      const response = await axios.get(`${config.api.foodfactsUrl}/products.json`, {
-        params: {
-          search_terms: query,
-          page,
-          page_size: 20,
-          json: true,
-        },
-      });
+      const response = await axios.get(`${config.api.baseUrl}/products/`);
 
-      console.log('OFF search response', response.data);
-      if (response.data.products) {
-        return response.data.products.map((p: any) => ({
-          id: p.code,
-          name: p.product_name || 'Unknown',
-          brands: p.brands,
-          image_url: p.image_front_small_url,
-          nutriscore: p.nutriscore_grade,
-          price: 999,
+      if (response.data) {
+        return response.data.map((p: any) => ({
+          id: p.id,
+          name: p.name || 'Unknown',
+          brands: p.brand,
+          image_url: p.imageUrl,
+          quantity: p.stockQuantity,
+          price: p.price,
         }));
       }
       return [];

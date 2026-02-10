@@ -64,6 +64,10 @@ export default function ProductScreen() {
               {item.price} €
             </Text>
 
+            <Text variant="bodySmall" style={{ color: theme.colors.secondary }}>
+              Quantity: {item.quantity}
+            </Text>
+
             <IconButton
               icon="plus"
               mode="contained"
