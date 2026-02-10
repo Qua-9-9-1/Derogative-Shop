@@ -6,6 +6,10 @@ how to run:
 
 ```npm run dev```
 
+> Or run it on android directly (also works for ios and web)
+
+```npm run android```
+
 react native-expo (core)
 
 android studio (real test)
