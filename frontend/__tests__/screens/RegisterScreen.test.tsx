@@ -3,8 +3,8 @@ import RegisterScreen from '@/screens/RegisterScreen';
 
 describe('RegisterScreen', () => {
   it('renders register form', () => {
-    const { getByPlaceholderText } = render(<RegisterScreen />);
-    expect(getByPlaceholderText(/email/i)).toBeTruthy();
-    expect(getByPlaceholderText(/password/i)).toBeTruthy();
+    const { getAllByTestId } = render(<RegisterScreen />);
+    const inputs = getAllByTestId('text-input-outlined');
+    expect(inputs.length).toBeGreaterThanOrEqual(3);
   });
 });

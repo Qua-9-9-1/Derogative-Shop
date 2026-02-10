@@ -15,6 +15,9 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
     ],
@@ -38,7 +41,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
-    "@react-navigation/native": "^7.1.28",
+    "@react-navigation/native": "^7.1.8",
     "axios": "^1.13.4",
     "eslint-config-universe": "^15.0.3",
     "expo": "~54.0.33",
@@ -55,8 +58,6 @@
     "expo-symbols": "~1.0.8",
     "expo-system-ui": "~6.0.9",
     "expo-web-browser": "~15.0.10",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
     "react-hook-form": "^7.71.1",
     "react-native": "^0.81.5",
     "react-native-dotenv": "^3.4.11",
@@ -74,14 +75,16 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.3",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "29.5.14",
     "@types/react": "~19.1.0",
     "eslint": "^9.39.2",
     "eslint-config-expo": "~10.0.0",
     "jest": "^29.7.0",
     "jest-expo": "^54.0.17",
     "prettier": "^3.8.1",
-    "react-test-renderer": "^19.2.4",
+    "react": "^19.1.4",
+    "react-dom": "^19.1.4",
+    "react-test-renderer": "^19.1.4",
     "typescript": "~5.9.2"
   },
   "private": true,

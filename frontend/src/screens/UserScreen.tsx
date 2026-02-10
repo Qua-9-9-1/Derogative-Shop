@@ -29,8 +29,7 @@ export default function UserScreen() {
     loadData();
   }, [userId, token]);
 
-  if (error)
-    return <ErrorContent message={error} />;
+  if (error) return <ErrorContent message={error} />;
   else if (!userData) return <LoadingContent />;
 
   return (

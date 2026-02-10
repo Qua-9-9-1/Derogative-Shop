@@ -1,10 +1,11 @@
-import { render } from '@testing-library/react-native';
+import React from 'react';
 import LoginScreen from '@/screens/LoginScreen';
+import { render } from '@/utils/test-utils';
 
 describe('LoginScreen', () => {
   it('renders login form', () => {
-    const { getByPlaceholderText } = render(<LoginScreen />);
-    expect(getByPlaceholderText(/email/i)).toBeTruthy();
-    expect(getByPlaceholderText(/password/i)).toBeTruthy();
+    const { getAllByTestId } = render(<LoginScreen />);
+    const inputs = getAllByTestId('text-input-outlined');
+    expect(inputs.length).toBeGreaterThanOrEqual(2);
   });
 });

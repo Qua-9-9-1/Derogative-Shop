@@ -38,16 +38,16 @@ export default function RegisterScreen() {
     setLoading(false);
 
     if (error) {
-      Alert.alert('Erreur', error.message);
+      Alert.alert('Error', error.message);
     } else {
-      Alert.alert('Succès', 'Compte créé ! Connectez-vous.');
+      Alert.alert('Success', 'Account created! Please log in.');
       router.back();
     }
   };
 
   return (
     <View style={styles.container}>
-      <Title style={styles.title}>Créer un compte</Title>
+      <Title style={styles.title}>Create an account</Title>
 
       <Controller
         control={control}
@@ -77,7 +77,7 @@ export default function RegisterScreen() {
         render={({ field: { onChange, onBlur, value } }) => (
           <>
             <TextInput
-              label="Mot de passe"
+              label="Password"
               mode="outlined"
               secureTextEntry
               onBlur={onBlur}
@@ -98,7 +98,7 @@ export default function RegisterScreen() {
         render={({ field: { onChange, onBlur, value } }) => (
           <>
             <TextInput
-              label="Confirmer le mot de passe"
+              label="Confirm Password"
               mode="outlined"
               secureTextEntry
               onBlur={onBlur}
@@ -119,11 +119,11 @@ export default function RegisterScreen() {
         loading={loading}
         style={styles.button}
       >
-        {"S'inscrire"}
+        {'Register'}
       </Button>
 
       <Button mode="text" onPress={() => router.back()} style={{ marginTop: 10 }}>
-        {'Annuler'}
+        {'Cancel'}
       </Button>
     </View>
   );
