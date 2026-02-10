@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage --runInBand",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write ."
   },

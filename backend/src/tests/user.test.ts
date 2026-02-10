@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../app';
+import jwt from 'jsonwebtoken';
 
 describe('User API', () => {
   let userId: string;
@@ -18,11 +19,19 @@ describe('User API', () => {
   });
 
   it('should return 404 for unknown user', async () => {
+    const validToken = jwt.sign(
+      { userId: 'unexistant-user', email: 'nothing@none.com' },
+      process.env.JWT_SECRET || 'not_found',
+      { expiresIn: '1h' }
+    );
+
     const res = await request(app)
-      .get('/user/nonexistent-id')
-      .set('Authorization', `Bearer ${token}`);
+      .get('/user/nonexistent-id-12345')
+      .set('Authorization', `Bearer ${validToken}`);
+
     expect(res.status).toBe(404);
   });
+
 
   it('should get the user by id', async () => {
     if (!userId) return;
