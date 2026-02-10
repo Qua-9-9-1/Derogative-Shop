@@ -111,6 +111,9 @@ export default function ProductScreen() {
           keyExtractor={(item) => item.id}
           renderItem={renderProduct}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
+          initialNumToRender={10}
+          windowSize={5}
+          removeClippedSubviews={true}
         />
       )}
     </Surface>
