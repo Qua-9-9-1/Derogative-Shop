@@ -29,7 +29,7 @@ export const productService = {
       }
       return null;
     } catch (error) {
-      console.error('Error API OFF', error);
+      console.error('Error during product search', error);
       return null;
     }
   },
@@ -50,7 +50,7 @@ export const productService = {
       }
       return [];
     } catch (error) {
-      console.error('Error API OFF', error);
+      console.error('Error during product search', error);
       return [];
     }
   },
