@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Check repository
       run: |
-        if [ "${{ github.repository }}" != "Qua-9-9-1/G-DER-800" ]; then
+        if [ "${{ github.repository }}" != "Qua-9-9-1/Derogative-Shop" ]; then
           echo "Not the main repository, skipping workflow."
           exit 1
         fi
