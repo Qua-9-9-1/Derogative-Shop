@@ -10,10 +10,12 @@ jobs:
   skip-if-not-main-repo:
     runs-on: ubuntu-latest
     steps:
-      - name: Check repository
-        if: ${{ github.repository == 'Qua-9-9-1/G-DER-800' }}
-        run: |
-          exit 0
+    - name: Check repository
+      run: |
+        if [ "${{ github.repository }}" != "Qua-9-9-1/G-DER-800" ]; then
+          echo "Not the main repository, skipping workflow."
+          exit 1
+        fi
 
   detect-changes:
     needs: skip-if-not-main-repo
