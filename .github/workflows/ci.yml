@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check repository
-        if: ${{ github.repository != 'Qua-9-9-1/Derogative-Shop' }}
+        if: ${{ github.repository == 'Qua-9-9-1/G-DER-800' }}
         run: |
           exit 0
 
