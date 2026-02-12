@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Product } from '../services/productService';
+import { cartService } from '../services/cartService';
 
 export interface CartItem extends Product {
   quantity: number;
@@ -7,57 +8,86 @@ export interface CartItem extends Product {
 
 interface CartState {
   items: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  decreaseQuantity: (productId: string) => void;
+  isDirty: boolean;
+  isLoading: boolean;
+
+  addItem: (product: Product) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  total: () => number;
   getItemCount: () => number;
+  totalPrice: () => number;
+
+  syncWithBackend: () => Promise<void>;
+  initializeCart: () => Promise<void>;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
+  isDirty: false,
+  isLoading: false,
 
-  addToCart: (product) =>
-    set((state) => {
-      const existingItem = state.items.find((item) => item.id === product.id);
-      if (existingItem) {
-        return {
-          items: state.items.map((item) =>
-            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-          ),
-        };
-      }
-      return { items: [...state.items, { ...product, quantity: 1 }] };
-    }),
-
-  removeFromCart: (id) =>
-    set((state) => ({
-      items: state.items.filter((item) => item.id !== id),
-    })),
-
-  decreaseQuantity: (id) =>
-    set((state) => {
-      const existingItem = state.items.find((item) => item.id === id);
-      if (existingItem && existingItem.quantity > 1) {
-        return {
-          items: state.items.map((item) =>
-            item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-          ),
-        };
-      }
-      return { items: state.items.filter((item) => item.id !== id) };
-    }),
-
-  clearCart: () => set({ items: [] }),
-
-  total: () => {
+  addItem: (product) => {
+    console.log('Adding item to cart:', product);
     const items = get().items;
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const existingItem = items.find((item) => item.id === product.id);
+    let newItems;
+    if (existingItem) {
+      newItems = items.map((item) =>
+        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+      );
+    } else {
+      newItems = [...items, { ...product, quantity: 1 }];
+    }
+
+    set({ items: newItems, isDirty: true });
   },
+
+  updateQuantity: (id, quantity) => {
+    console.log(`Updating quantity for item ${id} to ${quantity}`);
+    const items = get().items;
+    const newItems = items
+      .map((item) => (item.id === id ? { ...item, quantity: Math.max(0, quantity) } : item))
+      .filter((item) => item.quantity > 0);
+    set({ items: newItems, isDirty: true });
+  },
+
+clearCart: () => {
+  console.log('Clearing cart');
+  if (get().items.length === 0) return;
+  set({ items: [], isDirty: true }); },
 
   getItemCount: () => {
     const items = get().items;
-    return items.reduce((count, item) => count + item.quantity, 0);
+    return items.reduce((total, item) => total + item.quantity, 0);
+  },
+
+  totalPrice: () => {
+    const items = get().items;
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  },
+
+  initializeCart: async () => {
+    console.log('Initializing cart from backend...');
+    set({ isLoading: true });
+    try {
+      const serverCart = await cartService.getCart();
+      set({ items: serverCart.items, isDirty: false, isLoading: false });
+    } catch (e) {
+      console.error('Error initializing cart', e);
+      set({ isLoading: false });
+    }
+  },
+
+  syncWithBackend: async () => {
+    const { items, isDirty } = get();
+    if (!isDirty) return;
+
+    console.log('Syncing cart with backend...', items);
+    try {
+      await cartService.syncCart(items);
+      set({ isDirty: false });
+    } catch (e) {
+      console.error('Error syncing cart', e);
+    }
   },
 }));

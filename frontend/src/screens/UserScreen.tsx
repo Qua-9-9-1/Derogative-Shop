@@ -31,13 +31,15 @@ export default function UserScreen() {
     loadData();
   }, [userId, token]);
 
-  if (error) return (
-    <Surface style={{ padding: 20 }}>
-  <ErrorContent message={error} />
-  <Button mode="contained" onPress={() => router.push('/login')} style={{ marginTop: 20 }}>
-    Go to Login
-  </Button>
-  </Surface>);
+  if (error)
+    return (
+      <Surface style={{ padding: 20 }}>
+        <ErrorContent message={error} />
+        <Button mode="contained" onPress={() => router.push('/login')} style={{ marginTop: 20 }}>
+          Go to Login
+        </Button>
+      </Surface>
+    );
   else if (!userData) return <LoadingContent />;
 
   return (

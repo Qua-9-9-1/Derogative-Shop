@@ -22,7 +22,7 @@ export default function ProductScreen() {
 
   const theme = useTheme();
   const { showToast } = useToastStore();
-  const { addToCart, decreaseQuantity } = useCartStore();
+  const { addItem, updateQuantity } = useCartStore();
 
   const loadProducts = async () => {
     setLoading(true);
@@ -36,9 +36,9 @@ export default function ProductScreen() {
   }, []);
 
   const handleAddToCart = (item: Product) => {
-    addToCart(item);
+        addItem(item);
     showToast(`Item "${item.name}" added to cart`, () => {
-      decreaseQuantity(item.id);
+      updateQuantity(item.id, item.quantity - 1);
     });
   };
 
@@ -80,7 +80,9 @@ export default function ProductScreen() {
           </View>
         </View>
         <Image
-          source={{ uri: item.small_image_url || item.image_url || 'https://via.placeholder.com/150' }}
+          source={{
+            uri: item.small_image_url || item.image_url || 'https://via.placeholder.com/150',
+          }}
           style={{
             width: 80,
             height: 80,

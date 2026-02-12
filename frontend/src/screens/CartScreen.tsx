@@ -5,7 +5,7 @@ import { CartItem, useCartStore } from '../store/cartStore';
 
 export default function CartScreen() {
   const theme = useTheme();
-  const { items, removeFromCart, addToCart, decreaseQuantity, total, clearCart } = useCartStore();
+  const { items,addItem, updateQuantity, clearCart, totalPrice } = useCartStore();
 
   const handlePayment = () => {
     if (items.length === 0) return;
@@ -32,11 +32,11 @@ export default function CartScreen() {
             marginHorizontal: 10,
           }}
         >
-          <IconButton icon="minus" size={16} onPress={() => decreaseQuantity(item.id)} />
+          <IconButton icon="minus" size={16} onPress={() => updateQuantity(item.id, item.quantity - 1)} />
           <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
             {item.quantity}
           </Text>
-          <IconButton icon="plus" size={16} onPress={() => addToCart(item)} />
+          <IconButton icon="plus" size={16} onPress={() => addItem(item)} />
         </Surface>
 
         <Text
@@ -81,7 +81,7 @@ export default function CartScreen() {
               variant="headlineSmall"
               style={{ color: theme.colors.primary, fontWeight: 'bold' }}
             >
-              {total().toFixed(2)} €
+              {totalPrice().toFixed(2)} €
             </Text>
           </View>
 
