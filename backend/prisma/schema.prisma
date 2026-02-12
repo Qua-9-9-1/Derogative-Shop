@@ -27,6 +27,7 @@ model Product {
   id              String   @id
   name            String
   brand           String?
+  smallImageUrl   String?
   imageUrl        String?
   price           Decimal  @db.Decimal(10, 2)
   category        String?
