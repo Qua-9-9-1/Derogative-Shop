@@ -1,7 +1,7 @@
-import { PrismaClient, Product } from '@prisma/client';
+import { prisma } from '../prismaClient';
+import { Product } from '@prisma/client';
 import axios from 'axios';
 
-const prisma = new PrismaClient();
 const OFF_API_URL = 'https://world.openfoodfacts.org/api/v0/product';
 
 export const productService = {
