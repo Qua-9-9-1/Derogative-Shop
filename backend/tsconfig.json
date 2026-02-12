@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
-    "outDir": "./dist",
     "rootDir": "./src",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -11,5 +11,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules", "prisma.config.ts", "jest.config.js", "eslint.config.mts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "prisma", "jest.config.js", "eslint.config.mts", "dist"]
 }
