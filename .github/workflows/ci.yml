@@ -91,6 +91,9 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
+      - name: Clean dist folder for tests
+        run: rm -rf dist
+        
       - name: Tests and Coverage (Backend)
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
