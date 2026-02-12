@@ -5,6 +5,7 @@ export interface Product {
   id: string;
   name: string;
   brands?: string;
+  small_image_url?: string;
   image_url?: string;
   nutriscore?: string;
   quantity: number;
@@ -22,6 +23,7 @@ export const productService = {
           id: barcode,
           name: p.name || 'Unknown',
           brands: p.brand,
+          small_image_url: p.smallImageUrl,
           image_url: p.imageUrl,
           quantity: p.stockQuantity,
           price: p.price,

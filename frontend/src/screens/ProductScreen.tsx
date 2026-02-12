@@ -80,7 +80,7 @@ export default function ProductScreen() {
           </View>
         </View>
         <Image
-          source={{ uri: item.image_url || 'https://via.placeholder.com/150' }}
+          source={{ uri: item.small_image_url || item.image_url || 'https://via.placeholder.com/150' }}
           style={{
             width: 80,
             height: 80,
