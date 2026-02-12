@@ -76,13 +76,13 @@ async function main() {
     await createTestUser();
     await importProducts(250);
   } catch (error) {
-    process.exit(1);
+    console.error('Error seeding database:', error);
   }
 }
 
 main()
   .catch(() => {
-    process.exit(1);
+    console.error('Unexpected error during seeding');
   })
   .finally(async () => {
     await prisma.$disconnect();
