@@ -4,6 +4,8 @@ import { tokenService } from '@/services/tokenService';
 export const tokenController = {
   async authenticateAndCheckRevoked(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
+    let payload;
+
     if (!authHeader) {
       return res.status(401).json({ message: 'No token provided' });
     }
@@ -12,7 +14,7 @@ export const tokenController = {
       return res.status(401).json({ message: 'Invalid token format' });
     }
     try {
-      tokenService.verifyToken(token);
+      payload = tokenService.verifyToken(token);
     } catch (error) {
       return res
         .status(401)
@@ -20,6 +22,9 @@ export const tokenController = {
     }
     if (await tokenService.isTokenRevoked(token)) {
       return res.status(401).json({ message: 'Token has been revoked' });
+    }
+    if (payload && typeof payload === 'object' && payload.userId) {
+      (req as any).userId = payload.userId;
     }
     next();
   },
