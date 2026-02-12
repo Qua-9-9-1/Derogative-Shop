@@ -2,7 +2,8 @@ import { Product, productService } from '@/services/productService';
 import { useCartStore } from '@/store/cartStore';
 import { useToastStore } from '@/store/toastStore';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, View } from 'react-native';
+import { FlatList, View } from 'react-native';
+import { Image } from 'expo-image';
 import {
   ActivityIndicator,
   Card,
@@ -78,7 +79,6 @@ export default function ProductScreen() {
             />
           </View>
         </View>
-
         <Image
           source={{ uri: item.image_url || 'https://via.placeholder.com/150' }}
           style={{
@@ -88,6 +88,9 @@ export default function ProductScreen() {
             backgroundColor: 'white',
             resizeMode: 'contain',
           }}
+          contentFit="cover"
+          transition={500}
+          cachePolicy="disk"
         />
       </Card.Content>
     </Card>

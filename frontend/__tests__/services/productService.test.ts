@@ -31,9 +31,9 @@ describe('productService', () => {
   });
 
   it('searchProducts returns array', async () => {
-    axios.get.mockResolvedValue({ data: [
-      { id: '1', name: 'A', brand: 'Brand', imageUrl: 'img', stockQuantity: 2, price: 1 }
-    ] });
+    axios.get.mockResolvedValue({
+      data: [{ id: '1', name: 'A', brand: 'Brand', imageUrl: 'img', stockQuantity: 2, price: 1 }],
+    });
     const res = await productService.searchProducts('A');
     expect(Array.isArray(res)).toBe(true);
     expect(res[0].brands).toBe('Brand');
