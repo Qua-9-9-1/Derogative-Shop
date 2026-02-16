@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { Image } from 'expo-image';
 import {
-  ActivityIndicator,
   Card,
   IconButton,
   Searchbar,
@@ -16,6 +15,7 @@ import {
 import LoadingContent from '@/components/ui/LoadingContent';
 
 export default function ProductScreen() {
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,8 @@ export default function ProductScreen() {
 
   const loadProducts = async () => {
     setLoading(true);
-    const data = await productService.searchProducts(searchQuery);
+    const data = await productService.searchProducts('');
+    setAllProducts(data);
     setProducts(data);
     setLoading(false);
   };
@@ -35,8 +36,23 @@ export default function ProductScreen() {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+    if (!searchQuery) {
+      setProducts(allProducts);
+    } else {
+      const lower = searchQuery.toLowerCase();
+      setProducts(
+        allProducts.filter(
+          (item) =>
+            item.name.toLowerCase().includes(lower) ||
+            (item.brands && item.brands.toLowerCase().includes(lower))
+        )
+      );
+    }
+  }, [searchQuery, allProducts]);
+
   const handleAddToCart = (item: Product) => {
-        addItem(item);
+    addItem(item);
     showToast(`Item "${item.name}" added to cart`, () => {
       updateQuantity(item.id, item.quantity - 1);
     });
@@ -104,7 +120,6 @@ export default function ProductScreen() {
         placeholder="Search products"
         onChangeText={setSearchQuery}
         value={searchQuery}
-        onSubmitEditing={loadProducts}
         style={{ margin: 16 }}
       />
 
