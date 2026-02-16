@@ -4,6 +4,10 @@ jest.mock('axios');
 const axios = require('axios');
 
 describe('authService', () => {
+  it('should have login function', () => {
+    expect(typeof authService.login).toBe('function');
+  });
+
   it('register returns data on success', async () => {
     axios.post.mockResolvedValue({ data: { email: 'a@b.com' } });
     const res = await authService.register('a@b.com', 'pass');
