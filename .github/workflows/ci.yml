@@ -107,8 +107,12 @@ jobs:
 
   mirror-to-epitech-repo:
     name: Mirror to Epitech Repo
-    needs: [backend-check]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    needs: [backend-check, frontend-check]
+    if: >
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') &&
+      always() &&
+      needs.backend-check.result != 'failure' &&
+      needs.frontend-check.result != 'failure'
     runs-on: ubuntu-latest
 
     steps:
