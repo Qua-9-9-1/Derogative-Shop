@@ -51,10 +51,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ items: newItems, isDirty: true });
   },
 
-clearCart: () => {
-  console.log('Clearing cart');
-  if (get().items.length === 0) return;
-  set({ items: [], isDirty: true }); },
+  clearCart: () => {
+    console.log('Clearing cart');
+    if (get().items.length === 0) return;
+    set({ items: [], isDirty: true });
+  },
 
   getItemCount: () => {
     const items = get().items;

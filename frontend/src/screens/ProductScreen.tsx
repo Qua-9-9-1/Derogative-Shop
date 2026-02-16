@@ -4,14 +4,7 @@ import { useToastStore } from '@/store/toastStore';
 import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { Image } from 'expo-image';
-import {
-  Card,
-  IconButton,
-  Searchbar,
-  Surface,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import { Card, IconButton, Searchbar, Surface, Text, useTheme } from 'react-native-paper';
 import LoadingContent from '@/components/ui/LoadingContent';
 
 export default function ProductScreen() {

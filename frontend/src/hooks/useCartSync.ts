@@ -17,7 +17,7 @@ export const useCartSync = () => {
 
   useEffect(() => {
     if (isDirty && isAuthenticated) {
-        console.log('Cart is dirty, scheduling sync...');
+      console.log('Cart is dirty, scheduling sync...');
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
         syncWithBackend();
