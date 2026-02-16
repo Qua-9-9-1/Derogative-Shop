@@ -19,6 +19,9 @@ export const productService = {
 
       if (response.data.status === 1) {
         const p = response.data.product;
+        if (p.stockQuantity === 0) {
+          return null;
+        }
         return {
           id: barcode,
           name: p.name || 'Unknown',
@@ -41,14 +44,17 @@ export const productService = {
       const response = await axios.get(`${config.api.baseUrl}/products/`);
 
       if (response.data) {
-        return response.data.map((p: any) => ({
-          id: p.id,
-          name: p.name || 'Unknown',
-          brands: p.brand,
-          image_url: p.imageUrl,
-          quantity: p.stockQuantity,
-          price: p.price,
-        }));
+        // Filtre les produits dont la quantité est 0
+        return response.data
+          .filter((p: any) => p.stockQuantity > 0)
+          .map((p: any) => ({
+            id: p.id,
+            name: p.name || 'Unknown',
+            brands: p.brand,
+            image_url: p.imageUrl,
+            quantity: p.stockQuantity,
+            price: p.price,
+          }));
       }
       return [];
     } catch (error) {
