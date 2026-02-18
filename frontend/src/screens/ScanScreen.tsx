@@ -69,8 +69,9 @@ export default function ScanScreen() {
       />
 
       <Surface style={styles.overlay}>
-        <Surface style={styles.scanFrame} />
-        <Text style={styles.helpText}>Aim at a barcode</Text>
+        <Surface style={styles.scanFrame}>
+          <Text style={styles.helpText}>Aim at a barcode</Text>
+        </Surface>
       </Surface>
 
       {loading && (
