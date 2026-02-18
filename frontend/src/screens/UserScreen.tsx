@@ -1,35 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { Surface, Text, Button } from 'react-native-paper';
 import { useAuth } from '@/context/authContext';
-import { userService } from '@/services/userService';
 import LoadingContent from '@/components/ui/LoadingContent';
 import ErrorContent from '@/components/ui/ErrorContent';
 import { useRouter } from 'expo-router';
+import { useUser } from '@/context/userContext';
 
 export default function UserScreen() {
   const { userId, token, logout } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const {
+    userData: contextUserData,
+    loading: contextLoading,
+    error: contextError,
+    refetchUser,
+  } = useUser();
 
   useEffect(() => {
-    if (!userId || !token) {
-      setError('User not authenticated');
+    if (contextError) {
+      setError(contextError);
       setUserData(null);
-      return;
+    } else if (!contextLoading && contextUserData) {
+      setUserData(contextUserData);
+      setError(null);
     }
-
-    const loadData = async () => {
-      try {
-        const data = await userService.getUserProfile(userId, token);
-        setUserData(data);
-      } catch (error) {
-        setError('Failed to load user profile');
-        setUserData(null);
-      }
-    };
-    loadData();
-  }, [userId, token]);
+  }, [contextUserData, contextLoading, contextError]);
 
   if (error)
     return (

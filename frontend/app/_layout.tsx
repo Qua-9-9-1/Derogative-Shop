@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import { AuthProvider } from '@/context/authContext';
 import { useCartSync } from '@/hooks/useCartSync';
 import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import { UserProvider } from '@/context/userContext';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -22,15 +23,17 @@ export default function RootLayout() {
   return (
     <PaperProvider theme={paperTheme}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AuthProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="register" options={{ headerShown: false }} />
-          </Stack>
-          <StatusBar style="auto" />
-          <ToastStack />
-        </AuthProvider>
+        <UserProvider>
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen name="register" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar style="auto" />
+            <ToastStack />
+          </AuthProvider>
+        </UserProvider>
       </ThemeProvider>
     </PaperProvider>
   );
