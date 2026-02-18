@@ -1,64 +1,61 @@
-import React from 'react';
-import { Alert, FlatList, View } from 'react-native';
-import { Button, Card, IconButton, Surface, Text, useTheme } from 'react-native-paper';
+import React, { useState } from 'react';
+import { FlatList } from 'react-native';
+import { Surface, Text, useTheme } from 'react-native-paper';
 import { CartItem, useCartStore } from '../store/cartStore';
+import { CartItemRow } from '../components/cart/CartItemRow';
+import { CartSummary } from '../components/cart/CartSummary';
+import { StockValidationDialog } from '../components/cart/StockValidationDialog';
+import { PaymentDialog } from '../components/cart/PaymentDialog';
 
 export default function CartScreen() {
   const theme = useTheme();
   const { items, addItem, updateQuantity, clearCart, totalPrice } = useCartStore();
 
-  const handlePayment = () => {
-    if (items.length === 0) return;
-    Alert.alert('Payment', `Test pay`);
+  const [stockDialogVisible, setStockDialogVisible] = useState(false);
+  const [paymentDialogVisible, setPaymentDialogVisible] = useState(false);
+  const [missingItems, setMissingItems] = useState<CartItem[]>([]);
+
+  const mockCheckStock = (cartItems: CartItem[]): CartItem[] => {
+    return cartItems.filter((_, index) => index % 3 === 0);
   };
 
-  const renderItem = ({ item }: { item: CartItem }) => (
-    <Card style={{ marginBottom: 10 }}>
-      <Card.Content
-        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-      >
-        <View style={{ flex: 1 }}>
-          <Text variant="titleMedium">{item.name}</Text>
-          <Text variant="bodySmall">{item.price} € / by product </Text>
-        </View>
+  const handleInitiatePayment = () => {
+    if (items.length === 0) return;
 
-        <Surface
-          elevation={0}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: theme.colors.secondaryContainer,
-            borderRadius: 20,
-            marginHorizontal: 10,
-          }}
-        >
-          <IconButton
-            icon="minus"
-            size={16}
-            onPress={() => updateQuantity(item.id, item.quantity - 1)}
-          />
-          <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
-            {item.quantity}
-          </Text>
-          <IconButton icon="plus" size={16} onPress={() => addItem(item)} />
-        </Surface>
+    const outOfStock = mockCheckStock(items);
 
-        <Text
-          variant="titleMedium"
-          style={{ fontWeight: 'bold', minWidth: 50, textAlign: 'right' }}
-        >
-          {(item.price * item.quantity).toFixed(2)} €
-        </Text>
-      </Card.Content>
-    </Card>
-  );
+    if (outOfStock.length > 0) {
+      setMissingItems(outOfStock);
+      setStockDialogVisible(true);
+    } else {
+      setPaymentDialogVisible(true);
+    }
+  };
+
+  const handleForcePay = () => {
+    setStockDialogVisible(false);
+    setTimeout(() => {
+      setPaymentDialogVisible(true);
+    }, 200);
+  };
+
+  const handlePaymentSuccess = () => {
+    setPaymentDialogVisible(false);
+    clearCart();
+  };
 
   return (
     <Surface style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <CartItemRow
+            item={item}
+            onIncrement={() => addItem(item)}
+            onDecrement={() => updateQuantity(item.id, item.quantity - 1)}
+          />
+        )}
         contentContainerStyle={{ padding: 16 }}
         ListEmptyComponent={
           <Text style={{ textAlign: 'center', marginTop: 50, opacity: 0.5 }}>
@@ -68,41 +65,21 @@ export default function CartScreen() {
       />
 
       {items.length > 0 && (
-        <Surface
-          elevation={4}
-          style={{ padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 15,
-            }}
-          >
-            <Text variant="titleLarge">Total</Text>
-            <Text
-              variant="headlineSmall"
-              style={{ color: theme.colors.primary, fontWeight: 'bold' }}
-            >
-              {totalPrice().toFixed(2)} €
-            </Text>
-          </View>
-
-          <Button
-            mode="contained"
-            onPress={handlePayment}
-            style={{ marginBottom: 10 }}
-            contentStyle={{ paddingVertical: 5 }}
-          >
-            Pay now
-          </Button>
-
-          <Button mode="text" onPress={clearCart} textColor={theme.colors.error}>
-            Empty cart
-          </Button>
-        </Surface>
+        <CartSummary total={totalPrice()} onPay={handleInitiatePayment} onClear={clearCart} />
       )}
+
+      <StockValidationDialog
+        visible={stockDialogVisible}
+        missingItems={missingItems}
+        onDismiss={() => setStockDialogVisible(false)}
+        onForcePay={handleForcePay}
+      />
+
+      <PaymentDialog
+        visible={paymentDialogVisible}
+        onPaymentSuccess={handlePaymentSuccess}
+        onDismiss={() => setPaymentDialogVisible(false)}
+      />
     </Surface>
   );
 }
