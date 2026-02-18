@@ -3,8 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, StyleSheet, View } from 'react-native';
-import { Button, HelperText, TextInput, Title } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Button, HelperText, TextInput, Title, Dialog, Portal, Paragraph, Surface } from 'react-native-paper';
 import { z } from 'zod';
 
 const registerSchema = z
@@ -23,6 +23,10 @@ type RegisterForm = z.infer<typeof registerSchema>;
 export default function RegisterScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('');
+  const [dialogMessage, setDialogMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     control,
@@ -32,21 +36,34 @@ export default function RegisterScreen() {
     resolver: zodResolver(registerSchema),
   });
 
+  const showDialog = (title: string, message: string, success: boolean = false) => {
+    setDialogTitle(title);
+    setDialogMessage(message);
+    setIsSuccess(success);
+    setDialogVisible(true);
+  };
+
+  const hideDialog = () => {
+    setDialogVisible(false);
+    if (isSuccess) {
+      router.back();
+    }
+  };
+
   const onRegister = async (data: RegisterForm) => {
     setLoading(true);
     const { error } = await authService.register(data.email, data.password);
     setLoading(false);
 
     if (error) {
-      Alert.alert('Error', error.message);
+      showDialog('Error', error.message);
     } else {
-      Alert.alert('Success', 'Account created! Please log in.');
-      router.back();
+      showDialog('Success', 'Account created! Please log in.', true);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <Surface style={styles.container}>
       <Title style={styles.title}>Create an account</Title>
 
       <Controller
@@ -125,12 +142,24 @@ export default function RegisterScreen() {
       <Button mode="text" onPress={() => router.back()} style={{ marginTop: 10 }}>
         {'Cancel'}
       </Button>
-    </View>
+
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+          <Dialog.Title>{dialogTitle}</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>{dialogMessage}</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>OK</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </Surface>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: 'center', backgroundColor: '#fff' },
+  container: { flex: 1, padding: 20, justifyContent: 'center' },
   title: { textAlign: 'center', marginBottom: 20, fontSize: 24, fontWeight: 'bold' },
   button: { marginTop: 10, paddingVertical: 5 },
 });

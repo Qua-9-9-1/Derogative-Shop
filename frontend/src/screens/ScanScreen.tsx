@@ -1,7 +1,7 @@
 import { Camera, CameraView } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Vibration, View } from 'react-native';
-import { ActivityIndicator, Button, Card, Modal, Paragraph, Text, Title } from 'react-native-paper';
+import { StyleSheet, Vibration } from 'react-native';
+import { ActivityIndicator, Button, Card, Modal, Paragraph, Text, Title, Dialog, Portal, Surface } from 'react-native-paper';
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -9,6 +9,9 @@ export default function ScanScreen() {
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState<String | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [notFoundDialogVisible, setNotFoundDialogVisible] = useState(false);
+  const [scannedCode, setScannedCode] = useState('');
+  const [addedDialogVisible, setAddedDialogVisible] = useState(false);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -31,9 +34,8 @@ export default function ScanScreen() {
       setProduct('Test Product');
       setModalVisible(true);
     } else {
-      Alert.alert('Product not found', `Code: ${data}`, [
-        { text: 'OK', onPress: () => setScanned(false) },
-      ]);
+      setScannedCode(data);
+      setNotFoundDialogVisible(true);
     }
   };
 
@@ -45,19 +47,19 @@ export default function ScanScreen() {
 
   if (hasPermission === null)
     return (
-      <View style={styles.center}>
+      <Surface style={styles.center}>
         <Text>Asking for permission...</Text>
-      </View>
+      </Surface>
     );
   if (hasPermission === false)
     return (
-      <View style={styles.center}>
+      <Surface style={styles.center}>
         <Text>No access to camera...</Text>
-      </View>
+      </Surface>
     );
 
   return (
-    <View style={styles.container}>
+    <Surface style={styles.container}>
       <CameraView
         style={StyleSheet.absoluteFillObject}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -66,16 +68,16 @@ export default function ScanScreen() {
         }}
       />
 
-      <View style={styles.overlay}>
-        <View style={styles.scanFrame} />
+      <Surface style={styles.overlay}>
+        <Surface style={styles.scanFrame} />
         <Text style={styles.helpText}>Aim at a barcode</Text>
-      </View>
+      </Surface>
 
       {loading && (
-        <View style={styles.loadingOverlay}>
+        <Surface style={styles.loadingOverlay}>
           <ActivityIndicator animating={true} size="large" color="#fff" />
           <Text style={{ color: '#fff', marginTop: 10 }}>Searching for product...</Text>
-        </View>
+        </Surface>
       )}
 
       <Modal
@@ -97,7 +99,7 @@ export default function ScanScreen() {
               <Button
                 mode="contained"
                 onPress={() => {
-                  Alert.alert('Added!', 'Cart functionality coming soon...');
+                  setAddedDialogVisible(true);
                   closeModal();
                 }}
               >
@@ -107,7 +109,35 @@ export default function ScanScreen() {
           </Card>
         )}
       </Modal>
-    </View>
+
+      <Portal>
+        <Dialog visible={notFoundDialogVisible} onDismiss={() => {
+          setNotFoundDialogVisible(false);
+          setScanned(false);
+        }}>
+          <Dialog.Title>Product not found</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Code: {scannedCode}</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => {
+              setNotFoundDialogVisible(false);
+              setScanned(false);
+            }}>OK</Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Dialog visible={addedDialogVisible} onDismiss={() => setAddedDialogVisible(false)}>
+          <Dialog.Title>Added!</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Cart functionality coming soon...</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setAddedDialogVisible(false)}>OK</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </Surface>
   );
 }
 

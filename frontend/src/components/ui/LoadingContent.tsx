@@ -1,12 +1,17 @@
 import React from 'react';
-import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { ActivityIndicator, Surface, Text, useTheme } from 'react-native-paper';
 
 const LoadingContent: React.FC = () => {
+  const theme = useTheme();
+  
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#622be4" />
-      <Text style={styles.text}>loading</Text>
-    </View>
+    <Surface style={styles.container}>
+      <ActivityIndicator animating={true} size="large" color={theme.colors.primary} />
+      <Text variant="bodyLarge" style={[styles.text, { color: theme.colors.onSurface }]}>
+        Loading...
+      </Text>
+    </Surface>
   );
 };
 
@@ -18,8 +23,6 @@ const styles = StyleSheet.create({
   },
   text: {
     marginTop: 16,
-    fontSize: 16,
-    color: '#333',
   },
 });
 

@@ -3,8 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, View } from 'react-native';
-import { Button, HelperText, TextInput, Title } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Button, HelperText, TextInput, Title, Surface } from 'react-native-paper';
 import { z } from 'zod';
 import { useAuth } from '@/context/authContext';
 
@@ -42,7 +42,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <Surface style={styles.container}>
       <Title style={styles.title}>Welcome to Derogative Shop</Title>
 
       <Controller
@@ -100,7 +100,7 @@ export default function LoginScreen() {
       <Button mode="text" onPress={() => router.push('/register')} style={{ marginTop: 20 }}>
         {"Don't have an account? Register"}
       </Button>
-    </View>
+    </Surface>
   );
 }
 
@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   title: {
     textAlign: 'center',
