@@ -47,6 +47,7 @@ app/
 ```
 
 **Conventions**:
+
 - Files in `app/` automatically become routes
 - `(tabs)` is a route group sharing a layout
 - `_layout.tsx` defines nested layouts
@@ -68,6 +69,7 @@ components/
 ```
 
 **Principles**:
+
 - Dumb/presentational components
 - TypeScript typed props
 - Testable in isolation
@@ -87,6 +89,7 @@ screens/
 ```
 
 **Responsibilities**:
+
 - Screen business logic
 - Orchestration of hooks and services
 - Local state management
@@ -103,6 +106,7 @@ services/
 ```
 
 **Service Architecture**:
+
 - Encapsulation of API calls with Axios
 - Centralized error handling
 - Validation with Zod
@@ -111,9 +115,9 @@ services/
 ```typescript
 // Example structure
 class ProductService {
-  async getProducts(): Promise<Product[]>
-  async getProductById(id: string): Promise<Product>
-  async searchProducts(query: string): Promise<Product[]>
+  async getProducts(): Promise<Product[]>;
+  async getProductById(id: string): Promise<Product>;
+  async searchProducts(query: string): Promise<Product[]>;
 }
 ```
 
@@ -126,26 +130,28 @@ store/
 ```
 
 **Zustand Pattern**:
+
 ```typescript
 interface CartStore {
   // State
-  items: CartItem[]
-  total: number
-  
+  items: CartItem[];
+  total: number;
+
   // Actions
-  addItem: (item: CartItem) => void
-  removeItem: (id: string) => void
-  clearCart: () => void
+  addItem: (item: CartItem) => void;
+  removeItem: (id: string) => void;
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartStore>((set) => ({
   items: [],
   total: 0,
-  addItem: (item) => set((state) => ({
-    items: [...state.items, item]
-  })),
+  addItem: (item) =>
+    set((state) => ({
+      items: [...state.items, item],
+    })),
   // ...
-}))
+}));
 ```
 
 ### `/src/context` - React Contexts
@@ -156,6 +162,7 @@ context/
 ```
 
 **AuthContext**:
+
 - Manages global user state
 - Provides login/logout/register methods
 - Persists token with Expo Secure Store
@@ -171,17 +178,18 @@ hooks/
 ```
 
 **Business Hooks**:
+
 ```typescript
 // Example: useCartSync
 export function useCartSync() {
-  const { user } = useAuth()
-  const { items, syncWithBackend } = useCartStore()
-  
+  const { user } = useAuth();
+  const { items, syncWithBackend } = useCartStore();
+
   useEffect(() => {
     if (user) {
-      syncWithBackend(user.id)
+      syncWithBackend(user.id);
     }
-  }, [user, items])
+  }, [user, items]);
 }
 ```
 
@@ -201,6 +209,7 @@ Reusable functions (formatting, validation, helpers).
 ### 1. Separation of Concerns
 
 Each layer has a unique responsibility:
+
 - **Screens**: Presentation logic
 - **Services**: Backend communication
 - **Stores**: Shared global state
@@ -210,12 +219,12 @@ Each layer has a unique responsibility:
 
 ```typescript
 // Services are imported in screens/hooks
-import { productService } from '@/services/productService'
+import { productService } from '@/services/productService';
 
 function ProductScreen() {
   const loadProducts = async () => {
-    const products = await productService.getProducts()
-  }
+    const products = await productService.getProducts();
+  };
 }
 ```
 
@@ -300,13 +309,13 @@ Protected routes verify user via AuthContext:
 ```typescript
 function ProtectedScreen() {
   const { user, isLoading } = useAuth()
-  
+
   if (isLoading) return <LoadingContent />
   if (!user) {
     router.replace('/login')
     return null
   }
-  
+
   return <ScreenContent />
 }
 ```
@@ -322,20 +331,20 @@ function ProtectedScreen() {
 ```typescript
 // In a service
 try {
-  const response = await api.get('/products')
-  return response.data
+  const response = await api.get('/products');
+  return response.data;
 } catch (error) {
   if (axios.isAxiosError(error)) {
-    throw new ApiError(error.response?.data.message)
+    throw new ApiError(error.response?.data.message);
   }
-  throw error
+  throw error;
 }
 
 // In a screen
 try {
-  await loadProducts()
+  await loadProducts();
 } catch (error) {
-  toastStore.showError(error.message)
+  toastStore.showError(error.message);
 }
 ```
 
@@ -362,7 +371,7 @@ const ProductList = ({ products }) => {
   const renderItem = useCallback(({ item }) => (
     <ProductItem product={item} />
   ), [])
-  
+
   return (
     <FlatList
       data={products}
@@ -391,12 +400,12 @@ const ProductList = ({ products }) => {
 ```typescript
 // Axios interceptor
 axios.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('token')
+  const token = await SecureStore.getItemAsync('token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 ```
 
 ## Testing

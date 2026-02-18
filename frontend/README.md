@@ -15,6 +15,7 @@ Welcome to the complete documentation for the Derogative Shop frontend, a cross-
 ## Overview
 
 Derogative Shop is a cross-platform mobile application that allows users to:
+
 - Browse a product catalog
 - Scan barcodes to identify products
 - Manage a shopping cart
@@ -89,6 +90,7 @@ npm run web
 ## 🤝 Contributing
 
 To contribute to the project:
+
 1. Write tests for new features
 2. Ensure all tests pass (`npm test`)
 3. Check linting (`npm run lint`)

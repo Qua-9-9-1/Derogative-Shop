@@ -13,6 +13,7 @@ The application uses two approaches for state management:
 ## When to Use What?
 
 ### Use Zustand When:
+
 - ✅ State needs to be shared between many components
 - ✅ State persists across navigation
 - ✅ State updates frequently
@@ -20,12 +21,14 @@ The application uses two approaches for state management:
 - ✅ Examples: shopping cart, notifications, global settings
 
 ### Use React Context When:
+
 - ✅ State is tied to component lifecycle
 - ✅ Need to provide services (auth, theme, i18n)
 - ✅ State rarely changes
 - ✅ Examples: authentication, theme, language
 
 ### Use Local State When:
+
 - ✅ State is only used by one component
 - ✅ State is temporary (form, modal, toggle)
 - ✅ Examples: form input, loading, error
@@ -39,71 +42,70 @@ Global shopping cart management.
 **Location**: `src/store/cartStore.ts`
 
 ```typescript
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface CartItem {
-  productId: string
-  name: string
-  price: number
-  quantity: number
-  imageUrl: string
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
 }
 
 interface CartStore {
-  items: CartItem[]
-  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
-  clearCart: () => void
-  getTotal: () => number
-  getItemCount: () => number
+  items: CartItem[];
+  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
+  getTotal: () => number;
+  getItemCount: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      
-      addItem: (item, quantity = 1) => set((state) => {
-        const existing = state.items.find(i => i.productId === item.productId)
-        
-        if (existing) {
-          return {
-            items: state.items.map(i =>
-              i.productId === item.productId
-                ? { ...i, quantity: i.quantity + quantity }
-                : i
-            )
+
+      addItem: (item, quantity = 1) =>
+        set((state) => {
+          const existing = state.items.find((i) => i.productId === item.productId);
+
+          if (existing) {
+            return {
+              items: state.items.map((i) =>
+                i.productId === item.productId ? { ...i, quantity: i.quantity + quantity } : i
+              ),
+            };
           }
-        }
-        
-        return {
-          items: [...state.items, { ...item, quantity }]
-        }
-      }),
-      
-      removeItem: (productId) => set((state) => ({
-        items: state.items.filter(i => i.productId !== productId)
-      })),
-      
-      updateQuantity: (productId, quantity) => set((state) => ({
-        items: state.items.map(i =>
-          i.productId === productId ? { ...i, quantity } : i
-        )
-      })),
-      
+
+          return {
+            items: [...state.items, { ...item, quantity }],
+          };
+        }),
+
+      removeItem: (productId) =>
+        set((state) => ({
+          items: state.items.filter((i) => i.productId !== productId),
+        })),
+
+      updateQuantity: (productId, quantity) =>
+        set((state) => ({
+          items: state.items.map((i) => (i.productId === productId ? { ...i, quantity } : i)),
+        })),
+
       clearCart: () => set({ items: [] }),
-      
+
       getTotal: () => {
-        const { items } = get()
-        return items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        const { items } = get();
+        return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       },
-      
+
       getItemCount: () => {
-        const { items } = get()
-        return items.reduce((sum, item) => sum + item.quantity, 0)
+        const { items } = get();
+        return items.reduce((sum, item) => sum + item.quantity, 0);
       },
     }),
     {
@@ -111,7 +113,7 @@ export const useCartStore = create<CartStore>()(
       storage: createJSONStorage(() => AsyncStorage),
     }
   )
-)
+);
 ```
 
 **Usage in Components**:
@@ -121,7 +123,7 @@ import { useCartStore } from '@/store/cartStore'
 
 function ProductScreen({ product }: { product: Product }) {
   const addItem = useCartStore(state => state.addItem)
-  
+
   const handleAddToCart = () => {
     addItem({
       productId: product.id,
@@ -130,7 +132,7 @@ function ProductScreen({ product }: { product: Product }) {
       imageUrl: product.imageUrl,
     }, 1)
   }
-  
+
   return (
     <Button title="Add to cart" onPress={handleAddToCart} />
   )
@@ -140,7 +142,7 @@ function CartScreen() {
   const items = useCartStore(state => state.items)
   const total = useCartStore(state => state.getTotal())
   const clearCart = useCartStore(state => state.clearCart)
-  
+
   return (
     <View>
       <FlatList
@@ -161,50 +163,51 @@ Global toast notification management.
 **Location**: `src/store/toastStore.ts`
 
 ```typescript
-import { create } from 'zustand'
+import { create } from 'zustand';
 
-type ToastType = 'success' | 'error' | 'info'
+type ToastType = 'success' | 'error' | 'info';
 
 interface Toast {
-  id: string
-  message: string
-  type: ToastType
-  duration?: number
+  id: string;
+  message: string;
+  type: ToastType;
+  duration?: number;
 }
 
 interface ToastStore {
-  toasts: Toast[]
-  show: (message: string, type?: ToastType, duration?: number) => void
-  hide: (id: string) => void
-  clear: () => void
+  toasts: Toast[];
+  show: (message: string, type?: ToastType, duration?: number) => void;
+  hide: (id: string) => void;
+  clear: () => void;
 }
 
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
-  
+
   show: (message, type = 'info', duration = 3000) => {
-    const id = Math.random().toString(36).substring(7)
-    
+    const id = Math.random().toString(36).substring(7);
+
     set((state) => ({
-      toasts: [...state.toasts, { id, message, type, duration }]
-    }))
-    
+      toasts: [...state.toasts, { id, message, type, duration }],
+    }));
+
     // Auto-hide after duration
     if (duration > 0) {
       setTimeout(() => {
         set((state) => ({
-          toasts: state.toasts.filter(t => t.id !== id)
-        }))
-      }, duration)
+          toasts: state.toasts.filter((t) => t.id !== id),
+        }));
+      }, duration);
     }
   },
-  
-  hide: (id) => set((state) => ({
-    toasts: state.toasts.filter(t => t.id !== id)
-  })),
-  
+
+  hide: (id) =>
+    set((state) => ({
+      toasts: state.toasts.filter((t) => t.id !== id),
+    })),
+
   clear: () => set({ toasts: [] }),
-}))
+}));
 ```
 
 **Usage**:
@@ -214,7 +217,7 @@ import { useToastStore } from '@/store/toastStore'
 
 function MyComponent() {
   const { show } = useToastStore()
-  
+
   const handleSuccess = async () => {
     try {
       await saveData()
@@ -223,14 +226,14 @@ function MyComponent() {
       show('Failed to save data', 'error')
     }
   }
-  
+
   return <Button title="Save" onPress={handleSuccess} />
 }
 
 // In App.tsx
 function App() {
   const toasts = useToastStore(state => state.toasts)
-  
+
   return (
     <>
       <Navigation />
@@ -249,33 +252,33 @@ function App() {
 Persists state to AsyncStorage:
 
 ```typescript
-import { persist, createJSONStorage } from 'zustand/middleware'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const useStore = create(
   persist(
     (set) => ({
       count: 0,
-      increment: () => set((state) => ({ count: state.count + 1 }))
+      increment: () => set((state) => ({ count: state.count + 1 })),
     }),
     {
       name: 'my-storage-key',
       storage: createJSONStorage(() => AsyncStorage),
-      
+
       // Optional: partial persistence
       partialize: (state) => ({ count: state.count }),
-      
+
       // Optional: migrations
       version: 1,
       migrate: (persistedState, version) => {
         if (version === 0) {
           // Migrate from v0 to v1
         }
-        return persistedState
-      }
+        return persistedState;
+      },
     }
   )
-)
+);
 ```
 
 ### Devtools Middleware
@@ -283,17 +286,17 @@ const useStore = create(
 Debug tool integration (development only):
 
 ```typescript
-import { devtools } from 'zustand/middleware'
+import { devtools } from 'zustand/middleware';
 
 const useStore = create(
   devtools(
     (set) => ({
       count: 0,
-      increment: () => set((state) => ({ count: state.count + 1 }), false, 'increment')
+      increment: () => set((state) => ({ count: state.count + 1 }), false, 'increment'),
     }),
     { name: 'MyStore' }
   )
-)
+);
 ```
 
 ### Immer Middleware
@@ -301,23 +304,25 @@ const useStore = create(
 Simplifies immutable updates:
 
 ```typescript
-import { immer } from 'zustand/middleware/immer'
+import { immer } from 'zustand/middleware/immer';
 
 const useStore = create(
   immer((set) => ({
     items: [],
-    addItem: (item) => set((state) => {
-      // Direct mutation thanks to Immer
-      state.items.push(item)
-    }),
-    updateItem: (id, updates) => set((state) => {
-      const item = state.items.find(i => i.id === id)
-      if (item) {
-        Object.assign(item, updates)
-      }
-    })
+    addItem: (item) =>
+      set((state) => {
+        // Direct mutation thanks to Immer
+        state.items.push(item);
+      }),
+    updateItem: (id, updates) =>
+      set((state) => {
+        const item = state.items.find((i) => i.id === id);
+        if (item) {
+          Object.assign(item, updates);
+        }
+      }),
   }))
-)
+);
 ```
 
 ### Combine Multiple Middleware
@@ -336,7 +341,7 @@ const useStore = create(
     ),
     { name: 'StoreName' }
   )
-)
+);
 ```
 
 ## React Context
@@ -372,12 +377,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  
+
   // Check for saved token on app start
   useEffect(() => {
     checkAuth()
   }, [])
-  
+
   const checkAuth = async () => {
     try {
       const token = await SecureStore.getItemAsync('token')
@@ -393,7 +398,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     }
   }
-  
+
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.login({ email, password })
@@ -403,7 +408,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw error
     }
   }
-  
+
   const register = async (email: string, password: string, name: string) => {
     try {
       const response = await authService.register({ email, password, name })
@@ -413,7 +418,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw error
     }
   }
-  
+
   const logout = async () => {
     try {
       await authService.logout()
@@ -422,19 +427,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null)
     }
   }
-  
+
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser)
   }
-  
+
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      login, 
-      register, 
-      logout, 
-      updateUser 
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      login,
+      register,
+      logout,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>
@@ -471,7 +476,7 @@ function LoginScreen() {
   const { login, loading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  
+
   const handleLogin = async () => {
     try {
       await login(email, password)
@@ -480,7 +485,7 @@ function LoginScreen() {
       // Show error
     }
   }
-  
+
   return (
     <View>
       <Input value={email} onChangeText={setEmail} label="Email" />
@@ -495,9 +500,9 @@ import { useAuth } from '@/context/authContext'
 
 function UserScreen() {
   const { user, logout } = useAuth()
-  
+
   if (!user) return <Text>Not logged in</Text>
-  
+
   return (
     <View>
       <Text>Welcome, {user.name}!</Text>
@@ -516,11 +521,11 @@ import { Redirect } from 'expo-router'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  
+
   if (loading) return <LoadingContent />
-  
+
   if (!user) return <Redirect href="/login" />
-  
+
   return <>{children}</>
 }
 
@@ -546,7 +551,7 @@ function LoginForm() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
-  
+
   const handleChange = (field: string, value: string) => {
     setValues(prev => ({ ...prev, [field]: value }))
     // Clear error on change
@@ -558,20 +563,20 @@ function LoginForm() {
       })
     }
   }
-  
+
   const validate = () => {
     const newErrors: Record<string, string> = {}
-    
+
     if (!values.email) newErrors.email = 'Email is required'
     if (!values.password) newErrors.password = 'Password is required'
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-  
+
   const handleSubmit = async () => {
     if (!validate()) return
-    
+
     setLoading(true)
     try {
       await login(values.email, values.password)
@@ -579,7 +584,7 @@ function LoginForm() {
       setLoading(false)
     }
   }
-  
+
   return (
     <View>
       <Input
@@ -607,17 +612,17 @@ function LoginForm() {
 function MyScreen() {
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
-  
+
   const openModal = (item: Item) => {
     setSelectedItem(item)
     setModalVisible(true)
   }
-  
+
   const closeModal = () => {
     setModalVisible(false)
     setSelectedItem(null)
   }
-  
+
   return (
     <View>
       <FlatList
@@ -628,7 +633,7 @@ function MyScreen() {
           </TouchableOpacity>
         )}
       />
-      
+
       <Modal visible={modalVisible} onRequestClose={closeModal}>
         {selectedItem && (
           <View>
@@ -649,15 +654,15 @@ function DataScreen() {
   const [data, setData] = useState<Item[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  
+
   useEffect(() => {
     loadData()
   }, [])
-  
+
   const loadData = async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const result = await fetchData()
       setData(result)
@@ -667,11 +672,11 @@ function DataScreen() {
       setLoading(false)
     }
   }
-  
+
   if (loading) return <LoadingContent />
   if (error) return <ErrorContent message={error.message} onRetry={loadData} />
   if (!data || data.length === 0) return <EmptyState />
-  
+
   return <DataList data={data} />
 }
 ```
@@ -681,6 +686,7 @@ function DataScreen() {
 ### Selector Pattern with Zustand
 
 **❌ Bad - Re-renders on any state change**:
+
 ```typescript
 function MyComponent() {
   const store = useCartStore() // Re-renders on ANY change
@@ -689,6 +695,7 @@ function MyComponent() {
 ```
 
 **✅ Good - Re-renders only when selected value changes**:
+
 ```typescript
 function MyComponent() {
   const itemCount = useCartStore(state => state.items.length)
@@ -709,7 +716,7 @@ function MyComponent() {
     }),
     shallow // Shallow comparison instead of === comparison
   )
-  
+
   return (
     <View>
       <Text>Items: {items.length}</Text>
@@ -724,7 +731,7 @@ function MyComponent() {
 ```typescript
 function CartScreen() {
   const items = useCartStore(state => state.items)
-  
+
   // Expensive calculation
   const itemsByCategory = useMemo(() => {
     return items.reduce((acc, item) => {
@@ -734,7 +741,7 @@ function CartScreen() {
       return acc
     }, {} as Record<string, CartItem[]>)
   }, [items])
-  
+
   return (
     <View>
       {Object.entries(itemsByCategory).map(([category, items]) => (
@@ -753,18 +760,18 @@ function CartScreen() {
 ```typescript
 function CartScreen() {
   const updateQuantity = useCartStore(state => state.updateQuantity)
-  
+
   // Without useCallback, creates new function on each render
   const handleUpdateQuantity = useCallback((id: string, qty: number) => {
     updateQuantity(id, qty)
   }, [updateQuantity])
-  
+
   return (
     <FlatList
       data={items}
       renderItem={({ item }) => (
-        <CartItem 
-          item={item} 
+        <CartItem
+          item={item}
           onUpdateQuantity={handleUpdateQuantity} // Same reference
         />
       )}
@@ -778,60 +785,60 @@ function CartScreen() {
 ### Testing Zustand Stores
 
 ```typescript
-import { renderHook, act } from '@testing-library/react-hooks'
-import { useCartStore } from '@/store/cartStore'
+import { renderHook, act } from '@testing-library/react-hooks';
+import { useCartStore } from '@/store/cartStore';
 
 describe('CartStore', () => {
   beforeEach(() => {
     // Reset store before each test
-    useCartStore.setState({ items: [] })
-  })
-  
+    useCartStore.setState({ items: [] });
+  });
+
   it('should add item to cart', () => {
-    const { result } = renderHook(() => useCartStore())
-    
+    const { result } = renderHook(() => useCartStore());
+
     act(() => {
       result.current.addItem({
         productId: '1',
         name: 'Product',
         price: 10,
-        imageUrl: 'url'
-      })
-    })
-    
-    expect(result.current.items).toHaveLength(1)
-    expect(result.current.items[0].quantity).toBe(1)
-  })
-  
+        imageUrl: 'url',
+      });
+    });
+
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].quantity).toBe(1);
+  });
+
   it('should increment quantity for existing item', () => {
-    const { result } = renderHook(() => useCartStore())
+    const { result } = renderHook(() => useCartStore());
     const item = {
       productId: '1',
       name: 'Product',
       price: 10,
-      imageUrl: 'url'
-    }
-    
+      imageUrl: 'url',
+    };
+
     act(() => {
-      result.current.addItem(item)
-      result.current.addItem(item)
-    })
-    
-    expect(result.current.items).toHaveLength(1)
-    expect(result.current.items[0].quantity).toBe(2)
-  })
-  
+      result.current.addItem(item);
+      result.current.addItem(item);
+    });
+
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].quantity).toBe(2);
+  });
+
   it('should calculate total correctly', () => {
-    const { result } = renderHook(() => useCartStore())
-    
+    const { result } = renderHook(() => useCartStore());
+
     act(() => {
-      result.current.addItem({ productId: '1', name: 'P1', price: 10, imageUrl: '' }, 2)
-      result.current.addItem({ productId: '2', name: 'P2', price: 15, imageUrl: '' }, 1)
-    })
-    
-    expect(result.current.getTotal()).toBe(35) // (10 * 2) + (15 * 1)
-  })
-})
+      result.current.addItem({ productId: '1', name: 'P1', price: 10, imageUrl: '' }, 2);
+      result.current.addItem({ productId: '2', name: 'P2', price: 15, imageUrl: '' }, 1);
+    });
+
+    expect(result.current.getTotal()).toBe(35); // (10 * 2) + (15 * 1)
+  });
+});
 ```
 
 ### Testing React Context
@@ -857,9 +864,9 @@ describe('AuthContext', () => {
         <TestComponent />
       </AuthProvider>
     )
-    
+
     fireEvent.press(getByTestId('login-btn'))
-    
+
     await waitFor(() => {
       expect(getByTestId('user-name')).toHaveTextContent('John Doe')
     })
@@ -876,15 +883,15 @@ describe('AuthContext', () => {
 const useStore = create((set) => ({
   items: [],
   total: 0,
-  count: 0
-}))
+  count: 0,
+}));
 
 // ✅ Good - Calculate derived data
 const useStore = create((set, get) => ({
   items: [],
   getTotal: () => get().items.reduce((sum, item) => sum + item.price, 0),
-  getCount: () => get().items.length
-}))
+  getCount: () => get().items.length,
+}));
 ```
 
 ### 2. Avoid Nested Updates
@@ -894,20 +901,20 @@ const useStore = create((set, get) => ({
 set((state) => ({
   cart: {
     ...state.cart,
-    items: state.cart.items.map(item => ({
+    items: state.cart.items.map((item) => ({
       ...item,
-      selected: item.id === id
-    }))
-  }
-}))
+      selected: item.id === id,
+    })),
+  },
+}));
 
 // ✅ Good - Flatten state
 set((state) => ({
-  items: state.items.map(item => ({
+  items: state.items.map((item) => ({
     ...item,
-    selected: item.id === id
-  }))
-}))
+    selected: item.id === id,
+  })),
+}));
 ```
 
 ### 3. Separate Actions from State
@@ -917,12 +924,12 @@ const useStore = create((set) => ({
   // State
   count: 0,
   loading: false,
-  
+
   // Actions
   increment: () => set((state) => ({ count: state.count + 1 })),
   decrement: () => set((state) => ({ count: state.count - 1 })),
-  setLoading: (loading: boolean) => set({ loading })
-}))
+  setLoading: (loading: boolean) => set({ loading }),
+}));
 ```
 
 ### 4. Use TypeScript
@@ -930,16 +937,16 @@ const useStore = create((set) => ({
 ```typescript
 // Always define types for your stores
 interface CartState {
-  items: CartItem[]
-  addItem: (item: CartItem) => void
-  removeItem: (id: string) => void
+  items: CartItem[];
+  addItem: (item: CartItem) => void;
+  removeItem: (id: string) => void;
 }
 
 const useCartStore = create<CartState>((set) => ({
   items: [],
   addItem: (item) => set((state) => ({ items: [...state.items, item] })),
-  removeItem: (id) => set((state) => ({ items: state.items.filter(i => i.id !== id) }))
-}))
+  removeItem: (id) => set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
+}));
 ```
 
 ---

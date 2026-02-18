@@ -7,21 +7,25 @@ Complete catalog of UI components available in the application.
 ### Component Categories
 
 **1. UI Components (`src/components/ui/`)**
+
 - Reusable and generic components
 - Independent of business logic
 - Designed for maximum reusability
 
 **2. Theme Components (`src/components/`)**
+
 - Components using the theme
 - `ThemedText`, `ThemedView`, etc.
 - Ensure UI consistency
 
 **3. Screen Components (`src/screens/`)**
+
 - Complete screens
 - Integrate UI components
 - Manage screen logic
 
 **4. Layout Components**
+
 - Structural components
 - `ParallaxScrollView`, `TabBarIcon`
 
@@ -49,15 +53,17 @@ function MyComponent() {
 ```
 
 **Props**:
+
 ```typescript
 interface ThemedTextProps extends TextProps {
-  type?: 'default' | 'title' | 'subtitle' | 'defaultSemiBold' | 'link'
-  lightColor?: string
-  darkColor?: string
+  type?: 'default' | 'title' | 'subtitle' | 'defaultSemiBold' | 'link';
+  lightColor?: string;
+  darkColor?: string;
 }
 ```
 
 **Available Types**:
+
 - `default`: Regular text (16px)
 - `title`: Large title (32px, bold)
 - `subtitle`: Subtitle (20px, bold)
@@ -83,17 +89,19 @@ function MyComponent() {
 ```
 
 **Props**:
+
 ```typescript
 interface ThemedViewProps extends ViewProps {
-  lightColor?: string
-  darkColor?: string
+  lightColor?: string;
+  darkColor?: string;
 }
 ```
 
 **Usage**:
+
 ```typescript
-<ThemedView 
-  lightColor="#ffffff" 
+<ThemedView
+  lightColor="#ffffff"
   darkColor="#000000"
   style={{ padding: 16 }}
 >
@@ -114,23 +122,25 @@ import { LoadingContent } from '@/components/ui/LoadingContent'
 
 function MyScreen() {
   const [loading, setLoading] = useState(true)
-  
+
   if (loading) {
     return <LoadingContent message="Loading products..." />
   }
-  
+
   return <Content />
 }
 ```
 
 **Props**:
+
 ```typescript
 interface LoadingContentProps {
-  message?: string
+  message?: string;
 }
 ```
 
 **Features**:
+
 - Centered loading indicator
 - Optional custom message
 - Uses `ActivityIndicator` from React Native
@@ -146,30 +156,32 @@ import { ErrorContent } from '@/components/ui/ErrorContent'
 
 function MyScreen() {
   const [error, setError] = useState<Error | null>(null)
-  
+
   if (error) {
     return (
-      <ErrorContent 
+      <ErrorContent
         message={error.message}
         onRetry={loadData}
       />
     )
   }
-  
+
   return <Content />
 }
 ```
 
 **Props**:
+
 ```typescript
 interface ErrorContentProps {
-  message: string
-  onRetry?: () => void
-  retryText?: string
+  message: string;
+  onRetry?: () => void;
+  retryText?: string;
 }
 ```
 
 **Features**:
+
 - Visual error display
 - Optional retry button
 - Customizable messages
@@ -186,12 +198,12 @@ import { useToastStore } from '@/store/toastStore'
 
 function App() {
   const { toasts } = useToastStore()
-  
+
   return (
     <>
       <Navigation />
       {toasts.map(toast => (
-        <ToastSnack 
+        <ToastSnack
           key={toast.id}
           toast={toast}
         />
@@ -202,33 +214,35 @@ function App() {
 ```
 
 **Props**:
+
 ```typescript
 interface ToastSnackProps {
-  toast: Toast
+  toast: Toast;
 }
 
 interface Toast {
-  id: string
-  message: string
-  type: 'success' | 'error' | 'info'
-  duration?: number
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
+  duration?: number;
 }
 ```
 
 **Usage with Store**:
+
 ```typescript
-import { useToastStore } from '@/store/toastStore'
+import { useToastStore } from '@/store/toastStore';
 
 function MyComponent() {
-  const { show } = useToastStore()
-  
+  const { show } = useToastStore();
+
   const handleSuccess = () => {
-    show('Success!', 'success')
-  }
-  
+    show('Success!', 'success');
+  };
+
   const handleError = () => {
-    show('An error occurred', 'error')
-  }
+    show('An error occurred', 'error');
+  };
 }
 ```
 
@@ -252,14 +266,16 @@ function MyScreen() {
 ```
 
 **Props**:
+
 ```typescript
 interface CollapsibleProps {
-  title: string
-  children: React.ReactNode
+  title: string;
+  children: React.ReactNode;
 }
 ```
 
 **Features**:
+
 - Smooth expand/collapse animation
 - Chevron icon indicating state
 - Accessible with screen readers
@@ -296,15 +312,17 @@ function MyScreen() {
 ```
 
 **Props**:
+
 ```typescript
 interface ParallaxScrollViewProps {
-  headerBackgroundColor: { light: string; dark: string }
-  headerImage: React.ReactNode
-  children: React.ReactNode
+  headerBackgroundColor: { light: string; dark: string };
+  headerImage: React.ReactNode;
+  children: React.ReactNode;
 }
 ```
 
 **Features**:
+
 - Parallax effect on scroll
 - Animated header
 - Theme support
@@ -330,16 +348,18 @@ function MyComponent() {
 ```
 
 **Props**:
+
 ```typescript
 interface IconSymbolProps {
-  name: string
-  size?: number
-  color?: string
-  style?: ViewStyle
+  name: string;
+  size?: number;
+  color?: string;
+  style?: ViewStyle;
 }
 ```
 
 **Available Icons**:
+
 - SF Symbols on iOS
 - Material Icons on Android
 - Consistent fallbacks
@@ -358,25 +378,25 @@ import { Button } from '@/components/ui/Button'
 function MyScreen() {
   return (
     <>
-      <Button 
+      <Button
         title="Primary Action"
         onPress={handlePress}
         variant="primary"
       />
-      
-      <Button 
+
+      <Button
         title="Secondary Action"
         onPress={handlePress}
         variant="secondary"
       />
-      
-      <Button 
+
+      <Button
         title="Disabled"
         onPress={handlePress}
         disabled
       />
-      
-      <Button 
+
+      <Button
         title="Loading..."
         loading
       />
@@ -386,16 +406,17 @@ function MyScreen() {
 ```
 
 **Props**:
+
 ```typescript
 interface ButtonProps {
-  title: string
-  onPress?: () => void
-  variant?: 'primary' | 'secondary' | 'outline'
-  disabled?: boolean
-  loading?: boolean
-  icon?: React.ReactNode
-  style?: ViewStyle
-  testID?: string
+  title: string;
+  onPress?: () => void;
+  variant?: 'primary' | 'secondary' | 'outline';
+  disabled?: boolean;
+  loading?: boolean;
+  icon?: React.ReactNode;
+  style?: ViewStyle;
+  testID?: string;
 }
 ```
 
@@ -411,7 +432,7 @@ import { Input } from '@/components/ui/Input'
 function MyForm() {
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string>()
-  
+
   return (
     <Input
       label="Email"
@@ -427,14 +448,15 @@ function MyForm() {
 ```
 
 **Props**:
+
 ```typescript
 interface InputProps extends TextInputProps {
-  label?: string
-  error?: string
-  helperText?: string
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  containerStyle?: ViewStyle
+  label?: string;
+  error?: string;
+  helperText?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  containerStyle?: ViewStyle;
 }
 ```
 
@@ -454,7 +476,7 @@ function ProductList() {
     <FlatList
       data={products}
       renderItem={({ item }) => (
-        <ProductCard 
+        <ProductCard
           product={item}
           onPress={() => navigate('ProductScreen', { id: item.id })}
           onAddToCart={() => addToCart(item.id)}
@@ -466,15 +488,17 @@ function ProductList() {
 ```
 
 **Props**:
+
 ```typescript
 interface ProductCardProps {
-  product: Product
-  onPress?: () => void
-  onAddToCart?: () => void
+  product: Product;
+  onPress?: () => void;
+  onAddToCart?: () => void;
 }
 ```
 
 **Features**:
+
 - Product image display
 - Name, price, stock
 - "Add to cart" button
@@ -506,15 +530,17 @@ function CartScreen() {
 ```
 
 **Props**:
+
 ```typescript
 interface CartItemProps {
-  item: CartItem
-  onUpdateQuantity: (quantity: number) => void
-  onRemove: () => void
+  item: CartItem;
+  onUpdateQuantity: (quantity: number) => void;
+  onRemove: () => void;
 }
 ```
 
 **Features**:
+
 - Product display
 - Quantity controls (+/-)
 - Subtotal
@@ -531,7 +557,7 @@ function MyScreen() {
       <ThemedView style={styles.header}>
         <ThemedText type="title">Title</ThemedText>
       </ThemedView>
-      
+
       <ThemedView style={styles.content}>
         {loading ? (
           <LoadingContent />
@@ -592,14 +618,14 @@ function DataFetcher<T>({ fetch, children }: DataFetcherProps<T>) {
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  
+
   useEffect(() => {
     fetch()
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false))
   }, [])
-  
+
   return <>{children(data, loading, error)}</>
 }
 
@@ -625,10 +651,10 @@ Always define props with TypeScript:
 
 ```typescript
 interface MyComponentProps {
-  title: string
-  onPress: () => void
-  disabled?: boolean
-  children?: React.ReactNode
+  title: string;
+  onPress: () => void;
+  disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 function MyComponent({ title, onPress, disabled, children }: MyComponentProps) {
@@ -641,12 +667,7 @@ function MyComponent({ title, onPress, disabled, children }: MyComponentProps) {
 Use default values in destructuring:
 
 ```typescript
-function Button({ 
-  title, 
-  variant = 'primary',
-  disabled = false,
-  loading = false 
-}: ButtonProps) {
+function Button({ title, variant = 'primary', disabled = false, loading = false }: ButtonProps) {
   // ...
 }
 ```
@@ -697,9 +718,9 @@ interface ProductCardProps {
   onPress: () => void
 }
 
-export const ProductCard = React.memo(function ProductCard({ 
-  product, 
-  onPress 
+export const ProductCard = React.memo(function ProductCard({
+  product,
+  onPress
 }: ProductCardProps) {
   return (
     <TouchableOpacity onPress={onPress}>
@@ -721,7 +742,7 @@ export const ProductCard = React.memo(function ProductCard({
 Always use `StyleSheet.create`:
 
 ```typescript
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -732,12 +753,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-})
+});
 
 // Not
 const styles = {
-  container: { flex: 1 } // ❌ Creates new object on each render
-}
+  container: { flex: 1 }, // ❌ Creates new object on each render
+};
 ```
 
 ### 7. Conditional Rendering
@@ -779,17 +800,17 @@ interface MyComponentProps {
 export function MyComponent({ title }: MyComponentProps) {
   // 3.1 Hooks
   const [state, setState] = useState()
-  
+
   // 3.2 Handlers
   const handlePress = () => {
     // ...
   }
-  
+
   // 3.3 Effects
   useEffect(() => {
     // ...
   }, [])
-  
+
   // 3.4 Render
   return (
     <View style={styles.container}>
@@ -821,7 +842,7 @@ describe('Button', () => {
     const { getByText } = render(
       <Button title="Click me" onPress={onPress} />
     )
-    
+
     fireEvent.press(getByText('Click me'))
     expect(onPress).toHaveBeenCalledTimes(1)
   })

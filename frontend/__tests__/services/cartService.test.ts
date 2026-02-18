@@ -11,7 +11,9 @@ describe('cartService', () => {
   });
 
   it('getCart returns data', async () => {
-    mockedAxios.get.mockResolvedValueOnce({ data: { items: [{ id: '1', name: 'Test', price: 10, quantity: 1 }] } });
+    mockedAxios.get.mockResolvedValueOnce({
+      data: { items: [{ id: '1', name: 'Test', price: 10, quantity: 1 }] },
+    });
     const res = await cartService.getCart();
     expect(res.items.length).toBe(1);
   });

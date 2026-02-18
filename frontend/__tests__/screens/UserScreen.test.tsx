@@ -13,7 +13,6 @@ jest.mock('../../src/services/userService', () => ({
 jest.mock('../../src/components/ui/LoadingContent', () => () => <></>);
 jest.mock('../../src/components/ui/ErrorContent', () => ({ message }: any) => <>{message}</>);
 
-
 describe('UserScreen', () => {
   it('renders user info', async () => {
     const { getByText } = render(<UserScreen />);

@@ -4,7 +4,7 @@ import { ActivityIndicator, Surface, Text, useTheme } from 'react-native-paper';
 
 const LoadingContent: React.FC = () => {
   const theme = useTheme();
-  
+
   return (
     <Surface style={styles.container}>
       <ActivityIndicator animating={true} size="large" color={theme.colors.primary} />

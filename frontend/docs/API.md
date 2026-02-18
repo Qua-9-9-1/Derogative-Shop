@@ -14,7 +14,7 @@ export const config = {
     baseUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000',
     timeout: 30000,
   },
-}
+};
 ```
 
 ### Environment Variables
@@ -25,6 +25,7 @@ EXPO_PUBLIC_API_URL=http://localhost:3000
 ```
 
 **For different environments**:
+
 - **Development**: `http://localhost:3000` or `http://10.0.2.2:3000` (Android Emulator)
 - **Staging**: URL of staging backend
 - **Production**: URL of production backend (e.g., `https://api.derogative-shop.com`)
@@ -37,9 +38,9 @@ Global Axios configuration with interceptors:
 
 ```typescript
 // src/services/api.ts
-import axios from 'axios'
-import * as SecureStore from 'expo-secure-store'
-import { config } from '@/config'
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
+import { config } from '@/config';
 
 export const apiClient = axios.create({
   baseURL: config.api.baseUrl,
@@ -47,19 +48,19 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-})
+});
 
 // Request interceptor - Add JWT token
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = await SecureStore.getItemAsync('token')
+    const token = await SecureStore.getItemAsync('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
+    return config;
   },
   (error) => Promise.reject(error)
-)
+);
 
 // Response interceptor - Global error handling
 apiClient.interceptors.response.use(
@@ -67,46 +68,46 @@ apiClient.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Expired or invalid token
-      await SecureStore.deleteItemAsync('token')
+      await SecureStore.deleteItemAsync('token');
       // Redirect to login
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 ```
 
 ### Service Structure
 
 ```typescript
 class ServiceName {
-  private basePath = '/endpoint'
-  
+  private basePath = '/endpoint';
+
   async getAll(): Promise<Type[]> {
-    const response = await apiClient.get<Type[]>(this.basePath)
-    return response.data
+    const response = await apiClient.get<Type[]>(this.basePath);
+    return response.data;
   }
-  
+
   async getById(id: string): Promise<Type> {
-    const response = await apiClient.get<Type>(`${this.basePath}/${id}`)
-    return response.data
+    const response = await apiClient.get<Type>(`${this.basePath}/${id}`);
+    return response.data;
   }
-  
+
   async create(data: CreateDto): Promise<Type> {
-    const response = await apiClient.post<Type>(this.basePath, data)
-    return response.data
+    const response = await apiClient.post<Type>(this.basePath, data);
+    return response.data;
   }
-  
+
   async update(id: string, data: UpdateDto): Promise<Type> {
-    const response = await apiClient.put<Type>(`${this.basePath}/${id}`, data)
-    return response.data
+    const response = await apiClient.put<Type>(`${this.basePath}/${id}`, data);
+    return response.data;
   }
-  
+
   async delete(id: string): Promise<void> {
-    await apiClient.delete(`${this.basePath}/${id}`)
+    await apiClient.delete(`${this.basePath}/${id}`);
   }
 }
 
-export const serviceName = new ServiceName()
+export const serviceName = new ServiceName();
 ```
 
 ## Services and Endpoints
@@ -129,6 +130,7 @@ async login(credentials: LoginDto): Promise<AuthResponse>
 **Endpoint**: `POST /auth/login`
 
 **Request**:
+
 ```json
 {
   "email": "user@example.com",
@@ -137,6 +139,7 @@ async login(credentials: LoginDto): Promise<AuthResponse>
 ```
 
 **Response**:
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -149,6 +152,7 @@ async login(credentials: LoginDto): Promise<AuthResponse>
 ```
 
 **Errors**:
+
 - `400`: Invalid data
 - `401`: Incorrect credentials
 
@@ -166,6 +170,7 @@ async register(data: RegisterDto): Promise<AuthResponse>
 **Endpoint**: `POST /auth/register`
 
 **Request**:
+
 ```json
 {
   "email": "user@example.com",
@@ -177,6 +182,7 @@ async register(data: RegisterDto): Promise<AuthResponse>
 **Response**: Same as login
 
 **Errors**:
+
 - `400`: Invalid data
 - `409`: Email already in use
 
@@ -213,6 +219,7 @@ async getProfile(): Promise<User>
 **Headers**: `Authorization: Bearer <token>`
 
 **Response**:
+
 ```json
 {
   "id": "123",
@@ -237,6 +244,7 @@ async updateProfile(data: UpdateUserDto): Promise<User>
 **Headers**: `Authorization: Bearer <token>`
 
 **Request**:
+
 ```json
 {
   "name": "Jane Doe",
@@ -247,6 +255,7 @@ async updateProfile(data: UpdateUserDto): Promise<User>
 **Response**: Updated User object
 
 **Errors**:
+
 - `400`: Invalid data
 - `401`: Not authenticated
 - `409`: Email already in use
@@ -268,6 +277,7 @@ async getProducts(params?: ProductQueryParams): Promise<Product[]>
 **Endpoint**: `GET /products`
 
 **Query Parameters**:
+
 - `page`: Page number (default: 1)
 - `limit`: Items per page (default: 20)
 - `search`: Search by name
@@ -278,6 +288,7 @@ async getProducts(params?: ProductQueryParams): Promise<Product[]>
 **Example**: `GET /products?page=1&limit=20&search=phone`
 
 **Response**:
+
 ```json
 [
   {
@@ -308,6 +319,7 @@ async getProductById(id: string): Promise<Product>
 **Response**: Product object
 
 **Errors**:
+
 - `404`: Product not found
 
 #### Search Products
@@ -342,6 +354,7 @@ async getCart(): Promise<Cart>
 **Headers**: `Authorization: Bearer <token>`
 
 **Response**:
+
 ```json
 {
   "id": "cart-123",
@@ -379,6 +392,7 @@ async addToCart(productId: string, quantity?: number): Promise<Cart>
 **Headers**: `Authorization: Bearer <token>`
 
 **Request**:
+
 ```json
 {
   "productId": "prod-1",
@@ -389,6 +403,7 @@ async addToCart(productId: string, quantity?: number): Promise<Cart>
 **Response**: Updated Cart object
 
 **Errors**:
+
 - `400`: Invalid data
 - `401`: Not authenticated
 - `404`: Product not found
@@ -410,6 +425,7 @@ async updateCartItem(itemId: string, quantity: number): Promise<Cart>
 **Headers**: `Authorization: Bearer <token>`
 
 **Request**:
+
 ```json
 {
   "quantity": 3
@@ -456,22 +472,22 @@ async clearCart(): Promise<void>
 ```typescript
 // src/types/common.ts
 export interface ApiResponse<T> {
-  data: T
-  message?: string
+  data: T;
+  message?: string;
 }
 
 export interface PaginatedResponse<T> {
-  data: T[]
-  total: number
-  page: number
-  limit: number
-  totalPages: number
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 export interface ApiError {
-  message: string
-  statusCode: number
-  errors?: Record<string, string[]>
+  message: string;
+  statusCode: number;
+  errors?: Record<string, string[]>;
 }
 ```
 
@@ -480,26 +496,26 @@ export interface ApiError {
 ```typescript
 // src/types/auth.types.ts
 export interface LoginDto {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface RegisterDto {
-  email: string
-  password: string
-  name: string
+  email: string;
+  password: string;
+  name: string;
 }
 
 export interface AuthResponse {
-  token: string
-  user: User
+  token: string;
+  user: User;
 }
 
 export interface User {
-  id: string
-  email: string
-  name: string
-  createdAt: string
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
 }
 ```
 
@@ -508,25 +524,25 @@ export interface User {
 ```typescript
 // src/types/product.types.ts
 export interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  stock: number
-  imageUrl: string
-  smallImageUrl?: string
-  category: string
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  imageUrl: string;
+  smallImageUrl?: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProductQueryParams {
-  page?: number
-  limit?: number
-  search?: string
-  category?: string
-  minPrice?: number
-  maxPrice?: number
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 ```
 
@@ -535,26 +551,26 @@ export interface ProductQueryParams {
 ```typescript
 // src/types/cart.types.ts
 export interface Cart {
-  id: string
-  userId: string
-  items: CartItem[]
-  total: number
+  id: string;
+  userId: string;
+  items: CartItem[];
+  total: number;
 }
 
 export interface CartItem {
-  id: string
-  productId: string
-  product: Product
-  quantity: number
+  id: string;
+  productId: string;
+  product: Product;
+  quantity: number;
 }
 
 export interface AddToCartDto {
-  productId: string
-  quantity?: number
+  productId: string;
+  quantity?: number;
 }
 
 export interface UpdateCartItemDto {
-  quantity: number
+  quantity: number;
 }
 ```
 
@@ -569,24 +585,22 @@ export class ApiError extends Error {
     public statusCode: number,
     public errors?: Record<string, string[]>
   ) {
-    super(message)
-    this.name = 'ApiError'
+    super(message);
+    this.name = 'ApiError';
   }
 }
 
 export class NetworkError extends Error {
   constructor() {
-    super('Network error. Please check your connection.')
-    this.name = 'NetworkError'
+    super('Network error. Please check your connection.');
+    this.name = 'NetworkError';
   }
 }
 
 export class ValidationError extends Error {
-  constructor(
-    public errors: Record<string, string[]>
-  ) {
-    super('Validation failed')
-    this.name = 'ValidationError'
+  constructor(public errors: Record<string, string[]>) {
+    super('Validation failed');
+    this.name = 'ValidationError';
   }
 }
 ```
@@ -597,20 +611,20 @@ export class ValidationError extends Error {
 class ProductService {
   async getProducts(): Promise<Product[]> {
     try {
-      const response = await apiClient.get<Product[]>('/products')
-      return response.data
+      const response = await apiClient.get<Product[]>('/products');
+      return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (!error.response) {
-          throw new NetworkError()
+          throw new NetworkError();
         }
         throw new ApiError(
           error.response.data?.message || 'Failed to fetch products',
           error.response.status,
           error.response.data?.errors
-        )
+        );
       }
-      throw error
+      throw error;
     }
   }
 }
@@ -620,22 +634,22 @@ class ProductService {
 
 ```typescript
 function ProductScreen() {
-  const [error, setError] = useState<Error | null>(null)
-  
+  const [error, setError] = useState<Error | null>(null);
+
   const loadProducts = async () => {
     try {
-      const products = await productService.getProducts()
-      setProducts(products)
+      const products = await productService.getProducts();
+      setProducts(products);
     } catch (err) {
       if (err instanceof NetworkError) {
-        setError(new Error('Check your internet connection'))
+        setError(new Error('Check your internet connection'));
       } else if (err instanceof ApiError) {
-        setError(new Error(err.message))
+        setError(new Error(err.message));
       } else {
-        setError(new Error('An error occurred'))
+        setError(new Error('An error occurred'));
       }
     }
-  }
+  };
 }
 ```
 
@@ -644,30 +658,22 @@ function ProductScreen() {
 ### Retry with Exponential Backoff
 
 ```typescript
-async function fetchWithRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3,
-  delay = 1000
-): Promise<T> {
+async function fetchWithRetry<T>(fn: () => Promise<T>, maxRetries = 3, delay = 1000): Promise<T> {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      return await fn()
+      return await fn();
     } catch (error) {
-      if (i === maxRetries - 1) throw error
-      
+      if (i === maxRetries - 1) throw error;
+
       // Exponential backoff
-      await new Promise(resolve => 
-        setTimeout(resolve, delay * Math.pow(2, i))
-      )
+      await new Promise((resolve) => setTimeout(resolve, delay * Math.pow(2, i)));
     }
   }
-  throw new Error('Max retries reached')
+  throw new Error('Max retries reached');
 }
 
 // Usage
-const products = await fetchWithRetry(() => 
-  productService.getProducts()
-)
+const products = await fetchWithRetry(() => productService.getProducts());
 ```
 
 ## Caching
@@ -676,24 +682,24 @@ const products = await fetchWithRetry(() =>
 
 ```typescript
 class CachedProductService {
-  private cache = new Map<string, { data: Product[], timestamp: number }>()
-  private cacheDuration = 5 * 60 * 1000 // 5 minutes
-  
+  private cache = new Map<string, { data: Product[]; timestamp: number }>();
+  private cacheDuration = 5 * 60 * 1000; // 5 minutes
+
   async getProducts(): Promise<Product[]> {
-    const cached = this.cache.get('products')
-    
+    const cached = this.cache.get('products');
+
     if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-      return cached.data
+      return cached.data;
     }
-    
-    const products = await productService.getProducts()
-    this.cache.set('products', { data: products, timestamp: Date.now() })
-    
-    return products
+
+    const products = await productService.getProducts();
+    this.cache.set('products', { data: products, timestamp: Date.now() });
+
+    return products;
   }
-  
+
   clearCache() {
-    this.cache.clear()
+    this.cache.clear();
   }
 }
 ```
@@ -704,22 +710,22 @@ See [TESTING.md](./TESTING.md#3-service-tests) for detailed examples.
 
 ```typescript
 // Quick example
-import { productService } from '@/services/productService'
-import axios from 'axios'
+import { productService } from '@/services/productService';
+import axios from 'axios';
 
-jest.mock('axios')
-const mockedAxios = axios as jest.Mocked<typeof axios>
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('ProductService', () => {
   it('should fetch products', async () => {
-    mockedAxios.get.mockResolvedValue({ 
-      data: [{ id: '1', name: 'Product' }] 
-    })
-    
-    const products = await productService.getProducts()
-    expect(products).toHaveLength(1)
-  })
-})
+    mockedAxios.get.mockResolvedValue({
+      data: [{ id: '1', name: 'Product' }],
+    });
+
+    const products = await productService.getProducts();
+    expect(products).toHaveLength(1);
+  });
+});
 ```
 
 ---

@@ -1,7 +1,18 @@
 import { Camera, CameraView } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Vibration } from 'react-native';
-import { ActivityIndicator, Button, Card, Modal, Paragraph, Text, Title, Dialog, Portal, Surface } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  Modal,
+  Paragraph,
+  Text,
+  Title,
+  Dialog,
+  Portal,
+  Surface,
+} from 'react-native-paper';
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -112,19 +123,26 @@ export default function ScanScreen() {
       </Modal>
 
       <Portal>
-        <Dialog visible={notFoundDialogVisible} onDismiss={() => {
-          setNotFoundDialogVisible(false);
-          setScanned(false);
-        }}>
+        <Dialog
+          visible={notFoundDialogVisible}
+          onDismiss={() => {
+            setNotFoundDialogVisible(false);
+            setScanned(false);
+          }}
+        >
           <Dialog.Title>Product not found</Dialog.Title>
           <Dialog.Content>
             <Paragraph>Code: {scannedCode}</Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => {
-              setNotFoundDialogVisible(false);
-              setScanned(false);
-            }}>OK</Button>
+            <Button
+              onPress={() => {
+                setNotFoundDialogVisible(false);
+                setScanned(false);
+              }}
+            >
+              OK
+            </Button>
           </Dialog.Actions>
         </Dialog>
 

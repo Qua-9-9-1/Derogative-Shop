@@ -8,7 +8,13 @@ export type ThemedViewProps = ViewProps & {
   elevation?: number;
 };
 
-export function ThemedView({ style, lightColor, darkColor, elevation = 0, ...otherProps }: ThemedViewProps) {
+export function ThemedView({
+  style,
+  lightColor,
+  darkColor,
+  elevation = 0,
+  ...otherProps
+}: ThemedViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <Surface elevation={elevation} style={[{ backgroundColor }, style]} {...otherProps} />;

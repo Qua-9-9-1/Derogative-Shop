@@ -4,7 +4,16 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet } from 'react-native';
-import { Button, HelperText, TextInput, Title, Dialog, Portal, Paragraph, Surface } from 'react-native-paper';
+import {
+  Button,
+  HelperText,
+  TextInput,
+  Title,
+  Dialog,
+  Portal,
+  Paragraph,
+  Surface,
+} from 'react-native-paper';
 import { z } from 'zod';
 
 const registerSchema = z

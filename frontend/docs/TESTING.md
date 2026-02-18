@@ -24,10 +24,7 @@ Jest configuration is defined in `package.json`:
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*)"
     ],
     "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}",
-      "!src/**/*.d.ts"
-    ],
+    "collectCoverageFrom": ["src/**/*.{ts,tsx}", "!src/**/*.d.ts"],
     "coverageThreshold": {
       "global": {
         "branches": 20,
@@ -50,16 +47,16 @@ jest.mock('expo-secure-store', () => ({
   getItemAsync: jest.fn(),
   setItemAsync: jest.fn(),
   deleteItemAsync: jest.fn(),
-}))
+}));
 
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
-)
+);
 
 // Global configuration
 global.beforeEach(() => {
-  jest.clearAllMocks()
-})
+  jest.clearAllMocks();
+});
 ```
 
 ## Test Types
@@ -76,81 +73,80 @@ export function formatPrice(price: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(price)
+  }).format(price);
 }
 
 // __tests__/utils/formatPrice.test.ts
-import { formatPrice } from '@/utils/formatPrice'
+import { formatPrice } from '@/utils/formatPrice';
 
 describe('formatPrice', () => {
   it('should format price with USD currency', () => {
-    expect(formatPrice(19.99)).toBe('$19.99')
-  })
-  
+    expect(formatPrice(19.99)).toBe('$19.99');
+  });
+
   it('should handle zero', () => {
-    expect(formatPrice(0)).toBe('$0.00')
-  })
-  
+    expect(formatPrice(0)).toBe('$0.00');
+  });
+
   it('should handle large numbers', () => {
-    expect(formatPrice(1234567.89)).toBe('$1,234,567.89')
-  })
-  
+    expect(formatPrice(1234567.89)).toBe('$1,234,567.89');
+  });
+
   it('should round to 2 decimals', () => {
-    expect(formatPrice(19.999)).toBe('$20.00')
-  })
-})
+    expect(formatPrice(19.999)).toBe('$20.00');
+  });
+});
 ```
 
 #### Example: Custom Hook Test
 
 ```typescript
 // src/hooks/useDebounce.ts
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-  
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
-    
-    return () => clearTimeout(timer)
-  }, [value, delay])
-  
-  return debouncedValue
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
 }
 
 // __tests__/hooks/useDebounce.test.ts
-import { renderHook, waitFor } from '@testing-library/react-native'
-import { useDebounce } from '@/hooks/useDebounce'
+import { renderHook, waitFor } from '@testing-library/react-native';
+import { useDebounce } from '@/hooks/useDebounce';
 
 describe('useDebounce', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-  })
-  
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
-    jest.useRealTimers()
-  })
-  
+    jest.useRealTimers();
+  });
+
   it('should debounce value changes', async () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'initial', delay: 500 } }
-    )
-    
-    expect(result.current).toBe('initial')
-    
-    rerender({ value: 'updated', delay: 500 })
-    expect(result.current).toBe('initial') // Still old value
-    
-    jest.advanceTimersByTime(500)
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'initial', delay: 500 },
+    });
+
+    expect(result.current).toBe('initial');
+
+    rerender({ value: 'updated', delay: 500 });
+    expect(result.current).toBe('initial'); // Still old value
+
+    jest.advanceTimersByTime(500);
     await waitFor(() => {
-      expect(result.current).toBe('updated')
-    })
-  })
-})
+      expect(result.current).toBe('updated');
+    });
+  });
+});
 ```
 
 ### 2. Component Tests
@@ -209,32 +205,32 @@ describe('Button', () => {
     )
     expect(getByText('Click me')).toBeTruthy()
   })
-  
+
   it('should call onPress when pressed', () => {
     const onPress = jest.fn()
     const { getByTestId } = render(
       <Button title="Click me" onPress={onPress} />
     )
-    
+
     fireEvent.press(getByTestId('button'))
     expect(onPress).toHaveBeenCalledTimes(1)
   })
-  
+
   it('should not call onPress when disabled', () => {
     const onPress = jest.fn()
     const { getByTestId } = render(
       <Button title="Click me" onPress={onPress} disabled />
     )
-    
+
     fireEvent.press(getByTestId('button'))
     expect(onPress).not.toHaveBeenCalled()
   })
-  
+
   it('should apply disabled style when disabled', () => {
     const { getByTestId } = render(
       <Button title="Click me" onPress={() => {}} disabled />
     )
-    
+
     const button = getByTestId('button')
     expect(button.props.style).toContainEqual(
       expect.objectContaining({ opacity: 0.5 })
@@ -258,44 +254,44 @@ describe('LoginScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
-  
+
   it('should render login form', () => {
     const { getByPlaceholderText, getByText } = render(<LoginScreen />)
-    
+
     expect(getByPlaceholderText('Email')).toBeTruthy()
     expect(getByPlaceholderText('Password')).toBeTruthy()
     expect(getByText('Sign In')).toBeTruthy()
   })
-  
+
   it('should show validation errors', async () => {
     const { getByText, getByPlaceholderText } = render(<LoginScreen />)
-    
+
     const submitButton = getByText('Sign In')
     fireEvent.press(submitButton)
-    
+
     await waitFor(() => {
       expect(getByText('Email required')).toBeTruthy()
       expect(getByText('Password required')).toBeTruthy()
     })
   })
-  
+
   it('should call authService.login on submit', async () => {
     const mockLogin = authService.login as jest.MockedFunction<typeof authService.login>
-    mockLogin.mockResolvedValue({ 
-      token: 'fake-token', 
-      user: { id: '1', email: 'test@test.com' } 
+    mockLogin.mockResolvedValue({
+      token: 'fake-token',
+      user: { id: '1', email: 'test@test.com' }
     })
-    
+
     const { getByPlaceholderText, getByText } = render(<LoginScreen />)
-    
+
     const emailInput = getByPlaceholderText('Email')
     const passwordInput = getByPlaceholderText('Password')
     const submitButton = getByText('Sign In')
-    
+
     fireEvent.changeText(emailInput, 'test@test.com')
     fireEvent.changeText(passwordInput, 'password123')
     fireEvent.press(submitButton)
-    
+
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith({
         email: 'test@test.com',
@@ -303,17 +299,17 @@ describe('LoginScreen', () => {
       })
     })
   })
-  
+
   it('should show error message on login failure', async () => {
     const mockLogin = authService.login as jest.MockedFunction<typeof authService.login>
     mockLogin.mockRejectedValue(new Error('Invalid credentials'))
-    
+
     const { getByPlaceholderText, getByText } = render(<LoginScreen />)
-    
+
     fireEvent.changeText(getByPlaceholderText('Email'), 'test@test.com')
     fireEvent.changeText(getByPlaceholderText('Password'), 'wrong')
     fireEvent.press(getByText('Sign In'))
-    
+
     await waitFor(() => {
       expect(getByText('Invalid credentials')).toBeTruthy()
     })
@@ -327,134 +323,132 @@ Test API calls and error handling.
 
 ```typescript
 // __tests__/services/productService.test.ts
-import axios from 'axios'
-import { productService } from '@/services/productService'
+import axios from 'axios';
+import { productService } from '@/services/productService';
 
-jest.mock('axios')
-const mockedAxios = axios as jest.Mocked<typeof axios>
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('ProductService', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-  })
-  
+    jest.clearAllMocks();
+  });
+
   describe('getProducts', () => {
     it('should return products on success', async () => {
       const mockProducts = [
         { id: '1', name: 'Product 1', price: 10 },
         { id: '2', name: 'Product 2', price: 20 },
-      ]
-      
-      mockedAxios.get.mockResolvedValue({ data: mockProducts })
-      
-      const result = await productService.getProducts()
-      
-      expect(result).toEqual(mockProducts)
-      expect(mockedAxios.get).toHaveBeenCalledWith('/products')
-    })
-    
+      ];
+
+      mockedAxios.get.mockResolvedValue({ data: mockProducts });
+
+      const result = await productService.getProducts();
+
+      expect(result).toEqual(mockProducts);
+      expect(mockedAxios.get).toHaveBeenCalledWith('/products');
+    });
+
     it('should throw error on failure', async () => {
-      mockedAxios.get.mockRejectedValue(
-        new Error('Network error')
-      )
-      
-      await expect(productService.getProducts()).rejects.toThrow('Network error')
-    })
-    
+      mockedAxios.get.mockRejectedValue(new Error('Network error'));
+
+      await expect(productService.getProducts()).rejects.toThrow('Network error');
+    });
+
     it('should handle API error messages', async () => {
       mockedAxios.get.mockRejectedValue({
         isAxiosError: true,
         response: {
-          data: { message: 'Products not found' }
-        }
-      })
-      
-      await expect(productService.getProducts()).rejects.toThrow('Products not found')
-    })
-  })
-  
+          data: { message: 'Products not found' },
+        },
+      });
+
+      await expect(productService.getProducts()).rejects.toThrow('Products not found');
+    });
+  });
+
   describe('getProductById', () => {
     it('should return product by id', async () => {
-      const mockProduct = { id: '1', name: 'Product 1', price: 10 }
-      mockedAxios.get.mockResolvedValue({ data: mockProduct })
-      
-      const result = await productService.getProductById('1')
-      
-      expect(result).toEqual(mockProduct)
-      expect(mockedAxios.get).toHaveBeenCalledWith('/products/1')
-    })
-  })
-})
+      const mockProduct = { id: '1', name: 'Product 1', price: 10 };
+      mockedAxios.get.mockResolvedValue({ data: mockProduct });
+
+      const result = await productService.getProductById('1');
+
+      expect(result).toEqual(mockProduct);
+      expect(mockedAxios.get).toHaveBeenCalledWith('/products/1');
+    });
+  });
+});
 ```
 
 ### 4. Zustand Store Tests
 
 ```typescript
 // __tests__/store/cartStore.test.ts
-import { renderHook, act } from '@testing-library/react-native'
-import { useCartStore } from '@/store/cartStore'
+import { renderHook, act } from '@testing-library/react-native';
+import { useCartStore } from '@/store/cartStore';
 
 describe('CartStore', () => {
   beforeEach(() => {
     // Reset store before each test
-    const { result } = renderHook(() => useCartStore())
+    const { result } = renderHook(() => useCartStore());
     act(() => {
-      result.current.clearCart()
-    })
-  })
-  
+      result.current.clearCart();
+    });
+  });
+
   it('should add item to cart', () => {
-    const { result } = renderHook(() => useCartStore())
-    const product = { id: '1', name: 'Product 1', price: 10 }
-    
+    const { result } = renderHook(() => useCartStore());
+    const product = { id: '1', name: 'Product 1', price: 10 };
+
     act(() => {
-      result.current.addItem(product, 2)
-    })
-    
-    expect(result.current.items).toHaveLength(1)
+      result.current.addItem(product, 2);
+    });
+
+    expect(result.current.items).toHaveLength(1);
     expect(result.current.items[0]).toEqual({
       product,
       quantity: 2,
-    })
-  })
-  
+    });
+  });
+
   it('should increment quantity if product already in cart', () => {
-    const { result } = renderHook(() => useCartStore())
-    const product = { id: '1', name: 'Product 1', price: 10 }
-    
+    const { result } = renderHook(() => useCartStore());
+    const product = { id: '1', name: 'Product 1', price: 10 };
+
     act(() => {
-      result.current.addItem(product, 1)
-      result.current.addItem(product, 2)
-    })
-    
-    expect(result.current.items).toHaveLength(1)
-    expect(result.current.items[0].quantity).toBe(3)
-  })
-  
+      result.current.addItem(product, 1);
+      result.current.addItem(product, 2);
+    });
+
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].quantity).toBe(3);
+  });
+
   it('should remove item from cart', () => {
-    const { result } = renderHook(() => useCartStore())
-    const product = { id: '1', name: 'Product 1', price: 10 }
-    
+    const { result } = renderHook(() => useCartStore());
+    const product = { id: '1', name: 'Product 1', price: 10 };
+
     act(() => {
-      result.current.addItem(product)
-      result.current.removeItem('1')
-    })
-    
-    expect(result.current.items).toHaveLength(0)
-  })
-  
+      result.current.addItem(product);
+      result.current.removeItem('1');
+    });
+
+    expect(result.current.items).toHaveLength(0);
+  });
+
   it('should calculate total correctly', () => {
-    const { result } = renderHook(() => useCartStore())
-    
+    const { result } = renderHook(() => useCartStore());
+
     act(() => {
-      result.current.addItem({ id: '1', name: 'P1', price: 10 }, 2)
-      result.current.addItem({ id: '2', name: 'P2', price: 15 }, 1)
-    })
-    
+      result.current.addItem({ id: '1', name: 'P1', price: 10 }, 2);
+      result.current.addItem({ id: '2', name: 'P2', price: 15 }, 1);
+    });
+
     // 10 * 2 + 15 * 1 = 35
-    expect(result.current.total).toBe(35)
-  })
-})
+    expect(result.current.total).toBe(35);
+  });
+});
 ```
 
 ### 5. Context Tests
@@ -477,51 +471,51 @@ describe('AuthContext', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
-  
+
   it('should provide initial state', () => {
     const { result } = renderHook(() => useAuth(), { wrapper })
-    
+
     expect(result.current.user).toBeNull()
     expect(result.current.isLoading).toBe(false)
   })
-  
+
   it('should login successfully', async () => {
     const mockUser = { id: '1', email: 'test@test.com' }
     const mockToken = 'fake-token'
-    
+
     ;(authService.login as jest.Mock).mockResolvedValue({
       user: mockUser,
       token: mockToken,
     })
-    
+
     const { result } = renderHook(() => useAuth(), { wrapper })
-    
+
     await act(async () => {
       await result.current.login('test@test.com', 'password')
     })
-    
+
     expect(result.current.user).toEqual(mockUser)
     expect(SecureStore.setItemAsync).toHaveBeenCalledWith('token', mockToken)
   })
-  
+
   it('should logout successfully', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper })
-    
+
     // First login
     ;(authService.login as jest.Mock).mockResolvedValue({
       user: { id: '1', email: 'test@test.com' },
       token: 'fake-token',
     })
-    
+
     await act(async () => {
       await result.current.login('test@test.com', 'password')
     })
-    
+
     // Then logout
     await act(async () => {
       await result.current.logout()
     })
-    
+
     expect(result.current.user).toBeNull()
     expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('token')
   })
@@ -538,7 +532,7 @@ jest.mock('expo-camera', () => ({
   Camera: 'Camera',
   CameraView: 'CameraView',
   useCameraPermissions: () => [{ granted: true }, jest.fn()],
-}))
+}));
 
 // Mock React Navigation
 jest.mock('@react-navigation/native', () => ({
@@ -549,7 +543,7 @@ jest.mock('@react-navigation/native', () => ({
   useRoute: () => ({
     params: {},
   }),
-}))
+}));
 ```
 
 ### Mock Services
@@ -561,14 +555,12 @@ jest.mock('@/services/productService', () => ({
     getProducts: jest.fn(),
     getProductById: jest.fn(),
   },
-}))
+}));
 
 // Option 2: Mock with jest.spyOn
-import { productService } from '@/services/productService'
+import { productService } from '@/services/productService';
 
-jest.spyOn(productService, 'getProducts').mockResolvedValue([
-  { id: '1', name: 'Product' }
-])
+jest.spyOn(productService, 'getProducts').mockResolvedValue([{ id: '1', name: 'Product' }]);
 ```
 
 ## Best Practices
@@ -580,39 +572,39 @@ describe('ComponentName', () => {
   describe('feature/method', () => {
     it('should do something specific', () => {
       // Arrange
-      const input = 'test'
-      
+      const input = 'test';
+
       // Act
-      const result = someFunction(input)
-      
+      const result = someFunction(input);
+
       // Assert
-      expect(result).toBe('expected')
-    })
-  })
-})
+      expect(result).toBe('expected');
+    });
+  });
+});
 ```
 
 ### 2. Test Naming
 
 ```typescript
 // ✅ Good - descriptive and clear
-it('should display error message when login fails', () => {})
-it('should add product to cart when quantity is valid', () => {})
+it('should display error message when login fails', () => {});
+it('should add product to cart when quantity is valid', () => {});
 
 // ❌ Bad - too vague
-it('works', () => {})
-it('test login', () => {})
+it('works', () => {});
+it('test login', () => {});
 ```
 
 ### 3. Avoid Fragile Tests
 
 ```typescript
 // ❌ Bad - depends on implementation
-expect(component.find('TouchableOpacity').length).toBe(3)
+expect(component.find('TouchableOpacity').length).toBe(3);
 
 // ✅ Good - tests behavior
-expect(getByText('Add to cart')).toBeTruthy()
-expect(getByRole('button', { name: 'Add to cart' })).toBeTruthy()
+expect(getByText('Add to cart')).toBeTruthy();
+expect(getByRole('button', { name: 'Add to cart' })).toBeTruthy();
 ```
 
 ### 4. Async Tests
@@ -620,11 +612,11 @@ expect(getByRole('button', { name: 'Add to cart' })).toBeTruthy()
 ```typescript
 // ✅ Good - use waitFor
 await waitFor(() => {
-  expect(getByText('Products loaded')).toBeTruthy()
-})
+  expect(getByText('Products loaded')).toBeTruthy();
+});
 
 // ❌ Bad - no waiting
-expect(getByText('Products loaded')).toBeTruthy()
+expect(getByText('Products loaded')).toBeTruthy();
 ```
 
 ### 5. Test IDs
