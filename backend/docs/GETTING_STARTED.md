@@ -47,6 +47,7 @@ npm install
 ```
 
 This will install all dependencies listed in `package.json`:
+
 - Express, Prisma, JWT, bcrypt, etc.
 - Development tools (TypeScript, Jest, ESLint, Prettier)
 
@@ -106,7 +107,8 @@ NODE_ENV=development
 FRONTEND_URL="http://localhost:8081"
 ```
 
-**Important**: 
+**Important**:
+
 - Never commit `.env` files to version control
 - Use strong, random JWT_SECRET in production
 - Keep DATABASE_URL credentials secure
@@ -120,6 +122,7 @@ npx prisma migrate dev
 ```
 
 This will:
+
 - Create tables based on `prisma/schema.prisma`
 - Generate Prisma Client with TypeScript types
 - Apply all migrations from `prisma/migrations/`
@@ -133,6 +136,7 @@ npm run seed
 ```
 
 This runs `prisma/seed.ts` which creates:
+
 - Sample products
 - Test users
 - Demo cart items
@@ -146,31 +150,33 @@ npm run dev
 The API will be available at: **http://localhost:3000**
 
 You should see:
+
 ```
 Server is running on port 3000
 ```
 
 ## Available Scripts
 
-| Command | Description | When to Use |
-|---------|-------------|-------------|
-| `npm run dev` | Start development server with hot-reload | Daily development |
-| `npm run build` | Compile TypeScript to JavaScript | Before deployment |
-| `npm start` | Start production server (requires build) | Production only |
-| `npm test` | Run all tests once | Before commits |
-| `npm run test:coverage` | Run tests with coverage report | Checking test quality |
-| `npm run lint` | Lint code with ESLint | Before commits |
-| `npm run format` | Format code with Prettier | Before commits |
-| `npm run seed` | Seed database with sample data | Initial setup, testing |
-| `npx prisma studio` | Open Prisma Studio (DB GUI) | Database inspection |
-| `npx prisma migrate dev` | Create and apply new migration | After schema changes |
-| `npx prisma generate` | Generate Prisma Client | After schema changes |
+| Command                  | Description                              | When to Use            |
+| ------------------------ | ---------------------------------------- | ---------------------- |
+| `npm run dev`            | Start development server with hot-reload | Daily development      |
+| `npm run build`          | Compile TypeScript to JavaScript         | Before deployment      |
+| `npm start`              | Start production server (requires build) | Production only        |
+| `npm test`               | Run all tests once                       | Before commits         |
+| `npm run test:coverage`  | Run tests with coverage report           | Checking test quality  |
+| `npm run lint`           | Lint code with ESLint                    | Before commits         |
+| `npm run format`         | Format code with Prettier                | Before commits         |
+| `npm run seed`           | Seed database with sample data           | Initial setup, testing |
+| `npx prisma studio`      | Open Prisma Studio (DB GUI)              | Database inspection    |
+| `npx prisma migrate dev` | Create and apply new migration           | After schema changes   |
+| `npx prisma generate`    | Generate Prisma Client                   | After schema changes   |
 
 ## Development Workflow
 
 ### Daily Development
 
 1. **Start the server:**
+
    ```bash
    npm run dev
    ```
@@ -189,6 +195,7 @@ Server is running on port 3000
 1. **Edit** `prisma/schema.prisma`
 
 2. **Create migration:**
+
    ```bash
    npx prisma migrate dev --name describe_your_change
    ```
@@ -226,6 +233,7 @@ npx prisma studio
 Opens at `http://localhost:5555`
 
 Features:
+
 - View all tables and data
 - Add, edit, delete records
 - Filter and search
@@ -256,11 +264,13 @@ npx prisma format
 ### Database Backups
 
 **Export database:**
+
 ```bash
 pg_dump -U postgres derogative_shop > backup.sql
 ```
 
 **Restore database:**
+
 ```bash
 psql -U postgres derogative_shop < backup.sql
 ```
@@ -293,17 +303,17 @@ const response = await fetch('http://localhost:3000/auth/login', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     email: 'test@example.com',
-    password: 'password123'
-  })
-})
-const { token, user } = await response.json()
+    password: 'password123',
+  }),
+});
+const { token, user } = await response.json();
 
 // Get user profile (protected)
 const profile = await fetch('http://localhost:3000/user/profile', {
-  headers: { 
-    'Authorization': `Bearer ${token}` 
-  }
-})
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 ```
 
 ## Docker Setup
@@ -317,6 +327,7 @@ docker-compose up --build
 ```
 
 This will:
+
 - Build the backend Docker image
 - Start PostgreSQL container
 - Start backend container
@@ -420,6 +431,7 @@ Create `.vscode/launch.json`:
 **Problem**: `Error: listen EADDRINUSE: address already in use :::3000`
 
 **Solution**:
+
 ```bash
 # Find process using port 3000
 # Windows
@@ -441,11 +453,13 @@ kill -9 <PID>
 **Problem**: `Can't reach database server at localhost:5432`
 
 **Solutions**:
+
 1. Check PostgreSQL is running:
+
    ```bash
    # Windows (services)
    services.msc
-   
+
    # Linux/Mac
    sudo service postgresql status
    ```
@@ -464,6 +478,7 @@ kill -9 <PID>
 **Problem**: `Cannot find module '@prisma/client'`
 
 **Solution**:
+
 ```bash
 npx prisma generate
 ```
@@ -473,6 +488,7 @@ npx prisma generate
 **Problem**: Migration errors during `prisma migrate dev`
 
 **Solutions**:
+
 1. Check database connection
 2. Ensure no syntax errors in `schema.prisma`
 3. If in development, reset database:
@@ -485,7 +501,9 @@ npx prisma generate
 **Problem**: Import path errors like `Cannot find module '@/services/...'`
 
 **Solution**:
+
 1. Check `tsconfig.json` has path mapping:
+
    ```json
    {
      "compilerOptions": {
@@ -503,12 +521,15 @@ npx prisma generate
 **Problem**: Errors during `npm install`
 
 **Solutions**:
+
 1. Clear npm cache:
+
    ```bash
    npm cache clean --force
    ```
 
 2. Delete node_modules and reinstall:
+
    ```bash
    rm -rf node_modules package-lock.json
    npm install
@@ -518,13 +539,13 @@ npx prisma generate
 
 ## Environment Variables Reference
 
-| Variable | Description | Example | Required |
-|----------|-------------|---------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/db` | ✅ Yes |
-| `JWT_SECRET` | Secret key for JWT signing | `your-secret-key-min-32-chars` | ✅ Yes |
-| `PORT` | Server port | `3000` | No (default: 3000) |
-| `NODE_ENV` | Environment mode | `development` / `production` | No (default: development) |
-| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:8081` | No |
+| Variable       | Description                  | Example                                    | Required                  |
+| -------------- | ---------------------------- | ------------------------------------------ | ------------------------- |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/db` | ✅ Yes                    |
+| `JWT_SECRET`   | Secret key for JWT signing   | `your-secret-key-min-32-chars`             | ✅ Yes                    |
+| `PORT`         | Server port                  | `3000`                                     | No (default: 3000)        |
+| `NODE_ENV`     | Environment mode             | `development` / `production`               | No (default: development) |
+| `FRONTEND_URL` | Frontend URL for CORS        | `http://localhost:8081`                    | No                        |
 
 ## Next Steps
 

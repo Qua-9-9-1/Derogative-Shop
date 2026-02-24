@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BASE_URL = process.env.PAYPAL_BASE_URL as string;
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID as string;
@@ -7,15 +7,15 @@ const SECRET = process.env.PAYPAL_SECRET as string;
 const getAccessToken = async (): Promise<string> => {
   const response = await axios({
     url: `${BASE_URL}/v1/oauth2/token`,
-    method: "post",
+    method: 'post',
     auth: {
       username: CLIENT_ID,
       password: SECRET,
     },
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    data: "grant_type=client_credentials",
+    data: 'grant_type=client_credentials',
   });
 
   return response.data.access_token;
@@ -24,24 +24,23 @@ const getAccessToken = async (): Promise<string> => {
 export const createPayPalOrder = async (
   total: number
 ): Promise<{ id: string; approveLink?: string }> => {
-
   const accessToken = await getAccessToken();
 
   const response = await axios.post(
     `${BASE_URL}/v2/checkout/orders`,
     {
-      intent: "CAPTURE",
+      intent: 'CAPTURE',
       purchase_units: [
         {
           amount: {
-            currency_code: "EUR",
+            currency_code: 'EUR',
             value: total.toFixed(2),
           },
         },
       ],
       application_context: {
-        return_url: "https://example.com/success", // j'ai mis fake link en att
-        cancel_url: "https://example.com/cancel",
+        return_url: 'https://example.com/success', // j'ai mis fake link en att
+        cancel_url: 'https://example.com/cancel',
       },
     },
     {
@@ -51,9 +50,7 @@ export const createPayPalOrder = async (
     }
   );
 
-  const approveLink = response.data.links.find(
-    (link: any) => link.rel === "approve"
-  )?.href;
+  const approveLink = response.data.links.find((link: any) => link.rel === 'approve')?.href;
 
   return {
     id: response.data.id,
@@ -61,10 +58,7 @@ export const createPayPalOrder = async (
   };
 };
 
-
-export const capturePayPalOrder = async (
-  orderID: string
-) => {
+export const capturePayPalOrder = async (orderID: string) => {
   const accessToken = await getAccessToken();
 
   const response = await axios.post(

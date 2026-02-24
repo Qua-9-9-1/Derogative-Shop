@@ -1,9 +1,5 @@
-import { prisma } from "../prismaClient";
-import {
-  createPayPalOrder,
-  capturePayPalOrder,
-} from "./paypalService";
-
+import { prisma } from '../prismaClient';
+import { createPayPalOrder, capturePayPalOrder } from './paypalService';
 
 export const createOrder = async (userId: string) => {
   //récupérer panier
@@ -13,13 +9,12 @@ export const createOrder = async (userId: string) => {
   });
 
   if (!cartItems.length) {
-    throw new Error("Cart is empty");
+    throw new Error('Cart is empty');
   }
 
   // recalcul total sécurisé
   const total = cartItems.reduce<number>(
-    (sum, item) =>
-      sum + Number(item.product.price) * item.quantity,
+    (sum, item) => sum + Number(item.product.price) * item.quantity,
     0
   );
 
@@ -29,14 +24,11 @@ export const createOrder = async (userId: string) => {
   return { paypalOrderId };
 };
 
-export const captureOrder = async (
-  userId: string,
-  paypalOrderId: string
-) => {
+export const captureOrder = async (userId: string, paypalOrderId: string) => {
   const captureData = await capturePayPalOrder(paypalOrderId);
 
-  if (captureData.status !== "COMPLETED") {
-    throw new Error("Payment not completed");
+  if (captureData.status !== 'COMPLETED') {
+    throw new Error('Payment not completed');
   }
 
   const cartItems = await prisma.cartItem.findMany({
@@ -45,13 +37,11 @@ export const captureOrder = async (
   });
 
   const total = cartItems.reduce<number>(
-    (sum, item) =>
-      sum + Number(item.product.price) * item.quantity,
+    (sum, item) => sum + Number(item.product.price) * item.quantity,
     0
   );
 
-  const captureId =
-    captureData.purchase_units[0].payments.captures[0].id;
+  const captureId = captureData.purchase_units[0].payments.captures[0].id;
 
   // créer order en DB
   const order = await prisma.order.create({
@@ -60,7 +50,7 @@ export const captureOrder = async (
       total,
       paypalOrderId,
       paypalCaptureId: captureId,
-      status: "COMPLETED",
+      status: 'COMPLETED',
       items: {
         create: cartItems.map((item) => ({
           productId: item.productId,

@@ -4,7 +4,7 @@ import authRoutes from '@/routes/authRoutes';
 import productRoutes from '@/routes/productRoutes';
 import userRoutes from '@/routes/userRoutes';
 import cartRoutes from '@/routes/cartRoutes';
-import orderRoutes from "./routes/orderRoutes";
+import orderRoutes from './routes/orderRoutes';
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/user', userRoutes);
 app.use('/cart', cartRoutes);
-app.use("/orders", orderRoutes);
+app.use('/orders', orderRoutes);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;

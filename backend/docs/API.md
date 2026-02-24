@@ -14,11 +14,13 @@ Production: https://your-api-domain.com
 Most endpoints require JWT authentication via Bearer token.
 
 **Header Format:**
+
 ```
 Authorization: Bearer <your_jwt_token>
 ```
 
 **Obtaining a Token:**
+
 1. Register: `POST /auth/register`
 2. Login: `POST /auth/login`
 3. Use the returned `token` in subsequent requests
@@ -45,16 +47,16 @@ Authorization: Bearer <your_jwt_token>
 
 ## Status Codes
 
-| Code | Meaning |
-|------|---------|
-| `200` | OK - Request succeeded |
-| `201` | Created - Resource created successfully |
-| `400` | Bad Request - Invalid input |
-| `401` | Unauthorized - Missing or invalid token |
-| `404` | Not Found - Resource doesn't exist |
-| `409` | Conflict - Duplicate resource |
+| Code  | Meaning                                    |
+| ----- | ------------------------------------------ |
+| `200` | OK - Request succeeded                     |
+| `201` | Created - Resource created successfully    |
+| `400` | Bad Request - Invalid input                |
+| `401` | Unauthorized - Missing or invalid token    |
+| `404` | Not Found - Resource doesn't exist         |
+| `409` | Conflict - Duplicate resource              |
 | `422` | Unprocessable Entity - Invalid data format |
-| `500` | Internal Server Error - Server issue |
+| `500` | Internal Server Error - Server issue       |
 
 ---
 
@@ -69,16 +71,18 @@ Create a new user account.
 **Authentication:** Not required
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
   "password": "SecurePassword123!",
-  "firstName": "John",      // Optional
-  "lastName": "Doe"          // Optional
+  "firstName": "John", // Optional
+  "lastName": "Doe" // Optional
 }
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "id": "uuid-here",
@@ -90,10 +94,12 @@ Create a new user account.
 ```
 
 **Errors:**
+
 - `400` - Email and password required
 - `409` - Email already in use
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
@@ -111,6 +117,7 @@ Authenticate and receive JWT token.
 **Authentication:** Not required
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -119,6 +126,7 @@ Authenticate and receive JWT token.
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -132,10 +140,12 @@ Authenticate and receive JWT token.
 ```
 
 **Errors:**
+
 - `400` - Email and password required
 - `401` - Incorrect email or password
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
@@ -153,11 +163,13 @@ Get a new JWT token using existing valid token.
 **Authentication:** Required
 
 **Headers:**
+
 ```
 Authorization: Bearer <current_token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -165,11 +177,13 @@ Authorization: Bearer <current_token>
 ```
 
 **Errors:**
+
 - `401` - No token provided
 - `401` - Invalid or expired token
 - `401` - Token has been revoked
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/auth/refresh \
   -H "Authorization: Bearer your-token-here"
@@ -186,11 +200,13 @@ Revoke current token (logout).
 **Authentication:** Required
 
 **Headers:**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "message": "Logged out successfully"
@@ -198,10 +214,12 @@ Authorization: Bearer <token>
 ```
 
 **Errors:**
+
 - `401` - No token provided
 - `401` - Invalid token
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/auth/logout \
   -H "Authorization: Bearer your-token-here"
@@ -220,11 +238,13 @@ Retrieve the authenticated user's profile.
 **Authentication:** Required
 
 **Headers:**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "id": "uuid-here",
@@ -243,9 +263,11 @@ Authorization: Bearer <token>
 ```
 
 **Errors:**
+
 - `401` - Not authenticated
 
 **Example:**
+
 ```bash
 curl http://localhost:3000/user/profile \
   -H "Authorization: Bearer your-token-here"
@@ -262,11 +284,13 @@ Update authenticated user's information.
 **Authentication:** Required
 
 **Headers:**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **Request Body:** (all fields optional)
+
 ```json
 {
   "firstName": "Jane",
@@ -282,6 +306,7 @@ Authorization: Bearer <token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "id": "uuid-here",
@@ -295,10 +320,12 @@ Authorization: Bearer <token>
 ```
 
 **Errors:**
+
 - `401` - Not authenticated
 - `400` - Invalid data format
 
 **Example:**
+
 ```bash
 curl -X PUT http://localhost:3000/user/profile \
   -H "Authorization: Bearer your-token-here" \
@@ -319,6 +346,7 @@ Retrieve the complete product catalog.
 **Authentication:** Not required
 
 **Success Response (200):**
+
 ```json
 [
   {
@@ -354,6 +382,7 @@ Retrieve the complete product catalog.
 ```
 
 **Example:**
+
 ```bash
 curl http://localhost:3000/products
 ```
@@ -369,9 +398,11 @@ Retrieve a specific product by its barcode. If not in database, fetches from Ope
 **Authentication:** Not required
 
 **Parameters:**
+
 - `barcode` (path) - Product barcode/EAN (e.g., "3017624010701")
 
 **Success Response (200):**
+
 ```json
 {
   "id": "3017624010701",
@@ -393,14 +424,17 @@ Retrieve a specific product by its barcode. If not in database, fetches from Ope
 ```
 
 **Errors:**
+
 - `404` - Product not found
 
 **Example:**
+
 ```bash
 curl http://localhost:3000/products/3017624010701
 ```
 
 **Notes:**
+
 - First checks local database
 - If not found, queries Open Food Facts API
 - Automatically saves to database for future requests
@@ -417,9 +451,11 @@ Search products by name (future implementation).
 **Authentication:** Not required
 
 **Query Parameters:**
+
 - `q` (string) - Search query
 
 **Example:**
+
 ```bash
 curl "http://localhost:3000/products/search?q=nutella"
 ```
@@ -437,14 +473,17 @@ Retrieve user's shopping cart.
 **Authentication:** Required
 
 **Headers:**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **Parameters:**
+
 - `userId` (path) - User ID (extracted from token)
 
 **Success Response (200):**
+
 ```json
 {
   "items": [
@@ -479,9 +518,11 @@ Authorization: Bearer <token>
 ```
 
 **Errors:**
+
 - `401` - Not authenticated
 
 **Example:**
+
 ```bash
 curl http://localhost:3000/cart/user-uuid-here \
   -H "Authorization: Bearer your-token-here"
@@ -498,14 +539,17 @@ Synchronize frontend cart with backend (batch update).
 **Authentication:** Required
 
 **Headers:**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **Parameters:**
+
 - `userId` (path) - User ID
 
 **Request Body:**
+
 ```json
 [
   {
@@ -526,6 +570,7 @@ Authorization: Bearer <token>
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "message": "Cart synchronized",
@@ -543,11 +588,13 @@ Authorization: Bearer <token>
 ```
 
 **Errors:**
+
 - `400` - Invalid cart format: expected array
 - `401` - Missing userId (token invalid?)
 - `422` - Invalid item format
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/cart/user-uuid/sync \
   -H "Authorization: Bearer your-token-here" \
@@ -556,6 +603,7 @@ curl -X POST http://localhost:3000/cart/user-uuid/sync \
 ```
 
 **Notes:**
+
 - Replaces entire cart with provided items
 - Creates products in database if they don't exist
 - Removes items not in sync request
@@ -611,12 +659,12 @@ curl -X POST http://localhost:3000/cart/user-uuid/sync \
 
 ```typescript
 {
-  id: string              // UUID
-  quantity: number
-  userId: string          // Foreign key
-  user: User             // Relation
-  productId: string       // Foreign key
-  product: Product        // Relation
+  id: string; // UUID
+  quantity: number;
+  userId: string; // Foreign key
+  user: User; // Relation
+  productId: string; // Foreign key
+  product: Product; // Relation
 }
 ```
 
@@ -624,9 +672,9 @@ curl -X POST http://localhost:3000/cart/user-uuid/sync \
 
 ```typescript
 {
-  id: string              // UUID
-  token: string           // Unique, JWT token
-  revokedAt: Date
+  id: string; // UUID
+  token: string; // Unique, JWT token
+  revokedAt: Date;
 }
 ```
 
@@ -649,25 +697,27 @@ curl -X POST http://localhost:3000/cart/user-uuid/sync \
 
 ```typescript
 {
-  id: string              // UUID
-  quantity: number
-  unitPrice: Decimal      // Decimal(10,2)
-  invoiceId: string       // Foreign key
-  invoice: Invoice        // Relation
-  productId: string       // Foreign key
-  product: Product        // Relation
+  id: string; // UUID
+  quantity: number;
+  unitPrice: Decimal; // Decimal(10,2)
+  invoiceId: string; // Foreign key
+  invoice: Invoice; // Relation
+  productId: string; // Foreign key
+  product: Product; // Relation
 }
 ```
 
 ## Rate Limiting
 
 Currently no rate limiting is implemented. Future considerations:
+
 - 100 requests per 15 minutes per IP
 - 1000 requests per hour per authenticated user
 
 ## CORS
 
 CORS is configured to allow requests from:
+
 - Development: `http://localhost:8081`
 - Production: Configured via `FRONTEND_URL` environment variable
 
@@ -676,6 +726,7 @@ CORS is configured to allow requests from:
 Currently not implemented. All GET endpoints return complete datasets.
 
 Future implementation:
+
 ```
 GET /products?page=1&limit=20
 ```
@@ -719,6 +770,7 @@ Create a Postman collection with the following structure:
 ### Environment Variables
 
 Set up Postman environment:
+
 ```json
 {
   "baseUrl": "http://localhost:3000",
@@ -727,9 +779,10 @@ Set up Postman environment:
 ```
 
 Auto-set token after login:
+
 ```javascript
 // In Login request's Tests tab
-pm.environment.set("token", pm.response.json().token);
+pm.environment.set('token', pm.response.json().token);
 ```
 
 ---

@@ -9,26 +9,31 @@ REST API built with Express.js and TypeScript, using Prisma ORM for database man
 ## Technology Stack
 
 ### Core Framework
+
 - **Express.js 5.2** - Fast, minimalist web framework
 - **TypeScript 5.x** - Type-safe JavaScript
 - **Node.js 18+** - JavaScript runtime environment
 
 ### Database
+
 - **PostgreSQL** - Relational database
 - **Prisma 6.19** - Modern ORM with type safety
 - **Supabase** - PostgreSQL hosting (production)
 
 ### Authentication & Security
+
 - **JWT (jsonwebtoken 9.0)** - Token-based authentication
 - **bcryptjs 3.0** - Password hashing
 - **Helmet 8.1** - Security headers
 - **CORS 2.8** - Cross-origin resource sharing
 
 ### Validation & Data
+
 - **Zod 4.3** - Schema validation
 - **Axios 1.13** - HTTP client (for external APIs)
 
 ### Development Tools
+
 - **Nodemon 3.1** - Auto-restart on changes
 - **Jest 30.2** - Testing framework
 - **Supertest 7.2** - HTTP assertions
@@ -37,6 +42,7 @@ REST API built with Express.js and TypeScript, using Prisma ORM for database man
 - **ts-jest 29.4** - TypeScript Jest support
 
 ### Deployment
+
 - **Docker** - Containerization
 - **Render** - Cloud hosting platform
 
@@ -85,6 +91,7 @@ backend/
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 18.x or higher
 - npm 9.x or higher
 - PostgreSQL 14+ (or use Supabase)
@@ -125,35 +132,39 @@ docker-compose up --build
 
 ## Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot-reload |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm test` | Run all tests |
-| `npm run test:coverage` | Run tests with coverage report |
-| `npm run lint` | Lint code with ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run seed` | Seed database with sample data |
+| Command                 | Description                              |
+| ----------------------- | ---------------------------------------- |
+| `npm run dev`           | Start development server with hot-reload |
+| `npm run build`         | Build for production                     |
+| `npm start`             | Start production server                  |
+| `npm test`              | Run all tests                            |
+| `npm run test:coverage` | Run tests with coverage report           |
+| `npm run lint`          | Lint code with ESLint                    |
+| `npm run format`        | Format code with Prettier                |
+| `npm run seed`          | Seed database with sample data           |
 
 ## API Endpoints
 
 ### Authentication
+
 - `POST /auth/register` - Register new user
 - `POST /auth/login` - Login user
 - `POST /auth/logout` - Logout user (revoke token)
 - `POST /auth/refresh` - Refresh JWT token
 
 ### Users
+
 - `GET /user/profile` - Get user profile (protected)
 - `PUT /user/profile` - Update user profile (protected)
 
 ### Products
+
 - `GET /products` - Get all products
 - `GET /products/:id` - Get product by ID
 - `GET /products/search` - Search products
 
 ### Cart
+
 - `GET /cart` - Get user's cart (protected)
 - `POST /cart/items` - Add item to cart (protected)
 - `PUT /cart/items/:id` - Update cart item (protected)
@@ -192,6 +203,7 @@ See [Getting Started](./GETTING_STARTED.md#environment-configuration) for detail
 ## Database Schema
 
 The application uses the following main models:
+
 - **User** - User accounts with authentication
 - **Product** - Product catalog
 - **CartItem** - Shopping cart items
@@ -221,16 +233,19 @@ See [Testing Documentation](./TESTING.md) for detailed testing strategies.
 ## Code Quality
 
 ### Linting
+
 ```bash
 npm run lint
 ```
 
 ### Formatting
+
 ```bash
 npm run format
 ```
 
 ### Pre-commit Hooks
+
 The project uses Prettier for consistent code formatting. All code is automatically formatted before commits.
 
 ## Security Features
@@ -277,7 +292,8 @@ For issues and questions, please open an issue on the repository.
 
 ---
 
-**Next Steps**: 
+**Next Steps**:
+
 - Read [Architecture Guide](./ARCHITECTURE.md) to understand the codebase structure
 - Follow [Getting Started](./GETTING_STARTED.md) for detailed setup instructions
 - Review [API Documentation](./API.md) for endpoint details

@@ -1,10 +1,7 @@
-import { Request, Response } from "express";
-import * as orderService from "@/services/orderService";
+import { Request, Response } from 'express';
+import * as orderService from '@/services/orderService';
 
-export const createOrder = async (
-  req: Request,
-  res: Response
-) => {
+export const createOrder = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as { id: string; email: string };
 
@@ -16,18 +13,12 @@ export const createOrder = async (
   }
 };
 
-export const captureOrder = async (
-  req: Request,
-  res: Response
-) => {
+export const captureOrder = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as { id: string; email: string };
     const { paypalOrderId } = req.body;
 
-    const order = await orderService.captureOrder(
-      user.id,
-      paypalOrderId
-    );
+    const order = await orderService.captureOrder(user.id, paypalOrderId);
 
     res.json(order);
   } catch (error: any) {

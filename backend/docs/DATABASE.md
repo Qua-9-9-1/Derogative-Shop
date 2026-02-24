@@ -94,6 +94,7 @@ model User {
 ```
 
 **Fields:**
+
 - `id`: UUID primary key
 - `email`: Unique email address
 - `passwordHash`: Bcrypt hashed password
@@ -102,10 +103,12 @@ model User {
 - `createdAt`: Timestamp of account creation
 
 **Relations:**
+
 - One-to-many with `Invoice` (user's orders)
 - One-to-many with `CartItem` (user's cart)
 
 **Indexes:**
+
 - Unique index on `email` (enforced by `@unique`)
 
 ### Product Model
@@ -130,6 +133,7 @@ model Product {
 ```
 
 **Fields:**
+
 - `id`: Barcode/EAN (String, not UUID)
 - `name`: Product name
 - `brand`: Brand name (optional)
@@ -141,10 +145,12 @@ model Product {
 - `lastUpdated`: Last fetch/update timestamp
 
 **Relations:**
+
 - One-to-many with `CartItem`
 - One-to-many with `InvoiceItem`
 
 **Notes:**
+
 - Uses barcode as primary key (not UUID)
 - Price is estimated/default value
 - Products fetched from Open Food Facts API
@@ -165,16 +171,19 @@ model CartItem {
 ```
 
 **Fields:**
+
 - `id`: UUID primary key
 - `quantity`: Number of items
 - `userId`: Foreign key to User
 - `productId`: Foreign key to Product
 
 **Relations:**
+
 - Many-to-one with `User`
 - Many-to-one with `Product`
 
 **Constraints:**
+
 - Composite unique constraint on `(userId, productId)` prevents duplicates
 
 ### Invoice Model
@@ -205,6 +214,7 @@ enum PaymentMethod {
 ```
 
 **Fields:**
+
 - `id`: UUID primary key
 - `date`: Order date/time
 - `totalAmount`: Total invoice amount (Decimal for precision)
@@ -213,6 +223,7 @@ enum PaymentMethod {
 - `userId`: Foreign key to User
 
 **Relations:**
+
 - Many-to-one with `User`
 - One-to-many with `InvoiceItem`
 
@@ -231,6 +242,7 @@ model InvoiceItem {
 ```
 
 **Fields:**
+
 - `id`: UUID primary key
 - `quantity`: Number of items ordered
 - `unitPrice`: Price per unit at time of purchase
@@ -238,6 +250,7 @@ model InvoiceItem {
 - `productId`: Foreign key to Product
 
 **Relations:**
+
 - Many-to-one with `Invoice`
 - Many-to-one with `Product`
 
@@ -252,11 +265,13 @@ model RevokedToken {
 ```
 
 **Fields:**
+
 - `id`: UUID primary key
 - `token`: JWT token string (unique)
 - `revokedAt`: Timestamp of revocation
 
 **Purpose:**
+
 - Track logged-out users
 - Prevent reuse of revoked tokens
 - Implements token blacklist
@@ -293,6 +308,7 @@ prisma/migrations/
 ```
 
 **Migration History:**
+
 1. **init_tables** - Initial database tables
 2. **init_db** - Database initialization
 3. **add_revoked_token** - Added RevokedToken model
@@ -304,6 +320,7 @@ prisma/migrations/
 **Example: Add user role field**
 
 1. Edit `schema.prisma`:
+
 ```prisma
 model User {
   // ... existing fields
@@ -312,6 +329,7 @@ model User {
 ```
 
 2. Generate migration:
+
 ```bash
 npx prisma migrate dev --name add_user_role
 ```
@@ -329,6 +347,7 @@ npx prisma migrate deploy
 ```
 
 Use in production/CI:
+
 - Does not create new migrations
 - Only applies existing migrations
 - Safe for automated deployments
@@ -341,6 +360,7 @@ npx prisma migrate reset
 ```
 
 This will:
+
 1. Drop database
 2. Recreate database
 3. Apply all migrations
@@ -353,6 +373,7 @@ This will:
 ### Seed Configuration
 
 Add to `package.json`:
+
 ```json
 {
   "prisma": {
@@ -372,34 +393,34 @@ npx prisma db seed
 ### Seed Script
 
 ```typescript
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
-import axios from 'axios'
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import axios from 'axios';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   // 1. Clean database
-  await prisma.cartItem.deleteMany()
-  await prisma.product.deleteMany()
-  await prisma.user.deleteMany()
-  await prisma.revokedToken.deleteMany()
-  
+  await prisma.cartItem.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.revokedToken.deleteMany();
+
   // 2. Create test user
-  const hashedPassword = await bcrypt.hash('password123', 10)
+  const hashedPassword = await bcrypt.hash('password123', 10);
   await prisma.user.create({
     data: {
       email: 'test@user.test',
       passwordHash: hashedPassword,
       firstName: 'Testman',
-      lastName: 'Tester'
-    }
-  })
-  
+      lastName: 'Tester',
+    },
+  });
+
   // 3. Import products from Open Food Facts
-  const response = await axios.get('https://fr.openfoodfacts.org/cgi/search.pl?...')
-  const products = response.data.products
-  
+  const response = await axios.get('https://fr.openfoodfacts.org/cgi/search.pl?...');
+  const products = response.data.products;
+
   for (const p of products) {
     await prisma.product.create({
       data: {
@@ -409,17 +430,18 @@ async function main() {
         price: randomPrice(),
         imageUrl: p.image_url,
         // ...
-      }
-    })
+      },
+    });
   }
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(() => prisma.$disconnect());
 ```
 
 **What it does:**
+
 - Cleans existing data
 - Creates test user (email: `test@user.test`, password: `password123`)
 - Imports ~250 products from Open Food Facts
@@ -431,9 +453,9 @@ main()
 
 ```typescript
 // prismaClient.ts
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-export const prisma = new PrismaClient()
+export const prisma = new PrismaClient();
 ```
 
 ### Basic Queries
@@ -441,34 +463,34 @@ export const prisma = new PrismaClient()
 ```typescript
 // Find unique
 const user = await prisma.user.findUnique({
-  where: { email: 'test@example.com' }
-})
+  where: { email: 'test@example.com' },
+});
 
 // Find many
 const products = await prisma.product.findMany({
   where: { category: 'Beverages' },
   take: 10,
-  skip: 0
-})
+  skip: 0,
+});
 
 // Create
 const newUser = await prisma.user.create({
   data: {
     email: 'new@example.com',
-    passwordHash: hashedPassword
-  }
-})
+    passwordHash: hashedPassword,
+  },
+});
 
 // Update
 const updatedUser = await prisma.user.update({
   where: { id: userId },
-  data: { firstName: 'John' }
-})
+  data: { firstName: 'John' },
+});
 
 // Delete
 await prisma.cartItem.delete({
-  where: { id: itemId }
-})
+  where: { id: itemId },
+});
 ```
 
 ### Relations
@@ -477,18 +499,18 @@ await prisma.cartItem.delete({
 // Include related data
 const cart = await prisma.cartItem.findMany({
   where: { userId },
-  include: { product: true }
-})
+  include: { product: true },
+});
 
 // Select specific fields
 const users = await prisma.user.findMany({
   select: {
     id: true,
     email: true,
-    firstName: true
+    firstName: true,
     // passwordHash NOT included
-  }
-})
+  },
+});
 
 // Nested operations
 const invoice = await prisma.invoice.create({
@@ -497,13 +519,13 @@ const invoice = await prisma.invoice.create({
     totalAmount: 99.99,
     items: {
       create: [
-        { productId: 'prod1', quantity: 2, unitPrice: 25.00 },
-        { productId: 'prod2', quantity: 1, unitPrice: 49.99 }
-      ]
-    }
+        { productId: 'prod1', quantity: 2, unitPrice: 25.0 },
+        { productId: 'prod2', quantity: 1, unitPrice: 49.99 },
+      ],
+    },
   },
-  include: { items: true }
-})
+  include: { items: true },
+});
 ```
 
 ### Transactions
@@ -512,17 +534,17 @@ const invoice = await prisma.invoice.create({
 // Ensure multiple operations succeed or fail together
 await prisma.$transaction([
   prisma.cartItem.deleteMany({ where: { userId } }),
-  prisma.invoice.create({ data: invoiceData })
-])
+  prisma.invoice.create({ data: invoiceData }),
+]);
 
 // Interactive transactions
 await prisma.$transaction(async (tx) => {
-  const user = await tx.user.findUnique({ where: { id: userId } })
-  if (!user) throw new Error('User not found')
-  
-  await tx.cartItem.deleteMany({ where: { userId } })
-  return tx.invoice.create({ data: invoiceData })
-})
+  const user = await tx.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error('User not found');
+
+  await tx.cartItem.deleteMany({ where: { userId } });
+  return tx.invoice.create({ data: invoiceData });
+});
 ```
 
 ## Prisma Studio
@@ -578,6 +600,7 @@ psql -U postgres -d derogative_shop < backup_20260217.sql
 ### Automated Backups
 
 **Example cron job (Linux):**
+
 ```bash
 # Daily backup at 2 AM
 0 2 * * * pg_dump -U postgres derogative_shop > /backups/db_$(date +\%Y\%m\%d).sql
@@ -591,7 +614,7 @@ psql -U postgres -d derogative_shop < backup_20260217.sql
 model Product {
   name     String
   category String?
-  
+
   @@index([category])  // Index for filtering
   @@index([name])      // Index for search
 }
@@ -601,16 +624,16 @@ model Product {
 
 ```typescript
 // ❌ Bad - N+1 query problem
-const cartItems = await prisma.cartItem.findMany({ where: { userId } })
+const cartItems = await prisma.cartItem.findMany({ where: { userId } });
 for (const item of cartItems) {
-  const product = await prisma.product.findUnique({ where: { id: item.productId } })
+  const product = await prisma.product.findUnique({ where: { id: item.productId } });
 }
 
 // ✅ Good - Single query with include
 const cartItems = await prisma.cartItem.findMany({
   where: { userId },
-  include: { product: true }
-})
+  include: { product: true },
+});
 ```
 
 ### Connection Pooling
@@ -632,6 +655,7 @@ datasource db {
 **Error**: `Type X is not assignable to type Y`
 
 **Solution**:
+
 ```bash
 npx prisma generate
 ```
@@ -641,6 +665,7 @@ npx prisma generate
 **Error**: `Migration failed to apply`
 
 **Solutions**:
+
 1. Check database connection
 2. Review migration SQL
 3. Reset database (development):
@@ -657,6 +682,7 @@ npx prisma generate
 **Error**: `Can't reach database server`
 
 **Check:**
+
 1. PostgreSQL is running
 2. DATABASE_URL is correct
 3. Firewall allows connection

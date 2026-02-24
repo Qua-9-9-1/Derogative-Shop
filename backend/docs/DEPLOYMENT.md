@@ -13,6 +13,7 @@ Complete guide for deploying the backend to production.
 ### Overview
 
 [Render](https://render.com) provides easy deployment with:
+
 - Automatic HTTPS
 - Auto-deploy from GitHub
 - Built-in PostgreSQL hosting
@@ -45,6 +46,7 @@ Complete guide for deploying the backend to production.
 3. Configure:
 
 **Basic Settings:**
+
 - **Name**: `derogative-shop-api`
 - **Region**: Same as database
 - **Branch**: `main` or `master`
@@ -53,14 +55,17 @@ Complete guide for deploying the backend to production.
 - **Plan**: Free or Starter
 
 **Docker Settings:**
+
 - **Dockerfile Path**: `./backend/Dockerfile` (or `./Dockerfile` if in backend root)
 
 **Build Command** (if not using Docker):
+
 ```bash
 npm install && npx prisma generate && npm run build
 ```
 
 **Start Command** (if not using Docker):
+
 ```bash
 npx prisma migrate deploy && npm start
 ```
@@ -78,6 +83,7 @@ FRONTEND_URL=<your-frontend-url>
 ```
 
 **Generate JWT_SECRET:**
+
 ```bash
 # On Linux/Mac
 openssl rand -base64 32
@@ -102,6 +108,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 Migrations should run automatically via `CMD` in Dockerfile or start command.
 
 **Manual migration (if needed):**
+
 ```bash
 # In Render Shell
 npx prisma migrate deploy
@@ -117,6 +124,7 @@ npm run seed
 ### Auto-Deploy
 
 Render auto-deploys on every push to your connected branch:
+
 1. Push to GitHub
 2. Render detects changes
 3. Automatically builds and deploys
@@ -127,6 +135,7 @@ Render auto-deploys on every push to your connected branch:
 ### Building the Image
 
 **Dockerfile** (`backend/Dockerfile`):
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -156,6 +165,7 @@ CMD ["npm", "start"]
 ```
 
 **Build image:**
+
 ```bash
 cd backend
 docker build -t derogative-shop-backend .
@@ -177,11 +187,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: derogative_shop
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -190,7 +200,7 @@ services:
   api:
     build: ./backend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/derogative_shop
       JWT_SECRET: ${JWT_SECRET}
@@ -207,26 +217,31 @@ volumes:
 ```
 
 **Create `.env` file:**
+
 ```env
 JWT_SECRET=your-super-secret-jwt-key-change-this
 ```
 
 **Start services:**
+
 ```bash
 docker-compose up -d
 ```
 
 **View logs:**
+
 ```bash
 docker-compose logs -f api
 ```
 
 **Stop services:**
+
 ```bash
 docker-compose down
 ```
 
 **Rebuild after changes:**
+
 ```bash
 docker-compose up -d --build
 ```
@@ -234,17 +249,20 @@ docker-compose up -d --build
 ### Docker Hub Deployment
 
 **1. Tag image:**
+
 ```bash
 docker tag derogative-shop-backend yourusername/derogative-shop-backend:v1.0.0
 ```
 
 **2. Push to Docker Hub:**
+
 ```bash
 docker login
 docker push yourusername/derogative-shop-backend:v1.0.0
 ```
 
 **3. Pull on production server:**
+
 ```bash
 docker pull yourusername/derogative-shop-backend:v1.0.0
 docker run -d \
@@ -317,6 +335,7 @@ nano .env
 ```
 
 **Contents of `.env`:**
+
 ```env
 DATABASE_URL="postgresql://derogative_user:your_strong_password@localhost:5432/derogative_shop"
 JWT_SECRET="generate-strong-random-secret-key"
@@ -350,6 +369,7 @@ pm2 startup
 ```
 
 **PM2 Commands:**
+
 ```bash
 # View status
 pm2 status
@@ -374,6 +394,7 @@ sudo nano /etc/nginx/sites-available/derogative-shop
 ```
 
 **Nginx configuration:**
+
 ```nginx
 server {
     listen 80;
@@ -394,6 +415,7 @@ server {
 ```
 
 **Enable site:**
+
 ```bash
 sudo ln -s /etc/nginx/sites-available/derogative-shop /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -425,17 +447,17 @@ sudo ufw enable
 
 ### Required Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
-| `JWT_SECRET` | Secret for JWT signing (32+ chars) | `your-random-secret-key` |
-| `NODE_ENV` | Environment mode | `production` |
-| `PORT` | Server port | `3000` |
+| Variable       | Description                        | Example                               |
+| -------------- | ---------------------------------- | ------------------------------------- |
+| `DATABASE_URL` | PostgreSQL connection string       | `postgresql://user:pass@host:5432/db` |
+| `JWT_SECRET`   | Secret for JWT signing (32+ chars) | `your-random-secret-key`              |
+| `NODE_ENV`     | Environment mode                   | `production`                          |
+| `PORT`         | Server port                        | `3000`                                |
 
 ### Optional Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable       | Description           | Example               |
+| -------------- | --------------------- | --------------------- |
 | `FRONTEND_URL` | Frontend URL for CORS | `https://yourapp.com` |
 
 ### Generating Secure Secrets
@@ -459,12 +481,12 @@ Add to your Express app:
 
 ```typescript
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  })
-})
+    uptime: process.uptime(),
+  });
+});
 ```
 
 ### Database Health Check
@@ -472,12 +494,12 @@ app.get('/health', (req, res) => {
 ```typescript
 app.get('/health/db', async (req, res) => {
   try {
-    await prisma.$queryRaw`SELECT 1`
-    res.json({ status: 'ok', database: 'connected' })
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'ok', database: 'connected' });
   } catch (error) {
-    res.status(503).json({ status: 'error', database: 'disconnected' })
+    res.status(503).json({ status: 'error', database: 'disconnected' });
   }
-})
+});
 ```
 
 ## Monitoring
@@ -499,21 +521,23 @@ pm2 describe derogative-shop-api
 
 ```typescript
 // Use proper logging library
-import winston from 'winston'
+import winston from 'winston';
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.json(),
   transports: [
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
-})
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
 
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple()
-  }))
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    })
+  );
 }
 ```
 
@@ -526,12 +550,12 @@ name: Deploy to Render
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:14
@@ -545,30 +569,30 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install dependencies
         run: npm ci
         working-directory: ./backend
-      
+
       - name: Run linter
         run: npm run lint
         working-directory: ./backend
-      
+
       - name: Run tests
         run: npm test
         working-directory: ./backend
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           JWT_SECRET: test-secret
-      
+
       - name: Build
         run: npm run build
         working-directory: ./backend
@@ -592,12 +616,14 @@ kill -9 <PID>
 ### Issue: "Cannot connect to database"
 
 **Check connection:**
+
 ```bash
 # Test PostgreSQL connection
 psql -h localhost -U postgres -d derogative_shop
 ```
 
 **Verify DATABASE_URL format:**
+
 ```
 postgresql://USER:PASSWORD@HOST:PORT/DATABASE_NAME
 ```
@@ -628,6 +654,7 @@ sudo chown -R $USER:$USER /var/www/derogative-shop
 ### Render
 
 Render keeps deployment history:
+
 1. Go to your service
 2. Click **Deploys** tab
 3. Select previous successful deploy
@@ -675,6 +702,7 @@ pm2 restart derogative-shop-api
 ### Database Backups
 
 **Automated backups (cron job):**
+
 ```bash
 # Edit crontab
 crontab -e
@@ -687,6 +715,7 @@ crontab -e
 ```
 
 **Manual backup:**
+
 ```bash
 pg_dump -U derogative_user derogative_shop > backup_$(date +%Y%m%d).sql
 ```
@@ -713,6 +742,7 @@ pm2 start dist/app.js -i 4 --name derogative-shop-api
 ### Nginx Caching
 
 Add to Nginx config:
+
 ```nginx
 proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=api_cache:10m max_size=100m;
 
