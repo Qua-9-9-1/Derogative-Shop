@@ -7,6 +7,7 @@ interface AuthContextData {
   token: string | null;
   userId: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -40,15 +41,29 @@ async function deleteItem(key: string) {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadAuthData = async () => {
-      const storedToken = await getItem('user_token');
-      const storedUserId = await getItem('user_id');
+      try {
+        const storedToken = await getItem('user_token');
+        const storedUserId = await getItem('user_id');
 
-      if (storedToken && storedUserId) {
-        setToken(storedToken);
-        setUserId(storedUserId);
+        if (storedToken && storedUserId) {
+          const validationResult = await authService.validateToken(storedToken);
+
+          if (validationResult) {
+            setToken(storedToken);
+            setUserId(storedUserId);
+          } else {
+            await deleteItem('user_token');
+            await deleteItem('user_id');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading auth data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadAuthData();
@@ -69,6 +84,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
+    if (token) {
+      await authService.logout(token);
+    }
     setToken(null);
     setUserId(null);
     await deleteItem('user_token');
@@ -76,7 +94,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, userId, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider
+      value={{ token, userId, isAuthenticated: !!token, isLoading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

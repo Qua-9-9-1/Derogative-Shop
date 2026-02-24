@@ -29,11 +29,26 @@ export const authService = {
     }
   },
 
-  async logout() {
+  async logout(token?: string) {
     try {
-      await axios.post(`${config.api.baseUrl}/auth/logout`);
+      await axios.post(
+        `${config.api.baseUrl}/auth/logout`,
+        {},
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
+      );
     } catch (error: any) {
       Alert.alert('Logout Error', error.response?.data?.message || error.message);
+    }
+  },
+
+  async validateToken(token: string) {
+    try {
+      const response = await axios.get(`${config.api.baseUrl}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      return null;
     }
   },
 };

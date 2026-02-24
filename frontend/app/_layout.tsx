@@ -1,10 +1,11 @@
 import ToastStack from '@/components/ui/ToastSnack';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider } from '@/context/authContext';
+import { AuthProvider, useAuth } from '@/context/authContext';
 import { useCartSync } from '@/hooks/useCartSync';
 import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 import { UserProvider } from '@/context/userContext';
@@ -13,10 +14,40 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function RootLayoutNav() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
 
   useCartSync();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === 'login' || segments[0] === 'register';
+
+    if (!isAuthenticated && !inAuthGroup) {
+      router.replace('/login');
+    } else if (isAuthenticated && inAuthGroup) {
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated, segments, isLoading]);
+
+  return (
+    <>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
+      </Stack>
+      <StatusBar style="auto" />
+      <ToastStack />
+    </>
+  );
+}
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
 
   const paperTheme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
 
@@ -25,13 +56,7 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <UserProvider>
           <AuthProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen name="register" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
-            <ToastStack />
+            <RootLayoutNav />
           </AuthProvider>
         </UserProvider>
       </ThemeProvider>
