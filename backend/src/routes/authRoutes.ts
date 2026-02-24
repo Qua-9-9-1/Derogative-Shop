@@ -8,5 +8,6 @@ router.post('/login', authController.login);
 router.post('/register', authController.register);
 router.post('/refresh', authController.refresh);
 router.post('/logout', tokenController.checkRevokedToken, authController.logout);
+router.get('/me', tokenController.authenticateAndCheckRevoked, authController.me);
 
 export default router;

@@ -98,4 +98,26 @@ export const authController = {
         .json({ message: 'Server error during logout', error: (error as Error).message });
     }
   },
+
+  me: async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user as { id: string; email: string };
+
+      if (!user || !user.id) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const userData = await userService.getUserById(user.id);
+
+      if (!userData) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({ user: userData });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: 'Server error fetching user', error: (error as Error).message });
+    }
+  },
 };
