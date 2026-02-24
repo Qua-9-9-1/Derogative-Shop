@@ -25,10 +25,33 @@ export const createOrder = async (userId: string) => {
 };
 
 export const captureOrder = async (userId: string, paypalOrderId: string) => {
-  const captureData = await capturePayPalOrder(paypalOrderId);
+  if (!paypalOrderId) {
+    throw new Error('Missing PayPal order ID');
+  }
+
+  let captureData;
+  try {
+    captureData = await capturePayPalOrder(paypalOrderId);
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      const err: any = new Error(`PayPal order ID "${paypalOrderId}" not found. Make sure the order was created successfully.`);
+      err.statusCode = 404;
+      throw err;
+    }
+    if (error.response?.status === 422) {
+      const err: any = new Error('Cannot capture this PayPal order. It may have already been captured or cancelled.');
+      err.statusCode = 422;
+      throw err;
+    }
+    const err: any = new Error(`PayPal error: ${error.message}`);
+    err.statusCode = 502;
+    throw err;
+  }
 
   if (captureData.status !== 'COMPLETED') {
-    throw new Error('Payment not completed');
+    const err: any = new Error(`Payment not completed. Current status: ${captureData.status}`);
+    err.statusCode = 402;
+    throw err;
   }
 
   const cartItems = await prisma.cartItem.findMany({

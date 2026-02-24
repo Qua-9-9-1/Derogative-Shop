@@ -61,15 +61,28 @@ export const createPayPalOrder = async (
 export const capturePayPalOrder = async (orderID: string) => {
   const accessToken = await getAccessToken();
 
-  const response = await axios.post(
-    `${BASE_URL}/v2/checkout/orders/${orderID}/capture`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/v2/checkout/orders/${orderID}/capture`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      const paypalError = new Error(
+        error.response.data?.message || 
+        error.response.data?.details?.[0]?.description || 
+        `PayPal API error: ${error.response.statusText}`
+      );
+      (paypalError as any).response = error.response;
+      throw paypalError;
+    }
+    throw error;
+  }
 };
