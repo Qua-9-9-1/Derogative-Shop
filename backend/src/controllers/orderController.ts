@@ -19,16 +19,16 @@ export const captureOrder = async (req: Request, res: Response) => {
     const { paypalOrderId } = req.body;
 
     if (!paypalOrderId) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Missing paypalOrderId in request body',
-        expected: { paypalOrderId: 'string' }
+        expected: { paypalOrderId: 'string' },
       });
     }
 
     if (typeof paypalOrderId !== 'string' || paypalOrderId.trim() === '') {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Invalid paypalOrderId format',
-        message: 'paypalOrderId must be a non-empty string'
+        message: 'paypalOrderId must be a non-empty string',
       });
     }
 

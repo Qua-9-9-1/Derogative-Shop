@@ -76,9 +76,9 @@ export const capturePayPalOrder = async (orderID: string) => {
   } catch (error: any) {
     if (error.response) {
       const paypalError = new Error(
-        error.response.data?.message || 
-        error.response.data?.details?.[0]?.description || 
-        `PayPal API error: ${error.response.statusText}`
+        error.response.data?.message ||
+          error.response.data?.details?.[0]?.description ||
+          `PayPal API error: ${error.response.statusText}`
       );
       (paypalError as any).response = error.response;
       throw paypalError;

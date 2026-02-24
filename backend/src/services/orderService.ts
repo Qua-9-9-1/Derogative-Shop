@@ -34,12 +34,16 @@ export const captureOrder = async (userId: string, paypalOrderId: string) => {
     captureData = await capturePayPalOrder(paypalOrderId);
   } catch (error: any) {
     if (error.response?.status === 404) {
-      const err: any = new Error(`PayPal order ID "${paypalOrderId}" not found. Make sure the order was created successfully.`);
+      const err: any = new Error(
+        `PayPal order ID "${paypalOrderId}" not found. Make sure the order was created successfully.`
+      );
       err.statusCode = 404;
       throw err;
     }
     if (error.response?.status === 422) {
-      const err: any = new Error('Cannot capture this PayPal order. It may have already been captured or cancelled.');
+      const err: any = new Error(
+        'Cannot capture this PayPal order. It may have already been captured or cancelled.'
+      );
       err.statusCode = 422;
       throw err;
     }

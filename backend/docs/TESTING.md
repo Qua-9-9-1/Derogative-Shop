@@ -436,8 +436,7 @@ jest.mock('@/services/authService');
 // Mock specific function
 jest
   .spyOn(authService, 'login')
-  .mockResolvedValue(mockData)
-  (
+  .mockResolvedValue(mockData)(
     // Mock implementation
     authService.login as jest.Mock
   )
