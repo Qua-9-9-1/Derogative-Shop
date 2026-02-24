@@ -1,11 +1,10 @@
 import { Alert } from 'react-native';
-import { config } from '@/config';
-import axios from 'axios';
+import { apiClient } from './api';
 
 export const authService = {
   async register(email: string, pass: string) {
     try {
-      const response = await axios.post(`${config.api.baseUrl}/auth/register`, {
+      const response = await apiClient.post('/auth/register', {
         email,
         password: pass,
       });
@@ -18,7 +17,7 @@ export const authService = {
 
   async login(email: string, pass: string) {
     try {
-      const response = await axios.post(`${config.api.baseUrl}/auth/login`, {
+      const response = await apiClient.post('/auth/login', {
         email,
         password: pass,
       });
@@ -29,23 +28,17 @@ export const authService = {
     }
   },
 
-  async logout(token?: string) {
+  async logout() {
     try {
-      await axios.post(
-        `${config.api.baseUrl}/auth/logout`,
-        {},
-        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-      );
+      await apiClient.post('/auth/logout');
     } catch (error: any) {
       Alert.alert('Logout Error', error.response?.data?.message || error.message);
     }
   },
 
-  async validateToken(token: string) {
+  async validateToken() {
     try {
-      const response = await axios.get(`${config.api.baseUrl}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get('/auth/me');
       return response.data;
     } catch (error: any) {
       return null;

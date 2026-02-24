@@ -1,21 +1,10 @@
-import axios from 'axios';
 import { Alert } from 'react-native';
-import { config } from '@/config';
-
-const BASE_URL = config.api.baseUrl;
+import { apiClient } from './api';
 
 export const paymentService = {
-  async createOrder(token: string) {
+  async createOrder() {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/orders/create`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post('/orders/create');
 
       return response.data;
       // { paypalOrderId, approveLink }
@@ -25,17 +14,9 @@ export const paymentService = {
     }
   },
 
-  async captureOrder(token: string, paypalOrderId: string) {
+  async captureOrder(paypalOrderId: string) {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/orders/capture`,
-        { paypalOrderId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.post('/orders/capture', { paypalOrderId });
 
       return response.data;
     } catch (error: any) {
@@ -44,13 +25,9 @@ export const paymentService = {
     }
   },
 
-  async getOrderHistory(token: string) {
+  async getOrderHistory() {
     try {
-      const response = await axios.get(`${BASE_URL}/orders`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.get('/orders');
 
       return response.data;
     } catch (error: any) {

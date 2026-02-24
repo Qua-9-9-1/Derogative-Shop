@@ -59,11 +59,13 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   getItemCount: () => {
     const items = get().items;
+    if (!items || !Array.isArray(items)) return 0;
     return items.reduce((total, item) => total + item.quantity, 0);
   },
 
   totalPrice: () => {
     const items = get().items;
+    if (!items || !Array.isArray(items)) return 0;
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   },
 
@@ -72,10 +74,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ isLoading: true });
     try {
       const serverCart = await cartService.getCart();
-      set({ items: serverCart.items, isDirty: false, isLoading: false });
+      const items = serverCart?.items || [];
+      set({ items, isDirty: false, isLoading: false });
     } catch (e) {
       console.error('Error initializing cart', e);
-      set({ isLoading: false });
+      set({ items: [], isLoading: false });
     }
   },
 

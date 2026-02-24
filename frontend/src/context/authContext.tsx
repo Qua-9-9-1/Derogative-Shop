@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const storedUserId = await getItem('user_id');
 
         if (storedToken && storedUserId) {
-          const validationResult = await authService.validateToken(storedToken);
+          const validationResult = await authService.validateToken();
 
           if (validationResult) {
             setToken(storedToken);
@@ -84,9 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    if (token) {
-      await authService.logout(token);
-    }
+    await authService.logout();
     setToken(null);
     setUserId(null);
     await deleteItem('user_token');

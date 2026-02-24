@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { config } from '@/config';
+import { apiClient } from './api';
 
 export interface Product {
   id: string;
@@ -15,7 +14,7 @@ export interface Product {
 export const productService = {
   async getProductByBarcode(barcode: string): Promise<Product | null> {
     try {
-      const response = await axios.get(`${config.api.baseUrl}/${barcode}.json`);
+      const response = await apiClient.get(`/${barcode}.json`);
 
       if (response.data.status === 1) {
         const p = response.data.product;
@@ -41,7 +40,7 @@ export const productService = {
 
   async searchProducts(query: string, page: number = 1): Promise<Product[]> {
     try {
-      const response = await axios.get(`${config.api.baseUrl}/products/`);
+      const response = await apiClient.get('/products/');
 
       if (response.data) {
         return response.data

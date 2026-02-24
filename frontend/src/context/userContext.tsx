@@ -33,7 +33,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setLoading(true);
-      const data = await userService.getUserProfile(userId, token);
+      const data = await userService.getUserProfile(userId);
       setUserData(data);
       setError(null);
     } catch (err) {
