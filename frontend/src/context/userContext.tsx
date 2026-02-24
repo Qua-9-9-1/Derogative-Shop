@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/authContext';
 import { userService } from '@/services/userService';
 
@@ -18,15 +18,15 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const { userId, token } = useAuth();
+  const { userId, isAuthenticated, isLoading: authLoading } = useAuth();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadUserData = async () => {
-    if (!userId || !token) {
-      setError('User not authenticated');
+  const loadUserData = useCallback(async () => {
+    if (!userId || !isAuthenticated) {
       setUserData(null);
+      setError(null);
       setLoading(false);
       return;
     }
@@ -37,16 +37,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setUserData(data);
       setError(null);
     } catch (err) {
+      console.error('Error loading user profile:', err);
       setError('Failed to load user profile');
       setUserData(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, isAuthenticated]);
 
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+    
     loadUserData();
-  }, [userId, token]);
+  }, [isAuthenticated, authLoading, userId, loadUserData]);
 
   return (
     <UserContext.Provider value={{ userData, loading, error, refetchUser: loadUserData }}>

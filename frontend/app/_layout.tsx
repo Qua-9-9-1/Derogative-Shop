@@ -54,11 +54,11 @@ export default function RootLayout() {
   return (
     <PaperProvider theme={paperTheme}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <UserProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <UserProvider>
             <RootLayoutNav />
-          </AuthProvider>
-        </UserProvider>
+          </UserProvider>
+        </AuthProvider>
       </ThemeProvider>
     </PaperProvider>
   );

@@ -39,6 +39,7 @@ apiClient.interceptors.response.use(
       if (Platform.OS === 'web') {
         localStorage.removeItem('user_token');
         localStorage.removeItem('user_id');
+        window.dispatchEvent(new Event('auth:logout'));
       } else {
         await SecureStore.deleteItemAsync('user_token');
         await SecureStore.deleteItemAsync('user_id');

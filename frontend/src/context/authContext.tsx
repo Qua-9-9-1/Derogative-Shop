@@ -50,23 +50,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const storedUserId = await getItem('user_id');
 
         if (storedToken && storedUserId) {
-          const validationResult = await authService.validateToken();
-
-          if (validationResult) {
-            setToken(storedToken);
-            setUserId(storedUserId);
-          } else {
-            await deleteItem('user_token');
-            await deleteItem('user_id');
-          }
+          setToken(storedToken);
+          setUserId(storedUserId);
         }
       } catch (error) {
         console.error('Error loading auth data:', error);
+        await deleteItem('user_token');
+        await deleteItem('user_id');
       } finally {
         setIsLoading(false);
       }
     };
     loadAuthData();
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleLogout = () => {
+        setToken(null);
+        setUserId(null);
+      };
+      window.addEventListener('auth:logout', handleLogout);
+      return () => window.removeEventListener('auth:logout', handleLogout);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
