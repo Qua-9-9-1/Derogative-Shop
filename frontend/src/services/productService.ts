@@ -44,7 +44,6 @@ export const productService = {
       const response = await axios.get(`${config.api.baseUrl}/products/`);
 
       if (response.data) {
-        // Filtre les produits dont la quantité est 0
         return response.data
           .filter((p: any) => p.stockQuantity > 0)
           .map((p: any) => ({

@@ -1,11 +1,10 @@
-import axios from "axios";
-import { Alert } from "react-native";
+import axios from 'axios';
+import { Alert } from 'react-native';
 import { config } from '@/config';
 
-const BASE_URL = config.api.baseUrl
+const BASE_URL = config.api.baseUrl;
 
 export const paymentService = {
-
   async createOrder(token: string) {
     try {
       const response = await axios.post(
@@ -19,13 +18,9 @@ export const paymentService = {
       );
 
       return response.data;
-            // { paypalOrderId, approveLink }
-
+      // { paypalOrderId, approveLink }
     } catch (error: any) {
-      Alert.alert(
-        "Create Order Error",
-        error.response?.data?.error || error.message
-      );
+      Alert.alert('Create Order Error', error.response?.data?.error || error.message);
       throw error;
     }
   },
@@ -43,34 +38,23 @@ export const paymentService = {
       );
 
       return response.data;
-
     } catch (error: any) {
-      Alert.alert(
-        "Capture Error",
-        error.response?.data?.error || error.message
-      );
+      Alert.alert('Capture Error', error.response?.data?.error || error.message);
       throw error;
     }
   },
 
   async getOrderHistory(token: string) {
     try {
-      const response = await axios.get(
-        `${BASE_URL}/orders`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       return response.data;
-
     } catch (error: any) {
-      Alert.alert(
-        "History Error",
-        error.response?.data?.error || error.message
-      );
+      Alert.alert('History Error', error.response?.data?.error || error.message);
       throw error;
     }
   },
