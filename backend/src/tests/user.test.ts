@@ -14,8 +14,17 @@ describe('User API', () => {
       .post('/auth/login')
       .send({ email: testEmail, password: testPassword });
     token = loginRes.body.token;
-    const users = await request(app).get('/user').set('Authorization', `Bearer ${token}`);
-    userId = users.body[0]?.id || '';
+    userId = loginRes.body.user.id;
+  });
+
+  afterAll(async () => {
+    if (userId && token) {
+      try {
+        await request(app).delete(`/user/${userId}`).set('Authorization', `Bearer ${token}`);
+      } catch (error) {
+        console.error('Cleanup error:', error);
+      }
+    }
   });
 
   it('should return 404 for unknown user', async () => {
@@ -33,27 +42,98 @@ describe('User API', () => {
   });
 
   it('should get the user by id', async () => {
-    if (!userId) return;
     const res = await request(app).get(`/user/${userId}`).set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body.email).toBe(testEmail);
   });
 
-  it('should update the user', async () => {
-    if (!userId) return;
+  it('should update user firstName', async () => {
     const res = await request(app)
       .put(`/user/${userId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ firstName: 'API' });
+      .send({ firstName: 'UpdatedFirst' });
+    
     expect(res.status).toBe(200);
-    expect(res.body.firstName).toBe('API');
+    expect(res.body.firstName).toBe('UpdatedFirst');
+  });
+
+  it('should update user lastName', async () => {
+    const res = await request(app)
+      .put(`/user/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ lastName: 'UpdatedLast' });
+    
+    expect(res.status).toBe(200);
+    expect(res.body.lastName).toBe('UpdatedLast');
+  });
+
+  it('should update user phone', async () => {
+    const res = await request(app)
+      .put(`/user/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ phone: '+33612345678' });
+    
+    expect(res.status).toBe(200);
+    expect(res.body.phone).toBe('+33612345678');
+  });
+
+  it('should update user billingAddress', async () => {
+    const billingAddress = {
+      street: '123 Test Street',
+      city: 'Paris',
+      postalCode: '75001',
+      country: 'France'
+    };
+
+    const res = await request(app)
+      .put(`/user/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ billingAddress });
+    
+    expect(res.status).toBe(200);
+    expect(res.body.billingAddress).toEqual(billingAddress);
+  });
+
+  it('should update multiple user fields at once', async () => {
+    const updates = {
+      firstName: 'John',
+      lastName: 'Doe',
+      phone: '+33698765432'
+    };
+
+    const res = await request(app)
+      .put(`/user/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(updates);
+    
+    expect(res.status).toBe(200);
+    expect(res.body.firstName).toBe(updates.firstName);
+    expect(res.body.lastName).toBe(updates.lastName);
+    expect(res.body.phone).toBe(updates.phone);
+  });
+
+  it('should verify all updates persisted', async () => {
+    const res = await request(app).get(`/user/${userId}`).set('Authorization', `Bearer ${token}`);
+    
+    expect(res.status).toBe(200);
+    expect(res.body.firstName).toBe('John');
+    expect(res.body.lastName).toBe('Doe');
+    expect(res.body.phone).toBe('+33698765432');
   });
 
   it('should delete the user', async () => {
-    if (!userId) return;
     const res = await request(app)
       .delete(`/user/${userId}`)
       .set('Authorization', `Bearer ${token}`);
-    expect(res.status).toBe(200);
+    
+    expect(res.status).toBe(204);
+  });
+
+  it('should confirm user is deleted', async () => {
+    const res = await request(app)
+      .get(`/user/${userId}`)
+      .set('Authorization', `Bearer ${token}`);
+    
+    expect(res.status).toBe(404);
   });
 });
