@@ -9,6 +9,17 @@ export interface Product {
   nutriscore?: string;
   quantity: number;
   price: number;
+  nutritional_info?: {
+    energy?: string;
+    fat?: string;
+    saturated_fat?: string;
+    carbohydrates?: string;
+    sugars?: string;
+    fiber?: string;
+    proteins?: string;
+    salt?: string;
+    [key: string]: string | undefined;
+  };
 }
 
 export const productService = {
@@ -26,6 +37,8 @@ export const productService = {
           image_url: p.imageUrl,
           quantity: p.stockQuantity,
           price: p.price,
+          nutriscore: p.nutriscore,
+          nutritional_info: p.nutritionalInfo,
         };
       }
       console.warn('No product found for barcode:', barcode);
@@ -48,8 +61,11 @@ export const productService = {
             name: p.name || 'Unknown',
             brands: p.brand,
             image_url: p.imageUrl,
+            small_image_url: p.smallImageUrl,
             quantity: p.stockQuantity,
             price: p.price,
+            nutriscore: p.nutriscore,
+            nutritional_info: p.nutritionalInfo,
           }));
       }
       return [];

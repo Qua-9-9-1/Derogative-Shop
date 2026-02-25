@@ -90,8 +90,8 @@ export default function HomeScreen() {
           <Text variant="titleMedium" style={styles.sectionTitle}>
             Featured Products
           </Text>
-          <Button compact onPress={() => {}}>
-            Voir tout
+          <Button compact onPress={() => navigation.navigate('products')}>
+            See products
           </Button>
         </View>
 
