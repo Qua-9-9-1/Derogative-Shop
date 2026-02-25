@@ -54,7 +54,7 @@ export default function HomeScreen() {
             {user?.firstName || 'User'}
           </Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('User')}>
+        <TouchableOpacity onPress={() => navigation.navigate('user')}>
           <Avatar.Icon size={48} icon="account" style={dynamicStyles.avatarBg} />
         </TouchableOpacity>
       </Surface>
@@ -131,7 +131,7 @@ export default function HomeScreen() {
                   {...props}
                   icon="arrow-right"
                   iconColor={theme.colors.onTertiaryContainer}
-                  onPress={() => navigation.navigate('Cart')}
+                  onPress={() => navigation.navigate('cart')}
                 />
               )}
             />
