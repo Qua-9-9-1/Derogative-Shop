@@ -2,10 +2,20 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth } from '@/context/authContext';
 import { userService } from '@/services/userService';
 
-interface UserData {
-  firstName: string;
-  email: string;
+export interface BillingAddress {
+  street: string | null;
+  city: string | null;
+  zipCode: string | null;
+  country: string | null;
+}
+
+export interface UserData {
   id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  billingAddress: BillingAddress | null;
 }
 
 interface UserContextType {
@@ -13,6 +23,7 @@ interface UserContextType {
   loading: boolean;
   error: string | null;
   refetchUser: () => Promise<void>;
+  updateUser: (data: Partial<UserData>) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -45,6 +56,23 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [userId, isAuthenticated]);
 
+  const updateUser = useCallback(async (data: Partial<UserData>) => {
+    if (!userId) {
+      throw new Error('No user ID available');
+    }
+
+    try {
+      setLoading(true);
+      await userService.updateUserProfile(userId, data);
+      await loadUserData();
+    } catch (err) {
+      console.error('Error updating user profile:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, loadUserData]);
+
   useEffect(() => {
     if (authLoading) {
       setLoading(true);
@@ -55,7 +83,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, authLoading, userId, loadUserData]);
 
   return (
-    <UserContext.Provider value={{ userData, loading, error, refetchUser: loadUserData }}>
+    <UserContext.Provider value={{ userData, loading, error, refetchUser: loadUserData, updateUser }}>
       {children}
     </UserContext.Provider>
   );
