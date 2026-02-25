@@ -67,7 +67,7 @@ export default function HomeScreen() {
           <Button
             mode="contained"
             icon="barcode-scan"
-            onPress={() => navigation.navigate('Scan')}
+            onPress={() => navigation.navigate('scan')}
             style={styles.btnLeft}
             contentStyle={styles.btnContent}
           >
@@ -76,7 +76,7 @@ export default function HomeScreen() {
           <Button
             mode="contained-tonal"
             icon="cart"
-            onPress={() => navigation.navigate('Cart')}
+            onPress={() => navigation.navigate('cart')}
             style={styles.btnRight}
             contentStyle={styles.btnContent}
           >
