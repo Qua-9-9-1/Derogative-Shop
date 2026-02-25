@@ -1,4 +1,3 @@
-import { Alert } from 'react-native';
 import { apiClient } from './api';
 
 export const paymentService = {
@@ -9,7 +8,7 @@ export const paymentService = {
       return response.data;
       // { paypalOrderId, approveLink }
     } catch (error: any) {
-      Alert.alert('Create Order Error', error.response?.data?.error || error.message);
+      console.error('Create Order Error:', error);
       throw error;
     }
   },
@@ -20,7 +19,7 @@ export const paymentService = {
 
       return response.data;
     } catch (error: any) {
-      Alert.alert('Capture Error', error.response?.data?.error || error.message);
+      console.error('Capture Error:', error);
       throw error;
     }
   },
