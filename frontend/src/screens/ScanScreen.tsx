@@ -8,21 +8,23 @@ import {
   Modal,
   Paragraph,
   Text,
-  Title,
   Dialog,
   Portal,
   Surface,
 } from 'react-native-paper';
+import { productService } from '@/services/productService';
+import { useCartStore } from '@/store/cartStore';
+import { Product } from '@/services/productService';
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [product, setProduct] = useState<String | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [notFoundDialogVisible, setNotFoundDialogVisible] = useState(false);
   const [scannedCode, setScannedCode] = useState('');
-  const [addedDialogVisible, setAddedDialogVisible] = useState(false);
+  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -37,12 +39,11 @@ export default function ScanScreen() {
     Vibration.vibrate();
     setLoading(true);
 
-    const foundProduct = true; // todo api call to openfoodfacts
-
+    const foundProduct = await productService.getProductByBarcode(data);
     setLoading(false);
 
     if (foundProduct) {
-      setProduct('Test Product');
+      setProduct(foundProduct);
       setModalVisible(true);
     } else {
       setScannedCode(data);
@@ -99,20 +100,30 @@ export default function ScanScreen() {
       >
         {product && (
           <Card>
-            <Card.Cover source={{ uri: 'https://via.placeholder.com/150' }} />
+            <Card.Cover source={{ uri: product.image_url || 'https://via.placeholder.com/150' }} />
             <Card.Content>
-              <Title>{product}</Title>
-              <Paragraph>Brand: {'test brand'}</Paragraph>
-              <Paragraph style={styles.price}>{'unknown'} €</Paragraph>
-              <Paragraph>Nutriscore: {'OPFER'}</Paragraph>
+              <Surface
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Text variant="titleLarge">{product.name}</Text>
+                <Button icon="close" onPress={closeModal} compact />
+              </Surface>
+              <Text variant="bodyMedium">Brand: {product.brands || 'Unknown Brand'}</Text>
+              <Text variant="bodyMedium" style={styles.price}>
+                {product.price || 0} €
+              </Text>
+              <Text variant="bodyMedium">Nutriscore: {product.nutriscore || 'Unknown'}</Text>
             </Card.Content>
             <Card.Actions>
               <Button onPress={closeModal}>Cancel</Button>
               <Button
                 mode="contained"
                 onPress={() => {
-                  setAddedDialogVisible(true);
-                  closeModal();
+                  addItem(product);
                 }}
               >
                 Add to cart
@@ -143,16 +154,6 @@ export default function ScanScreen() {
             >
               OK
             </Button>
-          </Dialog.Actions>
-        </Dialog>
-
-        <Dialog visible={addedDialogVisible} onDismiss={() => setAddedDialogVisible(false)}>
-          <Dialog.Title>Added!</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>Cart functionality coming soon...</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setAddedDialogVisible(false)}>OK</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>

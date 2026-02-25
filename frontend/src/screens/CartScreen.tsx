@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, View, Alert } from 'react-native';
+import { FlatList, View } from 'react-native';
 import {
   Surface,
   Text,

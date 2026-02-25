@@ -14,13 +14,10 @@ export interface Product {
 export const productService = {
   async getProductByBarcode(barcode: string): Promise<Product | null> {
     try {
-      const response = await apiClient.get(`/${barcode}.json`);
+      const response = await apiClient.get(`/products/${barcode}`);
 
-      if (response.data.status === 1) {
-        const p = response.data.product;
-        if (p.stockQuantity === 0) {
-          return null;
-        }
+      if (response.data) {
+        const p = response.data;
         return {
           id: barcode,
           name: p.name || 'Unknown',
@@ -31,6 +28,7 @@ export const productService = {
           price: p.price,
         };
       }
+      console.warn('No product found for barcode:', barcode);
       return null;
     } catch (error) {
       console.error('Error during product search', error);
