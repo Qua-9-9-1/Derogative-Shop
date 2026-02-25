@@ -1,96 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList, View } from 'react-native';
 import { Card, Chip, Text, useTheme } from 'react-native-paper';
 import { Order, OrderDetailsDialog } from './OrderDetailsDialog';
-
-const MOCK_HISTORY: Order[] = [
-  {
-    id: 'ORD-001',
-    date: '2023-10-24',
-    total: 12.5,
-    status: 'paid',
-    items: [
-      { id: 'p1', name: 'Nutella 750g', quantity: 2, unitPrice: 4.5 },
-      { id: 'p2', name: 'Baguette', quantity: 1, unitPrice: 1.2 },
-      { id: 'p3', name: 'Milk 1L', quantity: 2, unitPrice: 1.15 },
-    ],
-  },
-  {
-    id: 'ORD-002',
-    date: '2023-10-20',
-    total: 45.9,
-    status: 'paid',
-    items: [
-      { id: 'p4', name: 'Coca Cola Pack', quantity: 2, unitPrice: 8.5 },
-      { id: 'p5', name: 'Pizza Regina', quantity: 3, unitPrice: 4.5 },
-      { id: 'p6', name: 'Chips', quantity: 5, unitPrice: 1.8 },
-      { id: 'p7', name: 'Water Pack', quantity: 1, unitPrice: 2.4 },
-    ],
-  },
-  {
-    id: 'ORD-003',
-    date: '2023-09-15',
-    total: 8.2,
-    status: 'paid',
-    items: [{ id: 'p8', name: 'Shampoo', quantity: 1, unitPrice: 8.2 }],
-  },
-];
+import { paymentService } from '@/services/paymentService';
+import LoadingContent from '../ui/LoadingContent';
+import ErrorContent from '../ui/ErrorContent';
 
 export const PurchaseHistory = () => {
   const theme = useTheme();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const renderOrder = ({ item }: { item: Order }) => (
-    <Card
-      style={{ marginBottom: 12, backgroundColor: theme.colors.surfaceVariant }}
-      onPress={() => setSelectedOrder(item)}
-    >
-      <Card.Content>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 8,
-          }}
-        >
-          <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
-            {item.date}
-          </Text>
-          <Chip icon="check" style={{ backgroundColor: theme.colors.primaryContainer }}>
-            Paid
-          </Chip>
-        </View>
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text variant="bodyMedium">Order #{item.id}</Text>
-          <Text variant="titleMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
-            {item.total.toFixed(2)} €
-          </Text>
-        </View>
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await paymentService.getOrderHistory();
+      
+      const transformedOrders: Order[] = data.map((order: any) => ({
+        id: order.id,
+        date: new Date(order.createdAt).toLocaleDateString('fr-FR'),
+        total: order.total,
+        status: order.status === 'COMPLETED' ? 'paid' : 'pending',
+        items: order.items.map((item: any) => ({
+          id: item.id,
+          name: item.product.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+        })),
+      }));
+      
+      setOrders(transformedOrders);
+    } catch (err) {
+      console.error('Error loading order history:', err);
+      setError('Failed to load purchase history');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-          <Text variant="bodySmall" style={{ opacity: 0.7 }}>
-            {item.items.reduce((acc, i) => acc + i.quantity, 0)} items
-          </Text>
-          <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-            Tap for details
-          </Text>
-        </View>
-      </Card.Content>
-    </Card>
-  );
+  if (loading) {
+    return <LoadingContent />;
+  }
+
+  if (error) {
+    return (
+      <View style={{ padding: 16 }}>
+        <ErrorContent message={error} />
+      </View>
+    );
+  }
+
+  const renderOrder = ({ item }: { item: Order }) => {
+    const isPaid = item.status === 'paid';
+    
+    return (
+      <Card
+        style={{ marginBottom: 12, backgroundColor: theme.colors.surfaceVariant }}
+        onPress={() => setSelectedOrder(item)}
+      >
+        <Card.Content>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 8,
+            }}
+          >
+            <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
+              {item.date}
+            </Text>
+            <Chip
+              icon={isPaid ? 'check' : 'clock-outline'}
+              style={{
+                backgroundColor: isPaid
+                  ? theme.colors.primaryContainer
+                  : theme.colors.secondaryContainer,
+              }}
+            >
+              {isPaid ? 'Paid' : 'Pending'}
+            </Chip>
+          </View>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text variant="bodyMedium">Order #{item.id.substring(0, 8)}</Text>
+            <Text variant="titleMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
+              {item.total.toFixed(2)} €
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+            <Text variant="bodySmall" style={{ opacity: 0.7 }}>
+              {item.items.reduce((acc, i) => acc + i.quantity, 0)} article{item.items.reduce((acc, i) => acc + i.quantity, 0) > 1 ? 's' : ''}
+            </Text>
+            <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+              See details
+            </Text>
+          </View>
+        </Card.Content>
+      </Card>
+    );
+  };
 
   return (
     <>
       <FlatList
-        data={MOCK_HISTORY}
+        data={orders}
         keyExtractor={(item) => item.id}
         renderItem={renderOrder}
         contentContainerStyle={{ padding: 16 }}
         ListEmptyComponent={
           <Text style={{ textAlign: 'center', marginTop: 50, opacity: 0.5 }}>
-            No purchase history found.
+            No orders found. Start shopping to see your purchase history here!
           </Text>
         }
       />

@@ -31,7 +31,7 @@ export const paymentService = {
 
       return response.data;
     } catch (error: any) {
-      Alert.alert('History Error', error.response?.data?.error || error.message);
+      console.error('Error fetching order history:', error);
       throw error;
     }
   },
