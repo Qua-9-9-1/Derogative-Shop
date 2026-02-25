@@ -40,3 +40,15 @@ export const captureOrder = async (req: Request, res: Response) => {
     res.status(statusCode).json({ error: error.message });
   }
 };
+
+export const getUserOrders = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as { id: string; email: string };
+
+    const orders = await orderService.getUserOrders(user.id);
+
+    res.json(orders);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};

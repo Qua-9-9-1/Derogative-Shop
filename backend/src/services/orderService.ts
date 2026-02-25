@@ -95,3 +95,21 @@ export const captureOrder = async (userId: string, paypalOrderId: string) => {
 
   return order;
 };
+
+export const getUserOrders = async (userId: string) => {
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  return orders;
+};
