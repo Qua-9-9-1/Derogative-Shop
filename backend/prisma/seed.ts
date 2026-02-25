@@ -48,7 +48,7 @@ async function createTestUser() {
       lastName: 'Tester',
       phone: '0123456789',
       billingAddress: {
-        zip: '75001',
+        zipCode: '75001',
         city: 'Paris',
         street: '1 Rue de la Paix',
         country: 'France',
