@@ -33,6 +33,26 @@ export const userController = {
     }
   },
 
+  updatePassword: async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id as string;
+      const { newPassword } = req.body;
+      
+      if (typeof newPassword !== 'string' || newPassword.length < 6) {
+        res.status(400).json({ message: 'New password must be at least 6 characters long' });
+        return;
+      }
+      
+      await userService.updatePassword(id, newPassword);
+      res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      res.status(500).json({
+        message: 'Error during password update',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  },
+
   delete: async (req: Request, res: Response) => {
     try {
       const id = req.params.id as string;
