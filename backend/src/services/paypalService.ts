@@ -62,6 +62,36 @@ export const capturePayPalOrder = async (orderID: string) => {
   const accessToken = await getAccessToken();
 
   try {
+    const orderDetails = await axios.get(`${BASE_URL}/v2/checkout/orders/${orderID}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    console.log(`PayPal Order ${orderID} status:`, orderDetails.data.status);
+
+    if (orderDetails.data.status === 'COMPLETED') {
+      return orderDetails.data;
+    }
+
+    if (orderDetails.data.status !== 'APPROVED') {
+      const error: any = new Error(
+        `Cannot capture order with status: ${orderDetails.data.status}. Please approve the payment first.`
+      );
+      error.response = {
+        status: 422,
+        data: {
+          details: [
+            {
+              issue: 'ORDER_NOT_APPROVED',
+              description: `Order status is ${orderDetails.data.status}, expected APPROVED`,
+            },
+          ],
+        },
+      };
+      throw error;
+    }
+
     const response = await axios.post(
       `${BASE_URL}/v2/checkout/orders/${orderID}/capture`,
       {},

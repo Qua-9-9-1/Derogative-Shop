@@ -6,7 +6,6 @@ export const paymentService = {
       const response = await apiClient.post('/orders/create');
 
       return response.data;
-      // { paypalOrderId, approveLink }
     } catch (error: any) {
       console.error('Create Order Error:', error);
       throw error;

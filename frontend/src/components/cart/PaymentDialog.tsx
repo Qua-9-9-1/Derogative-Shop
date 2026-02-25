@@ -12,7 +12,9 @@ interface PaymentDialogProps {
 
 export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentDialogProps) => {
   const theme = useTheme();
-  const [status, setStatus] = useState<'creating' | 'approving' | 'capturing' | 'success' | 'error'>('creating');
+  const [status, setStatus] = useState<
+    'creating' | 'approving' | 'confirming' | 'capturing' | 'success' | 'error'
+  >('creating');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [paypalOrderId, setPaypalOrderId] = useState<string | null>(null);
 
@@ -33,18 +35,9 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
       setPaypalOrderId(orderId);
 
       setStatus('approving');
-      const result = await WebBrowser.openBrowserAsync(approveLink);
+      await WebBrowser.openBrowserAsync(approveLink);
 
-      if (result.type === 'cancel') {
-        setStatus('error');
-        setErrorMessage('Payment cancelled');
-        return;
-      }
-
-      setStatus('capturing');
-      await paymentService.captureOrder(orderId);
-
-      setStatus('success');
+      setStatus('confirming');
     } catch (error: any) {
       console.error('Payment error:', error);
       setStatus('error');
@@ -52,18 +45,43 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
     }
   };
 
+  const handleConfirmPayment = async () => {
+    if (!paypalOrderId) return;
+
+    try {
+      setStatus('capturing');
+      await paymentService.captureOrder(paypalOrderId);
+      setStatus('success');
+    } catch (error: any) {
+      console.error('Capture error:', error);
+      setStatus('error');
+      setErrorMessage(
+        error.response?.data?.error ||
+          error.message ||
+          'Error processing payment'
+      );
+    }
+  };
+
+  const handleCancelPayment = () => {
+    setStatus('error');
+    setErrorMessage('Payment cancelled');
+  };
+
   const getTitle = () => {
     switch (status) {
       case 'creating':
-        return 'Creating order...';
+        return 'Creating Order...';
       case 'approving':
-        return 'Awaiting payment approval';
+        return 'Payment Approval';
+      case 'confirming':
+        return 'Payment Completed?';
       case 'capturing':
-        return 'Validating payment...';
+        return 'Processing Payment...';
       case 'success':
-        return 'Payment successful!';
+        return 'Payment Successful!';
       case 'error':
-        return 'Payment error';
+        return 'Payment Error';
       default:
         return 'Processing...';
     }
@@ -72,11 +90,13 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
   const getMessage = () => {
     switch (status) {
       case 'creating':
-        return 'Creating your order...';
+        return 'Preparing your order...';
       case 'approving':
-        return 'Please approve the payment in the PayPal browser window.';
+        return 'Please approve the payment in the PayPal browser';
+      case 'confirming':
+        return 'Did you approve the payment on PayPal?';
       case 'capturing':
-        return 'Finalising your order...';
+        return 'Finalizing your order...';
       case 'success':
         return 'Thank you for your purchase! Your order has been confirmed.';
       case 'error':
@@ -90,10 +110,12 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={status === 'error' ? onDismiss : undefined} dismissable={status === 'error'}>
-        <Dialog.Title style={{ textAlign: 'center' }}>
-          {getTitle()}
-        </Dialog.Title>
+      <Dialog
+        visible={visible}
+        onDismiss={status === 'error' ? onDismiss : undefined}
+        dismissable={status === 'error' || status === 'confirming'}
+      >
+        <Dialog.Title style={{ textAlign: 'center' }}>{getTitle()}</Dialog.Title>
         <Dialog.Content>
           <View style={{ alignItems: 'center', paddingVertical: 20 }}>
             {isProcessing ? (
@@ -101,12 +123,18 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
                 <ActivityIndicator animating={true} size="large" />
                 <Text style={{ marginTop: 20, textAlign: 'center' }}>{getMessage()}</Text>
               </>
+            ) : status === 'confirming' ? (
+              <>
+                <Dialog.Icon icon="help-circle" size={50} color={theme.colors.primary} />
+                <Text style={{ marginTop: 20, textAlign: 'center' }}>{getMessage()}</Text>
+                <Text style={{ marginTop: 10, textAlign: 'center', opacity: 0.7 }}>
+                  If you approved the payment on PayPal, click "Yes". Otherwise, click "No".
+                </Text>
+              </>
             ) : status === 'success' ? (
               <>
                 <Dialog.Icon icon="check-circle" size={50} color={theme.colors.primary} />
-                <Text style={{ marginTop: 20, textAlign: 'center' }}>
-                  {getMessage()}
-                </Text>
+                <Text style={{ marginTop: 20, textAlign: 'center' }}>{getMessage()}</Text>
               </>
             ) : (
               <>
@@ -118,9 +146,16 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
             )}
           </View>
         </Dialog.Content>
-        {(status === 'success' || status === 'error') && (
-          <Dialog.Actions>
-            {status === 'success' ? (
+        {(status === 'success' || status === 'error' || status === 'confirming') && (
+          <Dialog.Actions style={status === 'confirming' ? { justifyContent: 'space-between' } : {}}>
+            {status === 'confirming' ? (
+              <>
+                <Button onPress={handleCancelPayment}>No, Cancel</Button>
+                <Button mode="contained" onPress={handleConfirmPayment}>
+                  Yes, I Paid
+                </Button>
+              </>
+            ) : status === 'success' ? (
               <Button onPress={onPaymentSuccess}>Close</Button>
             ) : (
               <Button onPress={onDismiss}>Close</Button>
