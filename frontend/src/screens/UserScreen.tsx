@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
-import { Surface, Text, Button, Card, TextInput, Divider, IconButton } from 'react-native-paper';
+import {
+  Surface,
+  Text,
+  Button,
+  Card,
+  TextInput,
+  Divider,
+  IconButton,
+  Portal,
+  Modal,
+} from 'react-native-paper';
 import { useAuth } from '@/context/authContext';
 import LoadingContent from '@/components/ui/LoadingContent';
 import ErrorContent from '@/components/ui/ErrorContent';
@@ -20,8 +30,8 @@ interface EditableUserData {
 export default function UserScreen() {
   const { logout } = useAuth();
   const router = useRouter();
-  const { userData, loading, error: contextError, updateUser } = useUser();
-  
+  const { userData, loading, error: contextError, updateUser, updatePassword } = useUser();
+
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<EditableUserData>({
     firstName: '',
@@ -34,6 +44,13 @@ export default function UserScreen() {
   });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    old: '',
+    new: '',
+    confirm: '',
+  });
 
   useEffect(() => {
     if (userData) {
@@ -49,7 +66,7 @@ export default function UserScreen() {
     }
   }, [userData]);
 
-  const handleSave = async () => {
+  const handleSaveUser = async () => {
     setSaving(true);
     setSaveError(null);
     try {
@@ -70,6 +87,22 @@ export default function UserScreen() {
       console.error(err);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSavePassword = async () => {
+    if (passwordData.new !== passwordData.confirm) {
+      setSaveError('New password and confirmation do not match');
+      return;
+    }
+
+    try {
+      await updatePassword?.(passwordData.old, passwordData.new);
+      setShowPasswordModal(false);
+      setPasswordData({ old: '', new: '', confirm: '' });
+    } catch (err) {
+      setSaveError('Error updating password');
+      console.error(err);
     }
   };
 
@@ -112,21 +145,83 @@ export default function UserScreen() {
             My Profile
           </Text>
           {!isEditing && (
-            <IconButton
-              icon="pencil"
-              mode="contained"
-              onPress={() => setIsEditing(true)}
-            />
+            <IconButton icon="pencil" mode="contained" onPress={() => setIsEditing(true)} />
           )}
         </View>
 
-        {saveError && (
-          <Card style={styles.errorCard}>
-            <Card.Content>
-              <Text style={styles.errorText}>{saveError}</Text>
-            </Card.Content>
-          </Card>
+        {!isEditing && (
+          <Button
+            mode="outlined"
+            icon="lock"
+            style={styles.passwordButton}
+            onPress={() => setShowPasswordModal(true)}
+          >
+            Edit Password
+          </Button>
         )}
+
+        <Portal>
+          <Modal
+            visible={showPasswordModal}
+            onDismiss={() => {
+              setShowPasswordModal(false);
+              setPasswordData({ old: '', new: '', confirm: '' });
+            }}
+            contentContainerStyle={styles.passwordModal}
+          >
+            <Text variant="titleLarge" style={{ marginBottom: 12 }}>
+              Edit Password
+            </Text>
+            <TextInput
+              label="Old Password"
+              value={passwordData.old}
+              onChangeText={(text) => setPasswordData({ ...passwordData, old: text })}
+              secureTextEntry
+              style={styles.input}
+              mode="outlined"
+              autoComplete="current-password"
+            />
+            <TextInput
+              label="New Password"
+              value={passwordData.new}
+              onChangeText={(text) => setPasswordData({ ...passwordData, new: text })}
+              secureTextEntry
+              style={styles.input}
+              mode="outlined"
+              autoComplete="new-password"
+            />
+            <TextInput
+              label="Confirm New Password"
+              value={passwordData.confirm}
+              onChangeText={(text) => setPasswordData({ ...passwordData, confirm: text })}
+              secureTextEntry
+              style={styles.input}
+              mode="outlined"
+              autoComplete="new-password"
+            />
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  setShowPasswordModal(false);
+                  setPasswordData({ old: '', new: '', confirm: '' });
+                }}
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                mode="contained"
+                style={{ flex: 1 }}
+                onPress={() => {
+                  handleSavePassword();
+                }}
+              >
+                Save
+              </Button>
+            </View>
+          </Modal>
+        </Portal>
 
         <Card style={styles.card}>
           <Card.Title title="Personal Information" titleVariant="titleLarge" />
@@ -272,7 +367,7 @@ export default function UserScreen() {
             </Button>
             <Button
               mode="contained"
-              onPress={handleSave}
+              onPress={handleSaveUser}
               style={styles.saveButton}
               loading={saving}
               disabled={saving}
@@ -281,12 +376,7 @@ export default function UserScreen() {
             </Button>
           </View>
         ) : (
-          <Button
-            mode="contained-tonal"
-            onPress={logout}
-            style={styles.logoutButton}
-            icon="logout"
-          >
+          <Button mode="contained-tonal" onPress={logout} style={styles.logoutButton} icon="logout">
             Logout
           </Button>
         )}
@@ -296,6 +386,17 @@ export default function UserScreen() {
 }
 
 const styles = StyleSheet.create({
+  passwordButton: {
+    marginBottom: 12,
+    alignSelf: 'flex-start',
+  },
+  passwordModal: {
+    backgroundColor: 'white',
+    padding: 24,
+    margin: 24,
+    borderRadius: 12,
+    elevation: 4,
+  },
   container: {
     flex: 1,
   },

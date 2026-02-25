@@ -21,6 +21,15 @@ export const userService = {
     }
   },
 
+  async updateUserPassword(userId: string, oldPassword: string, newPassword: string) {
+    try {
+      await apiClient.put(`/user/${userId}/password`, { oldPassword, newPassword });
+    } catch (error) {
+      console.error('Error updating user password:', error);
+      throw error;
+    }
+  },
+
   async deleteUserAccount(userId: string) {
     try {
       await apiClient.delete(`/user/${userId}`);

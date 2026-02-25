@@ -24,6 +24,7 @@ interface UserContextType {
   error: string | null;
   refetchUser: () => Promise<void>;
   updateUser: (data: Partial<UserData>) => Promise<void>;
+  updatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -56,34 +57,58 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [userId, isAuthenticated]);
 
-  const updateUser = useCallback(async (data: Partial<UserData>) => {
-    if (!userId) {
-      throw new Error('No user ID available');
-    }
+  const updateUser = useCallback(
+    async (data: Partial<UserData>) => {
+      if (!userId) {
+        throw new Error('No user ID available');
+      }
 
-    try {
-      setLoading(true);
-      await userService.updateUserProfile(userId, data);
-      await loadUserData();
-    } catch (err) {
-      console.error('Error updating user profile:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, loadUserData]);
+      try {
+        setLoading(true);
+        await userService.updateUserProfile(userId, data);
+        await loadUserData();
+      } catch (err) {
+        console.error('Error updating user profile:', err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userId, loadUserData]
+  );
+
+  const updatePassword = useCallback(
+    async (oldPassword: string, newPassword: string) => {
+      if (!userId) {
+        throw new Error('No user ID available');
+      }
+
+      try {
+        setLoading(true);
+        await userService.updateUserPassword(userId, oldPassword, newPassword);
+      } catch (err) {
+        console.error('Error updating password:', err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userId]
+  );
 
   useEffect(() => {
     if (authLoading) {
       setLoading(true);
       return;
     }
-    
+
     loadUserData();
   }, [isAuthenticated, authLoading, userId, loadUserData]);
 
   return (
-    <UserContext.Provider value={{ userData, loading, error, refetchUser: loadUserData, updateUser }}>
+    <UserContext.Provider
+      value={{ userData, loading, error, refetchUser: loadUserData, updateUser, updatePassword }}
+    >
       {children}
     </UserContext.Provider>
   );
