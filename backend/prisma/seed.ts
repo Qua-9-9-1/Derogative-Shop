@@ -8,11 +8,34 @@ const randomPrice = () => (Math.random() * 19.5 + 0.5).toFixed(2);
 const randomStock = () => Math.floor(Math.random() * 100);
 
 async function cleanDatabase() {
+  // Supprimer dans le bon ordre pour respecter les clés étrangères
+  console.log('Cleaning database...');
+  
+  await prisma.orderItem.deleteMany();
+  console.log('OrderItems deleted');
+  
+  await prisma.order.deleteMany();
+  console.log('Orders deleted');
+  
   await prisma.cartItem.deleteMany();
+  console.log('CartItems deleted');
+  
+  await prisma.invoiceItem.deleteMany();
+  console.log('InvoiceItems deleted');
+  
+  await prisma.invoice.deleteMany();
+  console.log('Invoices deleted');
+  
   await prisma.product.deleteMany();
-  await prisma.user.deleteMany();
+  console.log('Products deleted');
+  
   await prisma.revokedToken.deleteMany();
-  console.log('Database cleaned');
+  console.log('RevokedTokens deleted');
+  
+  await prisma.user.deleteMany();
+  console.log('Users deleted');
+  
+  console.log('Database cleaned successfully');
 }
 
 async function createTestUser() {
