@@ -70,11 +70,9 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   initializeCart: async () => {
-    console.log('Initializing cart from backend...');
     set({ isLoading: true });
     try {
-      const serverCart = await cartService.getCart();
-      const items = serverCart?.items || [];
+      const items = await cartService.getCart();
       set({ items, isDirty: false, isLoading: false });
     } catch (e) {
       console.error('Error initializing cart', e);
