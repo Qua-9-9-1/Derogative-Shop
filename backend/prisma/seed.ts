@@ -90,6 +90,30 @@ async function importProducts(targetCount = 250) {
     }
     page++;
   }
+
+  // test for real barcode lookup
+  const barcode = '8024884600301';
+  const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+  const response = await axios.get(url);
+  if (response.data.status === 1) {
+    const p = response.data.product;
+    await prisma.product.create({
+      data: {
+        id: p.code,
+        name: p.product_name,
+        brand: p.brands?.split(',')[0] || 'Marque inconnue',
+        smallImageUrl: p.image_front_small_url || p.image_front_url || null,
+        imageUrl: p.image_front_url || null,
+        price: parseFloat(randomPrice()),
+        stockQuantity: randomStock(),
+        nutritionalInfo: p.nutriments || {},
+      },
+    });
+    console.log(`Imported product from barcode ${barcode}: ${p.product_name}`);
+    importedCount++;
+  } else {
+    console.log(`Product with barcode ${barcode} not found on OpenFoodFacts.`);
+  }
   console.log(`Finished importing ${importedCount} products.`);
 }
 
