@@ -55,11 +55,7 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
     } catch (error: any) {
       console.error('Capture error:', error);
       setStatus('error');
-      setErrorMessage(
-        error.response?.data?.error ||
-          error.message ||
-          'Error processing payment'
-      );
+      setErrorMessage(error.response?.data?.error || error.message || 'Error processing payment');
     }
   };
 
@@ -147,7 +143,9 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
           </View>
         </Dialog.Content>
         {(status === 'success' || status === 'error' || status === 'confirming') && (
-          <Dialog.Actions style={status === 'confirming' ? { justifyContent: 'space-between' } : {}}>
+          <Dialog.Actions
+            style={status === 'confirming' ? { justifyContent: 'space-between' } : {}}
+          >
             {status === 'confirming' ? (
               <>
                 <Button onPress={handleCancelPayment}>No, Cancel</Button>

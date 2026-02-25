@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { FlatList, View, Alert } from 'react-native';
-import { Surface, Text, useTheme, SegmentedButtons, Dialog, Portal, Button } from 'react-native-paper';
+import {
+  Surface,
+  Text,
+  useTheme,
+  SegmentedButtons,
+  Dialog,
+  Portal,
+  Button,
+} from 'react-native-paper';
 import { useCartStore } from '@/store/cartStore';
 import { CartItemRow } from '@/components/cart/CartItemRow';
 import { CartSummary } from '@/components/cart/CartSummary';

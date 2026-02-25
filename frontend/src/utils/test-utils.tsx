@@ -30,16 +30,21 @@ jest.mock('@/context/authContext', () => {
   });
 
   return {
-    AuthProvider: ({ children }: any) => React.createElement(AuthContext.Provider, {
-      value: {
-        token: 'test-token',
-        userId: 'test-user-id',
-        isAuthenticated: true,
-        isLoading: false,
-        login: jest.fn(),
-        logout: jest.fn(),
-      }
-    }, children),
+    AuthProvider: ({ children }: any) =>
+      React.createElement(
+        AuthContext.Provider,
+        {
+          value: {
+            token: 'test-token',
+            userId: 'test-user-id',
+            isAuthenticated: true,
+            isLoading: false,
+            login: jest.fn(),
+            logout: jest.fn(),
+          },
+        },
+        children
+      ),
     useAuth: () => React.useContext(AuthContext),
   };
 });
@@ -54,14 +59,19 @@ jest.mock('@/context/userContext', () => {
   });
 
   return {
-    UserProvider: ({ children }: any) => React.createElement(UserContext.Provider, {
-      value: {
-        userData: { firstName: 'Test', email: 'test@example.com', id: 'test-user-id' },
-        loading: false,
-        error: null,
-        refetchUser: jest.fn(),
-      }
-    }, children),
+    UserProvider: ({ children }: any) =>
+      React.createElement(
+        UserContext.Provider,
+        {
+          value: {
+            userData: { firstName: 'Test', email: 'test@example.com', id: 'test-user-id' },
+            loading: false,
+            error: null,
+            refetchUser: jest.fn(),
+          },
+        },
+        children
+      ),
     useUser: () => React.useContext(UserContext),
   };
 });
@@ -69,9 +79,7 @@ jest.mock('@/context/userContext', () => {
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <SafeAreaProvider>
-      <PaperProvider>
-        {children}
-      </PaperProvider>
+      <PaperProvider>{children}</PaperProvider>
     </SafeAreaProvider>
   );
 };

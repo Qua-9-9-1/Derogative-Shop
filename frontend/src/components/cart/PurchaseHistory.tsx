@@ -22,7 +22,7 @@ export const PurchaseHistory = () => {
       setLoading(true);
       setError(null);
       const data = await paymentService.getOrderHistory();
-      
+
       const transformedOrders: Order[] = data.map((order: any) => ({
         id: order.id,
         date: new Date(order.createdAt).toLocaleDateString('fr-FR'),
@@ -35,7 +35,7 @@ export const PurchaseHistory = () => {
           unitPrice: item.price,
         })),
       }));
-      
+
       setOrders(transformedOrders);
     } catch (err) {
       console.error('Error loading order history:', err);
@@ -59,7 +59,7 @@ export const PurchaseHistory = () => {
 
   const renderOrder = ({ item }: { item: Order }) => {
     const isPaid = item.status === 'paid';
-    
+
     return (
       <Card
         style={{ marginBottom: 12, backgroundColor: theme.colors.surfaceVariant }}
@@ -98,7 +98,8 @@ export const PurchaseHistory = () => {
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
             <Text variant="bodySmall" style={{ opacity: 0.7 }}>
-              {item.items.reduce((acc, i) => acc + i.quantity, 0)} article{item.items.reduce((acc, i) => acc + i.quantity, 0) > 1 ? 's' : ''}
+              {item.items.reduce((acc, i) => acc + i.quantity, 0)} article
+              {item.items.reduce((acc, i) => acc + i.quantity, 0) > 1 ? 's' : ''}
             </Text>
             <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
               See details

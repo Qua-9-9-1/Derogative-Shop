@@ -9,7 +9,7 @@ global.console = {
 
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
-  
+
   // Mock value pour Animated
   class MockAnimatedValue {
     constructor(value: number) {
@@ -28,7 +28,7 @@ jest.mock('react-native', () => {
     animate = jest.fn();
     _isUsingNativeDriver = () => false;
   }
-  
+
   // Mock pour les animations
   const mockAnimation = {
     start: jest.fn((callback) => {
@@ -38,13 +38,13 @@ jest.mock('react-native', () => {
     reset: jest.fn(),
     _isUsingNativeDriver: () => false,
   };
-  
+
   RN.Animated.Value = MockAnimatedValue;
   RN.Animated.ValueXY = class MockValueXY {
     x = new MockAnimatedValue(0);
     y = new MockAnimatedValue(0);
   };
-  
+
   RN.Animated.timing = jest.fn(() => mockAnimation);
   RN.Animated.spring = jest.fn(() => mockAnimation);
   RN.Animated.decay = jest.fn(() => mockAnimation);
@@ -52,9 +52,9 @@ jest.mock('react-native', () => {
   RN.Animated.parallel = jest.fn(() => mockAnimation);
   RN.Animated.stagger = jest.fn(() => mockAnimation);
   RN.Animated.loop = jest.fn(() => mockAnimation);
-  
+
   RN.Animated.createAnimatedComponent = (Component: any) => Component;
-  
+
   return RN;
 });
 
