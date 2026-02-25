@@ -19,9 +19,9 @@ export const createOrder = async (userId: string) => {
   );
 
   // créer order PayPal
-  const paypalOrderId = await createPayPalOrder(total);
+  const { id: paypalOrderId, approveLink } = await createPayPalOrder(total);
 
-  return { paypalOrderId };
+  return { paypalOrderId, approveLink };
 };
 
 export const captureOrder = async (userId: string, paypalOrderId: string) => {
