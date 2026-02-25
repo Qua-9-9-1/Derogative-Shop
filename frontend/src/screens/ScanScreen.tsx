@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   scanFrame: {
-    width: 250,
+    width: 550,
     height: 250,
     borderWidth: 2,
     borderColor: 'white',
