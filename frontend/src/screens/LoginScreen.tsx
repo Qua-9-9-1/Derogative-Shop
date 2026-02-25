@@ -17,6 +17,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { login } = useAuth();
 
   const {
@@ -30,11 +31,12 @@ export default function LoginScreen() {
 
   const onSubmit = async (dataForm: LoginForm) => {
     setLoading(true);
+    setLoginError(null);
     try {
       await login(dataForm.email, dataForm.password);
       router.push('/');
     } catch (error) {
-      // Nothing to do
+      setLoginError('Connection failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -43,6 +45,12 @@ export default function LoginScreen() {
   return (
     <Surface style={styles.container}>
       <Title style={styles.title}>Welcome to Derogative Shop</Title>
+
+      {loginError && (
+        <HelperText type="error" visible={true} style={styles.loginError}>
+          {loginError}
+        </HelperText>
+      )}
 
       <Controller
         control={control}
@@ -118,5 +126,9 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 10,
     paddingVertical: 5,
+  },
+  loginError: {
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });
