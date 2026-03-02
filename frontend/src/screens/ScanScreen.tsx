@@ -77,7 +77,7 @@ export default function ScanScreen() {
         style={StyleSheet.absoluteFillObject}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         barcodeScannerSettings={{
-          barcodeTypes: ['ean13', 'ean8', 'qr'],
+          barcodeTypes: ['ean13', 'ean8'],
         }}
       />
 
