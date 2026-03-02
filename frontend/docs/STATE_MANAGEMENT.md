@@ -37,117 +37,124 @@ The application uses two approaches for state management:
 
 ### Cart Store
 
-Global shopping cart management.
+Global shopping cart with backend sync.
 
 **Location**: `src/store/cartStore.ts`
 
 ```typescript
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { cartService } from '@/services/cartService';
 
-interface CartItem {
-  productId: string;
+export interface CartItem {
+  id: string;
   name: string;
+  brands?: string;
+  image_url?: string;
+  small_image_url?: string;
   price: number;
   quantity: number;
-  imageUrl: string;
 }
 
 interface CartStore {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  isDirty: boolean;
+  addItem: (item: CartItem) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (id: string) => void;
   clearCart: () => void;
-  getTotal: () => number;
   getItemCount: () => number;
+  totalPrice: () => number;
+  initializeCart: () => Promise<void>;
+  syncWithBackend: () => Promise<void>;
 }
 
-export const useCartStore = create<CartStore>()(
-  persist(
-    (set, get) => ({
-      items: [],
+export const useCartStore = create<CartStore>()((set, get) => ({
+  items: [],
+  isDirty: false,
 
-      addItem: (item, quantity = 1) =>
-        set((state) => {
-          const existing = state.items.find((i) => i.productId === item.productId);
-
-          if (existing) {
-            return {
-              items: state.items.map((i) =>
-                i.productId === item.productId ? { ...i, quantity: i.quantity + quantity } : i
-              ),
-            };
-          }
-
-          return {
-            items: [...state.items, { ...item, quantity }],
-          };
-        }),
-
-      removeItem: (productId) =>
-        set((state) => ({
-          items: state.items.filter((i) => i.productId !== productId),
-        })),
-
-      updateQuantity: (productId, quantity) =>
-        set((state) => ({
-          items: state.items.map((i) => (i.productId === productId ? { ...i, quantity } : i)),
-        })),
-
-      clearCart: () => set({ items: [] }),
-
-      getTotal: () => {
-        const { items } = get();
-        return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      },
-
-      getItemCount: () => {
-        const { items } = get();
-        return items.reduce((sum, item) => sum + item.quantity, 0);
-      },
-    }),
-    {
-      name: 'cart-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+  addItem: (item) => {
+    const existing = get().items.find((i) => i.id === item.id);
+    if (existing) {
+      set({
+        items: get().items.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        ),
+        isDirty: true,
+      });
+    } else {
+      set({ items: [...get().items, { ...item, quantity: 1 }], isDirty: true });
     }
-  )
-);
+  },
+
+  updateQuantity: (id, quantity) => {
+    if (quantity <= 0) {
+      get().removeItem(id);
+    } else {
+      set({
+        items: get().items.map((i) => (i.id === id ? { ...i, quantity } : i)),
+        isDirty: true,
+      });
+    }
+  },
+
+  removeItem: (id) => {
+    set({ items: get().items.filter((i) => i.id !== id), isDirty: true });
+  },
+
+  clearCart: () => set({ items: [], isDirty: true }),
+
+  getItemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
+
+  totalPrice: () => get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+
+  initializeCart: async () => {
+    try {
+      const items = await cartService.getCart();
+      set({ items, isDirty: false });
+    } catch (error) {
+      console.error('Failed to initialize cart:', error);
+    }
+  },
+
+  syncWithBackend: async () => {
+    if (!get().isDirty) return;
+    try {
+      await cartService.syncCart(get().items);
+      set({ isDirty: false });
+    } catch (error) {
+      console.error('Failed to sync cart:', error);
+    }
+  },
+}));
 ```
 
-**Usage in Components**:
+**Usage**:
 
 ```typescript
-import { useCartStore } from '@/store/cartStore'
+import { useCartStore } from '@/store/cartStore';
 
-function ProductScreen({ product }: { product: Product }) {
-  const addItem = useCartStore(state => state.addItem)
+function ProductScreen({ product }) {
+  const addItem = useCartStore((state) => state.addItem);
 
-  const handleAddToCart = () => {
-    addItem({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      imageUrl: product.imageUrl,
-    }, 1)
-  }
-
-  return (
-    <Button title="Add to cart" onPress={handleAddToCart} />
-  )
+  return <Button onPress={() => addItem(product)} title="Add to cart" />;
 }
 
 function CartScreen() {
-  const items = useCartStore(state => state.items)
-  const total = useCartStore(state => state.getTotal())
-  const clearCart = useCartStore(state => state.clearCart)
+  const items = useCartStore((state) => state.items);
+  const total = useCartStore((state) => state.totalPrice());
+  const clearCart = useCartStore((state) => state.clearCart);
 
   return (
     <View>
-      <FlatList
-        data={items}
-        renderItem={({ item }) => <CartItem item={item} />}
+      {items.map((item) => (
+        <CartItemRow key={item.id} item={item} />
+      ))}
+      <Text>Total: {total.toFixed(2)}€</Text>
+      <Button title="Clear" onPress={clearCart} />
+    </View>
+  );
+}
+```
       />
       <Text>Total: {total}€</Text>
       <Button title="Clear cart" onPress={clearCart} />
@@ -158,90 +165,69 @@ function CartScreen() {
 
 ### Toast Store
 
-Global toast notification management.
+Toast notifications with auto-hide.
 
 **Location**: `src/store/toastStore.ts`
 
 ```typescript
 import { create } from 'zustand';
 
-type ToastType = 'success' | 'error' | 'info';
-
-interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
-  duration?: number;
-}
-
 interface ToastStore {
-  toasts: Toast[];
-  show: (message: string, type?: ToastType, duration?: number) => void;
-  hide: (id: string) => void;
-  clear: () => void;
+  message: string;
+  visible: boolean;
+  type: 'success' | 'error' | 'info';
+  showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  hideToast: () => void;
 }
 
-export const useToastStore = create<ToastStore>((set) => ({
-  toasts: [],
+export const useToastStore = create<ToastStore>()((set, get) => ({
+  message: '',
+  visible: false,
+  type: 'info',
 
-  show: (message, type = 'info', duration = 3000) => {
-    const id = Math.random().toString(36).substring(7);
-
-    set((state) => ({
-      toasts: [...state.toasts, { id, message, type, duration }],
-    }));
-
-    // Auto-hide after duration
-    if (duration > 0) {
-      setTimeout(() => {
-        set((state) => ({
-          toasts: state.toasts.filter((t) => t.id !== id),
-        }));
-      }, duration);
-    }
+  showToast: (message, type = 'info') => {
+    set({ message, visible: true, type });
+    setTimeout(() => {
+      if (get().visible) {
+        get().hideToast();
+      }
+    }, 3000);
   },
 
-  hide: (id) =>
-    set((state) => ({
-      toasts: state.toasts.filter((t) => t.id !== id),
-    })),
-
-  clear: () => set({ toasts: [] }),
+  hideToast: () => set({ visible: false, message: '' }),
 }));
 ```
 
 **Usage**:
 
 ```typescript
-import { useToastStore } from '@/store/toastStore'
+import { useToastStore } from '@/store/toastStore';
 
 function MyComponent() {
-  const { show } = useToastStore()
+  const showToast = useToastStore((state) => state.showToast);
 
   const handleSuccess = async () => {
     try {
-      await saveData()
-      show('Data saved successfully!', 'success')
+      await saveData();
+      showToast('Saved!', 'success');
     } catch (error) {
-      show('Failed to save data', 'error')
+      showToast('Failed to save', 'error');
     }
-  }
+  };
 
-  return <Button title="Save" onPress={handleSuccess} />
+  return <Button onPress={handleSuccess} title="Save" />;
 }
 
-// In App.tsx
-function App() {
-  const toasts = useToastStore(state => state.toasts)
+// In _layout.tsx
+function RootLayout() {
+  const { visible, message, type, hideToast } = useToastStore();
 
   return (
     <>
-      <Navigation />
-      {toasts.map(toast => (
-        <ToastSnack key={toast.id} toast={toast} />
-      ))}
+      <Stack />
+      <ToastSnack visible={visible} message={message} type={type} onDismiss={hideToast} />
     </>
-  )
+  );
 }
 ```
 

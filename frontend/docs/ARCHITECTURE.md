@@ -99,58 +99,72 @@ screens/
 
 ```
 services/
-├── authService.ts            # Authentication (login, register, logout)
-├── userService.ts            # User management (profile, update)
-├── productService.ts         # Products (list, search, details)
-└── cartService.ts            # Cart (add, remove, sync)
+├── api.ts                    # Axios client
+├── authService.ts            # Authentication
+├── userService.ts            # User management
+├── productService.ts         # Products
+├── cartService.ts            # Cart
+├── paymentService.ts         # PayPal payments
+└── recommendationService.ts  # Product recommendations
 ```
 
-**Service Architecture**:
-
-- Encapsulation of API calls with Axios
-- Centralized error handling
-- Validation with Zod
-- TypeScript types for requests/responses
+**Service Pattern**:
 
 ```typescript
-// Example structure
-class ProductService {
-  async getProducts(): Promise<Product[]>;
-  async getProductById(id: string): Promise<Product>;
-  async searchProducts(query: string): Promise<Product[]>;
-}
+export const productService = {
+  async searchProducts(query: string): Promise<Product[]> {
+    const response = await apiClient.get('/products/');
+    return response.data.filter(p => p.stockQuantity > 0);
+  },
+
+  async getProductByBarcode(barcode: string): Promise<Product | null> {
+    try {
+      const response = await apiClient.get(`/products/${barcode}`);
+      return response.data;
+    } catch (error) {
+      return null;
+    }
+  },
+};
 ```
 
-### `/src/store` - Zustand State Management
+### `/src/store` - Zustand Stores
 
 ```
 store/
-├── cartStore.ts              # Cart state
-└── toastStore.ts             # Notifications state
+├── cartStore.ts              # Cart with backend sync
+└── toastStore.ts             # Toast notifications
 ```
 
-**Zustand Pattern**:
+**Pattern**:
 
 ```typescript
 interface CartStore {
-  // State
   items: CartItem[];
-  total: number;
-
-  // Actions
+  isDirty: boolean;
   addItem: (item: CartItem) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
+  getItemCount: () => number;
+  totalPrice: () => number;
+  initializeCart: () => Promise<void>;
+  syncWithBackend: () => Promise<void>;
 }
 
-export const useCartStore = create<CartStore>((set) => ({
+export const useCartStore = create<CartStore>()((set, get) => ({
   items: [],
-  total: 0,
-  addItem: (item) =>
-    set((state) => ({
-      items: [...state.items, item],
-    })),
-  // ...
+  isDirty: false,
+  addItem: (item) => {
+    const existing = get().items.find(i => i.id === item.id);
+    if (existing) {
+      set({ items: get().items.map(i => 
+        i.id === item.id ? {...i, quantity: i.quantity + 1} : i
+      ), isDirty: true });
+    } else {
+      set({ items: [...get().items, {...item, quantity: 1}], isDirty: true });
+    }
+  },
 }));
 ```
 
@@ -158,15 +172,12 @@ export const useCartStore = create<CartStore>((set) => ({
 
 ```
 context/
-└── authContext.tsx           # Authentication context
+├── authContext.tsx           # Authentication
+└── userContext.tsx           # User profile data
 ```
 
-**AuthContext**:
-
-- Manages global user state
-- Provides login/logout/register methods
-- Persists token with Expo Secure Store
-- Verifies authentication on startup
+**AuthContext**: Login, logout, register, token validation
+**UserContext**: User profile management, updates
 
 ### `/src/hooks` - Custom Hooks
 

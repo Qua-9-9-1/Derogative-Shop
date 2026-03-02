@@ -112,341 +112,127 @@ export const serviceName = new ServiceName();
 
 ## Services and Endpoints
 
-### AuthService
+### AuthService (`src/services/authService.ts`)
 
-User authentication management.
-
-#### Login
-
+#### register
 ```typescript
-/**
- * Authenticates a user
- * @param credentials - Email and password
- * @returns JWT token and user information
- */
-async login(credentials: LoginDto): Promise<AuthResponse>
+async register(email: string, pass: string): Promise<{ email: string } | null>
 ```
-
-**Endpoint**: `POST /auth/login`
-
-**Request**:
-
-```json
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-**Response**:
-
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "123",
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
-}
-```
-
-**Errors**:
-
-- `400`: Invalid data
-- `401`: Incorrect credentials
-
-#### Register
-
-```typescript
-/**
- * Creates a new user account
- * @param data - Registration information
- * @returns JWT token and user information
- */
-async register(data: RegisterDto): Promise<AuthResponse>
-```
-
 **Endpoint**: `POST /auth/register`
 
-**Request**:
-
-```json
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "John Doe"
-}
-```
-
-**Response**: Same as login
-
-**Errors**:
-
-- `400`: Invalid data
-- `409`: Email already in use
-
-#### Logout
-
+#### login
 ```typescript
-/**
- * Logs out the user and revokes the token
- */
+async login(email: string, pass: string): Promise<{ token: string } | null>
+```
+**Endpoint**: `POST /auth/login`
+
+#### logout
+```typescript
 async logout(): Promise<void>
 ```
-
 **Endpoint**: `POST /auth/logout`
 
-**Headers**: `Authorization: Bearer <token>`
-
-**Response**: `204 No Content`
-
-### UserService
-
-User profile management.
-
-#### Get Profile
-
+#### validateToken
 ```typescript
-/**
- * Retrieves the logged-in user's profile
- */
-async getProfile(): Promise<User>
+async validateToken(): Promise<User | null>
 ```
+**Endpoint**: `GET /auth/me`
 
+### UserService (`src/services/userService.ts`)
+
+#### getUserProfile
+```typescript
+async getUserProfile(): Promise<User>
+```
 **Endpoint**: `GET /users/profile`
 
-**Headers**: `Authorization: Bearer <token>`
-
-**Response**:
-
-```json
-{
-  "id": "123",
-  "email": "user@example.com",
-  "name": "John Doe",
-  "createdAt": "2026-01-01T00:00:00.000Z"
-}
-```
-
-#### Update Profile
-
+#### updateUserProfile
 ```typescript
-/**
- * Updates user profile
- * @param data - Fields to update
- */
-async updateProfile(data: UpdateUserDto): Promise<User>
+async updateUserProfile(data: UpdateUserProfileDto): Promise<User>
 ```
-
 **Endpoint**: `PUT /users/profile`
 
-**Headers**: `Authorization: Bearer <token>`
-
-**Request**:
-
-```json
-{
-  "name": "Jane Doe",
-  "email": "jane@example.com"
-}
-```
-
-**Response**: Updated User object
-
-**Errors**:
-
-- `400`: Invalid data
-- `401`: Not authenticated
-- `409`: Email already in use
-
-### ProductService
-
-Product management.
-
-#### Get Products
-
+#### updateUserPassword
 ```typescript
-/**
- * Retrieves product list
- * @param params - Filter and pagination parameters
- */
-async getProducts(params?: ProductQueryParams): Promise<Product[]>
+async updateUserPassword(currentPassword: string, newPassword: string): Promise<void>
 ```
+**Endpoint**: `PUT /users/password`
 
-**Endpoint**: `GET /products`
-
-**Query Parameters**:
-
-- `page`: Page number (default: 1)
-- `limit`: Items per page (default: 20)
-- `search`: Search by name
-- `category`: Filter by category
-- `minPrice`: Minimum price
-- `maxPrice`: Maximum price
-
-**Example**: `GET /products?page=1&limit=20&search=phone`
-
-**Response**:
-
-```json
-[
-  {
-    "id": "1",
-    "name": "iPhone 15",
-    "description": "Latest iPhone model",
-    "price": 999.99,
-    "stock": 50,
-    "imageUrl": "https://...",
-    "smallImageUrl": "https://...",
-    "category": "Electronics"
-  }
-]
-```
-
-#### Get Product by ID
-
+#### deleteUserAccount
 ```typescript
-/**
- * Retrieves a product by its ID
- * @param id - Product ID
- */
-async getProductById(id: string): Promise<Product>
+async deleteUserAccount(): Promise<void>
 ```
+**Endpoint**: `DELETE /users/profile`
 
-**Endpoint**: `GET /products/:id`
+### ProductService (`src/services/productService.ts`)
 
-**Response**: Product object
-
-**Errors**:
-
-- `404`: Product not found
-
-#### Search Products
-
+#### searchProducts
 ```typescript
-/**
- * Searches for products
- * @param query - Search term
- */
-async searchProducts(query: string): Promise<Product[]>
+async searchProducts(query: string, page?: number): Promise<Product[]>
 ```
+**Endpoint**: `GET /products/`
+**Returns**: Array of products with `stockQuantity > 0`
 
-**Endpoint**: `GET /products/search?q=<query>`
-
-**Response**: Array of products
-
-### CartService
-
-Shopping cart management.
-
-#### Get Cart
-
+#### getProductByBarcode
 ```typescript
-/**
- * Retrieves the user's cart
- */
-async getCart(): Promise<Cart>
+async getProductByBarcode(barcode: string): Promise<Product | null>
 ```
+**Endpoint**: `GET /products/:barcode`
+**Returns**: Product data or null
 
+#### checkStockAvailability
+```typescript
+async checkStockAvailability(cartItems: Product[]): Promise<Product[]>
+```
+**Returns**: Items out of stock
+
+### CartService (`src/services/cartService.ts`)
+
+#### getCart
+```typescript
+async getCart(): Promise<CartItem[]>
+```
 **Endpoint**: `GET /cart`
+**Returns**: Array of cart items
 
-**Headers**: `Authorization: Bearer <token>`
-
-**Response**:
-
-```json
-{
-  "id": "cart-123",
-  "userId": "user-123",
-  "items": [
-    {
-      "id": "item-1",
-      "productId": "prod-1",
-      "product": {
-        "id": "prod-1",
-        "name": "iPhone 15",
-        "price": 999.99,
-        "imageUrl": "https://..."
-      },
-      "quantity": 2
-    }
-  ],
-  "total": 1999.98
-}
-```
-
-#### Add Item to Cart
-
+#### syncCart
 ```typescript
-/**
- * Adds a product to the cart
- * @param productId - Product ID
- * @param quantity - Quantity (default: 1)
- */
-async addToCart(productId: string, quantity?: number): Promise<Cart>
+async syncCart(items: CartItem[]): Promise<void>
 ```
+**Endpoint**: `PUT /cart/sync`
+**Syncs** local cart with backend
 
-**Endpoint**: `POST /cart/items`
+### PaymentService (`src/services/paymentService.ts`)
 
-**Headers**: `Authorization: Bearer <token>`
-
-**Request**:
-
-```json
-{
-  "productId": "prod-1",
-  "quantity": 2
-}
-```
-
-**Response**: Updated Cart object
-
-**Errors**:
-
-- `400`: Invalid data
-- `401`: Not authenticated
-- `404`: Product not found
-- `409`: Insufficient stock
-
-#### Update Cart Item
-
+#### createOrder
 ```typescript
-/**
- * Updates cart item quantity
- * @param itemId - Item ID
- * @param quantity - New quantity
- */
-async updateCartItem(itemId: string, quantity: number): Promise<Cart>
+async createOrder(items: Array<{id: string, quantity: number}>): Promise<{orderId: string, approvalUrl: string}>
 ```
+**Endpoint**: `POST /payments/create-order`
+**Returns**: PayPal order ID and approval URL
 
-**Endpoint**: `PUT /cart/items/:itemId`
-
-**Headers**: `Authorization: Bearer <token>`
-
-**Request**:
-
-```json
-{
-  "quantity": 3
-}
-```
-
-**Response**: Updated Cart object
-
-#### Remove Item from Cart
-
+#### captureOrder
 ```typescript
-/**
- * Removes an item from the cart
- * @param itemId - Item ID
- */
-async removeFromCart(itemId: string): Promise<Cart>
+async captureOrder(orderId: string): Promise<{status: string, message: string}>
 ```
+**Endpoint**: `POST /payments/capture-order`
+**Captures** PayPal payment
 
-**Endpoint**: `DELETE /cart/items/:itemId`
+#### getOrderHistory
+```typescript
+async getOrderHistory(): Promise<Order[]>
+```
+**Endpoint**: `GET /orders`
+**Returns**: User's order history
 
-**Headers**: `Authorization: Bearer <token>`
+### RecommendationService (`src/services/recommendationService.ts`)
+
+#### getRecommendations
+```typescript
+async getRecommendations(): Promise<Product[]>
+```
+**Endpoint**: `GET /recommendations`
+**Returns**: Recommended products based on user history
 
 **Response**: Updated Cart object
 

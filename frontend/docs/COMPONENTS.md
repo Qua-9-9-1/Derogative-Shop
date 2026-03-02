@@ -109,45 +109,195 @@ interface ThemedViewProps extends ViewProps {
 </ThemedView>
 ```
 
-## UI Components
+## UI Components (`src/components/ui/`)
 
 ### LoadingContent
 
-Loading indicator with optional message.
+Centered loading indicator.
 
 **Location**: `src/components/ui/LoadingContent.tsx`
 
 ```typescript
-import { LoadingContent } from '@/components/ui/LoadingContent'
+import { LoadingContent } from '@/components/ui/LoadingContent';
 
 function MyScreen() {
-  const [loading, setLoading] = useState(true)
-
-  if (loading) {
-    return <LoadingContent message="Loading products..." />
-  }
-
-  return <Content />
+  if (loading) return <LoadingContent message="Loading products..." />;
+  return <Content />;
 }
 ```
 
 **Props**:
-
 ```typescript
 interface LoadingContentProps {
   message?: string;
 }
 ```
 
-**Features**:
-
-- Centered loading indicator
-- Optional custom message
-- Uses `ActivityIndicator` from React Native
-
 ### ErrorContent
 
-Error display with retry option.
+Error display with retry.
+
+**Location**: `src/components/ui/ErrorContent.tsx`
+
+```typescript
+import { ErrorContent } from '@/components/ui/ErrorContent';
+
+function MyScreen() {
+  if (error) return <ErrorContent message={error} onRetry={refetch} />;
+  return <Content />;
+}
+```
+
+**Props**:
+```typescript
+interface ErrorContentProps {
+  message: string;
+  onRetry?: () => void;
+}
+```
+
+### ToastSnack
+
+Toast notifications using Snackbar.
+
+**Location**: `src/components/ui/ToastSnack.tsx`
+
+```typescript
+import { ToastSnack } from '@/components/ui/ToastSnack';
+
+function RootLayout() {
+  const { visible, message, type, hideToast } = useToastStore();
+  return (
+    <>
+      <Stack />
+      <ToastSnack visible={visible} message={message} type={type} onDismiss={hideToast} />
+    </>
+  );
+}
+```
+
+### Collapsible
+
+Expandable content section.
+
+**Location**: `src/components/ui/collapsible.tsx`
+
+```typescript
+import { Collapsible } from '@/components/ui/collapsible';
+
+<Collapsible title="Details">
+  <Text>Hidden content</Text>
+</Collapsible>
+```
+
+## Cart Components (`src/components/cart/`)
+
+### CartItemRow
+
+Single cart item with quantity controls.
+
+**Location**: `src/components/cart/CartItemRow.tsx`
+
+```typescript
+import { CartItemRow } from '@/components/cart/CartItemRow';
+
+<CartItemRow
+  item={item}
+  onIncrement={() => updateQuantity(item.id, item.quantity + 1)}
+  onDecrement={() => updateQuantity(item.id, item.quantity - 1)}
+/>
+```
+
+### CartSummary
+
+Cart total and checkout button.
+
+**Location**: `src/components/cart/CartSummary.tsx`
+
+```typescript
+import { CartSummary } from '@/components/cart/CartSummary';
+
+<CartSummary total={totalPrice} onCheckout={handleCheckout} />
+```
+
+### PaymentDialog
+
+PayPal payment modal.
+
+**Location**: `src/components/cart/PaymentDialog.tsx`
+
+```typescript
+import { PaymentDialog } from '@/components/cart/PaymentDialog';
+
+<PaymentDialog
+  visible={showPayment}
+  onDismiss={() => setShowPayment(false)}
+  onSuccess={handlePaymentSuccess}
+/>
+```
+
+### StockValidationDialog
+
+Out of stock warning.
+
+**Location**: `src/components/cart/StockValidationDialog.tsx`
+
+```typescript
+import { StockValidationDialog } from '@/components/cart/StockValidationDialog';
+
+<StockValidationDialog
+  visible={outOfStock.length > 0}
+  outOfStockItems={outOfStock}
+  onDismiss={() => setOutOfStock([])}
+/>
+```
+
+### PurchaseHistory
+
+Order history list.
+
+**Location**: `src/components/cart/PurchaseHistory.tsx`
+
+```typescript
+import { PurchaseHistory } from '@/components/cart/PurchaseHistory';
+
+<PurchaseHistory orders={orders} />
+```
+
+### OrderDetailsDialog
+
+Order details modal.
+
+**Location**: `src/components/cart/OrderDetailsDialog.tsx`
+
+```typescript
+import { OrderDetailsDialog } from '@/components/cart/OrderDetailsDialog';
+
+<OrderDetailsDialog
+  visible={!!selectedOrder}
+  order={selectedOrder}
+  onDismiss={() => setSelectedOrder(null)}
+/>
+```
+
+## Product Components
+
+### ProductModal
+
+Product detail modal with add to cart.
+
+**Location**: `src/components/ProductModal.tsx`
+
+```typescript
+import ProductModal from '@/components/ProductModal';
+
+<ProductModal
+  visible={!!selectedProduct}
+  product={selectedProduct}
+  onDismiss={() => setSelectedProduct(null)}
+  onAddToCart={handleAddToCart}
+/>
+```
 
 **Location**: `src/components/ui/ErrorContent.tsx`
 

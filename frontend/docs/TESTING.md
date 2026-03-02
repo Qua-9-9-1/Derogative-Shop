@@ -323,59 +323,53 @@ Test API calls and error handling.
 
 ```typescript
 // __tests__/services/productService.test.ts
-import axios from 'axios';
 import { productService } from '@/services/productService';
+import { apiClient } from '@/services/api';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 describe('ProductService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  describe('getProducts', () => {
-    it('should return products on success', async () => {
-      const mockProducts = [
-        { id: '1', name: 'Product 1', price: 10 },
-        { id: '2', name: 'Product 2', price: 20 },
-      ];
-
-      mockedAxios.get.mockResolvedValue({ data: mockProducts });
-
-      const result = await productService.getProducts();
-
-      expect(result).toEqual(mockProducts);
-      expect(mockedAxios.get).toHaveBeenCalledWith('/products');
-    });
-
-    it('should throw error on failure', async () => {
-      mockedAxios.get.mockRejectedValue(new Error('Network error'));
-
-      await expect(productService.getProducts()).rejects.toThrow('Network error');
-    });
-
-    it('should handle API error messages', async () => {
-      mockedAxios.get.mockRejectedValue({
-        isAxiosError: true,
-        response: {
-          data: { message: 'Products not found' },
-        },
+  describe('searchProducts', () => {
+    it('should return filtered products', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: [
+          { id: '1', name: 'Product 1', brand: 'Brand', stockQuantity: 5, price: 10, imageUrl: 'img' },
+          { id: '2', name: 'Product 2', brand: 'Brand2', stockQuantity: 0, price: 20, imageUrl: 'img2' },
+        ],
       });
 
-      await expect(productService.getProducts()).rejects.toThrow('Products not found');
+      const result = await productService.searchProducts('test');
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Product 1');
+    });
+
+    it('should return empty array on error', async () => {
+      mockedApiClient.get.mockRejectedValue(new Error('Network error'));
+      const result = await productService.searchProducts('test');
+      expect(result).toEqual([]);
     });
   });
 
-  describe('getProductById', () => {
-    it('should return product by id', async () => {
-      const mockProduct = { id: '1', name: 'Product 1', price: 10 };
-      mockedAxios.get.mockResolvedValue({ data: mockProduct });
+  describe('getProductByBarcode', () => {
+    it('should return product data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { name: 'Product', brand: 'Brand', stockQuantity: 5, price: 10 },
+      });
 
-      const result = await productService.getProductById('1');
+      const result = await productService.getProductByBarcode('123');
+      expect(result?.name).toBe('Product');
+    });
 
-      expect(result).toEqual(mockProduct);
-      expect(mockedAxios.get).toHaveBeenCalledWith('/products/1');
+    it('should return null on error', async () => {
+      mockedApiClient.get.mockRejectedValue(new Error('Not found'));
+      const result = await productService.getProductByBarcode('123');
+      expect(result).toBeNull();
     });
   });
 });
@@ -656,13 +650,26 @@ npm test -- -u
 
 ## Coverage
 
+### Current Coverage Stats
+
+```
+All files:       39.56% statements | 18.40% branches | 27.98% functions | 39.67% lines
+
+Services:        54% statements (authService, productService, cartService 100%)
+Store:           77% statements (cartStore 95%, toastStore 100%)
+Context:         76% statements (userContext 87%)
+Hooks:           55% statements
+Components:      3% statements
+Screens:         4% statements
+```
+
 ### View Coverage
 
 ```bash
 npm run test:coverage
 ```
 
-An HTML report is generated in `/coverage/lcov-report/index.html`.
+HTML report: `/coverage/lcov-report/index.html`
 
 ### Coverage Thresholds
 
