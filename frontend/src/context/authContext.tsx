@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { authService } from '../services/authService';
 import { Platform } from 'react-native';
+import { authEventEmitter } from '../services/api';
 
 interface AuthContextData {
   token: string | null;
@@ -65,14 +66,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (Platform.OS === 'web') {
-      const handleLogout = () => {
-        setToken(null);
-        setUserId(null);
-      };
-      window.addEventListener('auth:logout', handleLogout);
-      return () => window.removeEventListener('auth:logout', handleLogout);
-    }
+    const handleLogout = () => {
+      setToken(null);
+      setUserId(null);
+    };
+    
+    // Écouter l'événement de déconnexion sur toutes les plateformes
+    authEventEmitter.on('auth:logout', handleLogout);
+    
+    return () => {
+      authEventEmitter.off('auth:logout', handleLogout);
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
