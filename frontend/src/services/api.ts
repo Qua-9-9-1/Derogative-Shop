@@ -66,7 +66,7 @@ apiClient.interceptors.response.use(
         await SecureStore.deleteItemAsync('user_token');
         await SecureStore.deleteItemAsync('user_id');
       }
-      
+
       authEventEmitter.emit('auth:logout');
     }
     return Promise.reject(error);

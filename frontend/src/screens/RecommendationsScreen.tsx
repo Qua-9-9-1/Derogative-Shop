@@ -64,9 +64,7 @@ export default function RecommendationsScreen() {
                   <Text numberOfLines={1} style={styles.productName}>
                     {item.name}
                   </Text>
-                  <Text style={dynamicStyles.priceColor}>
-                    {Number(item.price).toFixed(2)} €
-                  </Text>
+                  <Text style={dynamicStyles.priceColor}>{Number(item.price).toFixed(2)} €</Text>
                 </Card.Content>
               </Card>
             ))}

@@ -70,10 +70,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(null);
       setUserId(null);
     };
-    
+
     // Écouter l'événement de déconnexion sur toutes les plateformes
     authEventEmitter.on('auth:logout', handleLogout);
-    
+
     return () => {
       authEventEmitter.off('auth:logout', handleLogout);
     };

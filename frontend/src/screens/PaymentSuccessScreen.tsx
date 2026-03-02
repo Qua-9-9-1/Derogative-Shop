@@ -11,15 +11,10 @@ export default function PaymentSuccessScreen() {
       <Title style={styles.title}>Paiement validé 🎉</Title>
 
       <Paragraph style={styles.text}>
-        Merci pour votre commande !
-        Votre paiement a été confirmé avec succès.
+        Merci pour votre commande ! Votre paiement a été confirmé avec succès.
       </Paragraph>
 
-      <Button
-        mode="contained"
-        onPress={() => router.replace('/(tabs)')}
-        style={styles.button}
-      >
+      <Button mode="contained" onPress={() => router.replace('/(tabs)')} style={styles.button}>
         Retour à l'accueil
       </Button>
     </Surface>

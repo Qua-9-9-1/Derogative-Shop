@@ -76,10 +76,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="recommendations"
-        options={{ title: 'Suggestions' }}
-      />
+      <Tabs.Screen name="recommendations" options={{ title: 'Suggestions' }} />
     </Tabs>
   );
 }

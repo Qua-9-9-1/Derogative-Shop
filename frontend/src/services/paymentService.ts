@@ -4,7 +4,7 @@ export const paymentService = {
   async createOrder() {
     try {
       const response = await apiClient.post('/orders/create');
-      console.log("PayPal response:", response.data);
+
       return response.data;
     } catch (error: any) {
       console.error('Create Order Error:', error);
