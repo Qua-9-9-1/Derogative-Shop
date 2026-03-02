@@ -9,6 +9,9 @@ import { AuthProvider, useAuth } from '@/context/authContext';
 import { useCartSync } from '@/hooks/useCartSync';
 import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 import { UserProvider } from '@/context/userContext';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreAllLogs(true);
 
 export const unstable_settings = {
   anchor: '(tabs)',
