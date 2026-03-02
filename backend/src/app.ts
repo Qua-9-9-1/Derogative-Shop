@@ -5,6 +5,7 @@ import productRoutes from '@/routes/productRoutes';
 import userRoutes from '@/routes/userRoutes';
 import cartRoutes from '@/routes/cartRoutes';
 import orderRoutes from './routes/orderRoutes';
+import recommendationRoutes from './routes/recommendationRoutes';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use('/products', productRoutes);
 app.use('/user', userRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
+app.use('/recommendations', recommendationRoutes);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;

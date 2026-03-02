@@ -52,3 +52,16 @@ export const getUserOrders = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getRecommendations = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as { id: string };
+
+    const recommendations = await orderService.getRecommendations(user.id);
+
+    res.json(recommendations);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
