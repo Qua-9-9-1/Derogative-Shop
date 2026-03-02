@@ -52,7 +52,16 @@ function RootLayoutNav() {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  const paperTheme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
+  const paperTheme = {
+    ...(colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme),
+    colors: {
+      ...(colorScheme === 'dark' ? MD3DarkTheme.colors : MD3LightTheme.colors),
+      primary: '#aa2a14',
+      primaryContainer: '#fef4f2',
+      secondary: '#e04b31',
+      secondaryContainer: '#fef4f2',
+    },
+  };
 
   return (
     <PaperProvider theme={paperTheme}>

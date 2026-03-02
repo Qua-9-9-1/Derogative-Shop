@@ -8,7 +8,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const cartItemCount = useCartStore((state) => state.getItemCount());
 
-  const activeColor = '#875dd6';
+  const activeColor = '#e04b31';
   const inactiveColor = colorScheme === 'dark' ? '#888' : 'gray';
 
   return (
@@ -17,7 +17,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: activeColor,
         tabBarInactiveTintColor: inactiveColor,
         headerShown: true,
-        headerStyle: { backgroundColor: '#875dd6' },
+        headerStyle: { backgroundColor: '#e04b31' },
         headerTitleStyle: { color: '#fff', textAlign: 'center', fontWeight: 'bold', fontSize: 20 },
         headerTitleAlign: 'center',
         tabBarStyle: {
