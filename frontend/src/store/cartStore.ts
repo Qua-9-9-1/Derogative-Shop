@@ -27,7 +27,6 @@ export const useCartStore = create<CartState>((set, get) => ({
   isLoading: false,
 
   addItem: (product) => {
-    console.log('Adding item to cart:', product);
     const items = get().items;
     const existingItem = items.find((item) => item.id === product.id);
     let newItems;
@@ -43,7 +42,6 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   updateQuantity: (id, quantity) => {
-    console.log(`Updating quantity for item ${id} to ${quantity}`);
     const items = get().items;
     const newItems = items
       .map((item) => (item.id === id ? { ...item, quantity: Math.max(0, quantity) } : item))
@@ -52,7 +50,6 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   clearCart: () => {
-    console.log('Clearing cart');
     if (get().items.length === 0) return;
     set({ items: [], isDirty: true });
   },
@@ -84,7 +81,6 @@ export const useCartStore = create<CartState>((set, get) => ({
     const { items, isDirty } = get();
     if (!isDirty) return;
 
-    console.log('Syncing cart with backend...', items);
     try {
       await cartService.syncCart(items);
       set({ isDirty: false });
