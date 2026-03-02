@@ -40,7 +40,9 @@ export default function ProductModal({ visible, product, onDismiss, onAddToCart 
                 </Text>
               )}
             </View>
-            <Button icon="close" onPress={onDismiss} compact />
+            <Button icon="close" onPress={onDismiss} compact>
+              {' '}
+            </Button>
           </Surface>
           
           <View style={styles.infoSection}>
