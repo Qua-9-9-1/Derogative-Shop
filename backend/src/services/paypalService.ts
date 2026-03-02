@@ -39,8 +39,8 @@ export const createPayPalOrder = async (
         },
       ],
       application_context: {
-        return_url: 'https://example.com/success', // j'ai mis fake link en att
-        cancel_url: 'https://example.com/cancel',
+        return_url: "https://derogativeshop://payment-success",
+        cancel_url: "https://derogativeshop://",
       },
     },
     {

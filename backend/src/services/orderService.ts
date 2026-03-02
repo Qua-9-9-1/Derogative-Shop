@@ -94,6 +94,26 @@ export const captureOrder = async (userId: string, paypalOrderId: string) => {
     },
   });
 
+  //supprimer du stock
+  for (const item of cartItems) {
+  const product = await prisma.product.findUnique({
+    where: { id: item.productId },
+  });
+
+  if (!product || product.stockQuantity < item.quantity) {
+    throw new Error("Not enough stock available");
+  }
+
+  await prisma.product.update({
+    where: { id: item.productId },
+    data: {
+      stockQuantity: {
+        decrement: item.quantity,
+      },
+    },
+  });
+}
+
   //vider panier
   await prisma.cartItem.deleteMany({
     where: { userId },
@@ -118,4 +138,47 @@ export const getUserOrders = async (userId: string) => {
   });
 
   return orders;
+};
+
+
+export const getRecommendations = async (userId: string) => {
+  //recuperer les produits achetes
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+  });
+
+  const purchasedProducts = orders.flatMap(order =>
+    order.items.map(item => item.product)
+  );
+
+  if (!purchasedProducts.length) {
+    return [];
+  }
+
+  // recuperer categories deja achetees
+  const categories = [...new Set(
+    purchasedProducts.map(p => p.category).filter(Boolean)
+  )];
+
+  // recuperer IDs deja achets
+  const purchasedIds = purchasedProducts.map(p => p.id);
+
+  // trouver produits similaires
+  const recommendations = await prisma.product.findMany({
+    where: {
+      category: { in: categories as string[] },
+      id: { notIn: purchasedIds },
+      stockQuantity: { gt: 0 },
+    },
+    take: 10,
+  });
+
+  return recommendations;
 };
