@@ -22,4 +22,9 @@ export const tokenService = {
     const revoked = await prisma.revokedToken.findUnique({ where: { token } });
     return !!revoked;
   },
+
+  async checkUserExists(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    return !!user;
+  },
 };

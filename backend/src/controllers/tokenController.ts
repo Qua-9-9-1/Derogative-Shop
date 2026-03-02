@@ -24,6 +24,10 @@ export const tokenController = {
       return res.status(401).json({ message: 'Token has been revoked' });
     }
     if (payload && typeof payload === 'object' && payload.userId) {
+      const userExists = await tokenService.checkUserExists(payload.userId);
+      if (!userExists) {
+        return res.status(401).json({ message: 'User no longer exists' });
+      }
       (req as any).userId = payload.userId;
     }
     next();
