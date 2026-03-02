@@ -1,7 +1,7 @@
 import { prisma } from '../prismaClient';
+import { Product } from '@prisma/client';
 
 export const getRecommendations = async (userId: string) => {
-  // 1️⃣ récupérer produits déjà achetés
   const orders = await prisma.order.findMany({
     where: { userId },
     include: {
@@ -14,37 +14,50 @@ export const getRecommendations = async (userId: string) => {
   });
 
   if (!orders.length) {
-    return [];
+    return await prisma.product.findMany({
+      where: { stockQuantity: { gt: 0 } },
+      take: 10,
+    });
   }
 
-  // 2️⃣ extraire catégories achetées
-  const purchasedCategories = new Set<string>();
-  const purchasedProductIds = new Set<string>();
+  const purchasedProducts = orders.flatMap(order =>
+    order.items.map(item => item.product)
+  );
 
-  orders.forEach(order => {
-    order.items.forEach(item => {
-      if (item.product.category) {
-        purchasedCategories.add(item.product.category);
-      }
-      purchasedProductIds.add(item.product.id);
+  const purchasedIds = purchasedProducts.map(p => p.id);
+
+  const purchasedCategories = [
+    ...new Set(
+      purchasedProducts
+        .map(p => p.category)
+        .filter((c): c is string => !!c)
+    ),
+  ];
+
+  let recommendations: Product[] = [];
+
+  if (purchasedCategories.length > 0) {
+    recommendations = await prisma.product.findMany({
+      where: {
+        category: { in: purchasedCategories },
+        id: { notIn: purchasedIds },
+        stockQuantity: { gt: 0 },
+      },
+      take: 10,
     });
-  });
+  }
 
-  // 3️⃣ chercher autres produits mêmes catégories
-  const recommendations = await prisma.product.findMany({
-    where: {
-      category: {
-        in: Array.from(purchasedCategories),
+  if (recommendations.length < 10) {
+    const extraProducts = await prisma.product.findMany({
+      where: {
+        id: { notIn: [...purchasedIds, ...recommendations.map(r => r.id)] },
+        stockQuantity: { gt: 0 },
       },
-      id: {
-        notIn: Array.from(purchasedProductIds),
-      },
-      stockQuantity: {
-        gt: 0,
-      },
-    },
-    take: 10,
-  });
+      take: 10 - recommendations.length,
+    });
+
+    recommendations = [...recommendations, ...extraProducts];
+  }
 
   return recommendations;
 };
