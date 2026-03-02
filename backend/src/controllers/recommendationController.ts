@@ -4,7 +4,7 @@ import { getRecommendations } from '../services/recommendationService';
 export const recommendationController = {
   async getUserRecommendations(req: Request, res: Response) {
     try {
-      const user = req as any; // 🔥 cast ici
+      const user = req as any;
 
       const recommendations = await getRecommendations(user.user.id);
 
