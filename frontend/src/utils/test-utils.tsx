@@ -18,63 +18,29 @@ jest.mock('@/hooks/useCartSync', () => ({
   useCartSync: jest.fn(),
 }));
 
-jest.mock('@/context/authContext', () => {
-  const React = require('react');
-  const AuthContext = React.createContext({
+jest.mock('@/context/authContext', () => ({
+  AuthProvider: ({ children }: any) => children,
+  useAuth: jest.fn(() => ({
     token: 'test-token',
     userId: 'test-user-id',
     isAuthenticated: true,
     isLoading: false,
     login: jest.fn(),
     logout: jest.fn(),
-  });
+  })),
+}));
 
-  return {
-    AuthProvider: ({ children }: any) =>
-      React.createElement(
-        AuthContext.Provider,
-        {
-          value: {
-            token: 'test-token',
-            userId: 'test-user-id',
-            isAuthenticated: true,
-            isLoading: false,
-            login: jest.fn(),
-            logout: jest.fn(),
-          },
-        },
-        children
-      ),
-    useAuth: () => React.useContext(AuthContext),
-  };
-});
-
-jest.mock('@/context/userContext', () => {
-  const React = require('react');
-  const UserContext = React.createContext({
+jest.mock('@/context/userContext', () => ({
+  UserProvider: ({ children }: any) => children,
+  useUser: jest.fn(() => ({
     userData: { firstName: 'Test', email: 'test@example.com', id: 'test-user-id' },
     loading: false,
     error: null,
     refetchUser: jest.fn(),
-  });
-
-  return {
-    UserProvider: ({ children }: any) =>
-      React.createElement(
-        UserContext.Provider,
-        {
-          value: {
-            userData: { firstName: 'Test', email: 'test@example.com', id: 'test-user-id' },
-            loading: false,
-            error: null,
-            refetchUser: jest.fn(),
-          },
-        },
-        children
-      ),
-    useUser: () => React.useContext(UserContext),
-  };
-});
+    updateUser: jest.fn(),
+    updatePassword: jest.fn(),
+  })),
+}));
 
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   return (

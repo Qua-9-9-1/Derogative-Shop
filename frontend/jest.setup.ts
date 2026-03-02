@@ -1,16 +1,85 @@
 import 'react-native-gesture-handler/jestSetup';
 
-// Supprimer les warnings de console pour les tests
 global.console = {
   ...console,
   error: jest.fn(),
   warn: jest.fn(),
 };
 
+jest.mock('axios', () => {
+  const mockAxiosInstance = {
+    get: jest.fn(() => Promise.resolve({ data: {} })),
+    post: jest.fn(() => Promise.resolve({ data: {} })),
+    put: jest.fn(() => Promise.resolve({ data: {} })),
+    delete: jest.fn(() => Promise.resolve({ data: {} })),
+    interceptors: {
+      request: {
+        use: jest.fn(),
+        eject: jest.fn(),
+      },
+      response: {
+        use: jest.fn(),
+        eject: jest.fn(),
+      },
+    },
+  };
+
+  return {
+    default: {
+      create: jest.fn(() => mockAxiosInstance),
+      ...mockAxiosInstance,
+    },
+    create: jest.fn(() => mockAxiosInstance),
+  };
+});
+
+jest.mock('@/services/api', () => {
+  const mockApiClient = {
+    get: jest.fn(() => Promise.resolve({ data: {} })),
+    post: jest.fn(() => Promise.resolve({ data: {} })),
+    put: jest.fn(() => Promise.resolve({ data: {} })),
+    delete: jest.fn(() => Promise.resolve({ data: {} })),
+    interceptors: {
+      request: {
+        use: jest.fn(),
+        eject: jest.fn(),
+      },
+      response: {
+        use: jest.fn(),
+        eject: jest.fn(),
+      },
+    },
+  };
+
+  class MockEventEmitter {
+    private listeners: { [key: string]: Array<() => void> } = {};
+    on(event: string, callback: () => void) {
+      if (!this.listeners[event]) {
+        this.listeners[event] = [];
+      }
+      this.listeners[event].push(callback);
+    }
+    off(event: string, callback: () => void) {
+      if (!this.listeners[event]) return;
+      this.listeners[event] = this.listeners[event].filter((cb) => cb !== callback);
+    }
+    emit(event: string) {
+      if (!this.listeners[event]) return;
+      this.listeners[event].forEach((callback) => callback());
+    }
+  }
+
+  return {
+    apiClient: mockApiClient,
+    authEventEmitter: new MockEventEmitter(),
+    catalogEventEmitter: new MockEventEmitter(),
+    default: mockApiClient,
+  };
+});
+
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
 
-  // Mock value pour Animated
   class MockAnimatedValue {
     constructor(value: number) {
       this._value = value;
@@ -29,7 +98,6 @@ jest.mock('react-native', () => {
     _isUsingNativeDriver = () => false;
   }
 
-  // Mock pour les animations
   const mockAnimation = {
     start: jest.fn((callback) => {
       if (callback) callback({ finished: true });
@@ -110,3 +178,31 @@ jest.mock('expo-secure-store', () => ({
   setItemAsync: jest.fn(() => Promise.resolve()),
   deleteItemAsync: jest.fn(() => Promise.resolve()),
 }));
+
+jest.mock('expo-router', () => ({
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    canGoBack: jest.fn(() => true),
+  })),
+  useLocalSearchParams: jest.fn(() => ({})),
+  useSegments: jest.fn(() => []),
+  usePathname: jest.fn(() => '/'),
+  Link: ({ children }: any) => children,
+  Redirect: () => null,
+  Stack: ({ children }: any) => children,
+  Tabs: ({ children }: any) => children,
+}));
+
+jest.mock('expo-image', () => {
+  const React = require('react');
+  return {
+    Image: (props: any) => React.createElement('Image', props),
+  };
+});
+
+jest.mock('expo-web-browser', () => ({
+  openBrowserAsync: jest.fn(() => Promise.resolve({ type: 'cancel' })),
+}));
+

@@ -18,7 +18,6 @@ jest.mock('react-hook-form', () => ({
   },
 }));
 
-// Mock services
 jest.mock('@/services/authService', () => ({
   authService: {
     login: jest.fn(),
