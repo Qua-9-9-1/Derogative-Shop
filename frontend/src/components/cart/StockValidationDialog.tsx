@@ -7,14 +7,12 @@ interface StockValidationDialogProps {
   visible: boolean;
   missingItems: CartItem[];
   onDismiss: () => void;
-  onForcePay: () => void;
 }
 
 export const StockValidationDialog = ({
   visible,
   missingItems,
   onDismiss,
-  onForcePay,
 }: StockValidationDialogProps) => {
   const theme = useTheme();
 
@@ -39,14 +37,10 @@ export const StockValidationDialog = ({
               />
             ))}
           </ScrollView>
-          <Text variant="bodyMedium" style={{ marginTop: 10 }}>
-            Do you want to proceed with payment anyway?
-          </Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={onDismiss}>Cancel</Button>
-          <Button onPress={onForcePay} mode="contained" buttonColor={theme.colors.error}>
-            Pay Anyway
+                    <Button onPress={onDismiss} mode="contained" buttonColor={theme.colors.error}>
+            Cancel
           </Button>
         </Dialog.Actions>
       </Dialog>

@@ -17,6 +17,7 @@ import { PaymentDialog } from '@/components/cart/PaymentDialog';
 import { PurchaseHistory } from '@/components/cart/PurchaseHistory';
 import { useUser } from '@/context/userContext';
 import { useRouter } from 'expo-router';
+import { productService } from '@/services/productService';
 
 export default function CartScreen() {
   const theme = useTheme();
@@ -29,8 +30,7 @@ export default function CartScreen() {
   const [paymentDialogVisible, setPaymentDialogVisible] = useState(false);
   const [addressDialogVisible, setAddressDialogVisible] = useState(false);
   const [missingItems, setMissingItems] = useState<any[]>([]);
-
-  const mockCheckStock = (cartItems: any[]) => cartItems.filter((_, index) => index % 3 === 0);
+  const [checkingStock, setCheckingStock] = useState(false);
 
   const hasBillingAddress = () => {
     if (!userData || !userData.billingAddress) return false;
@@ -38,7 +38,7 @@ export default function CartScreen() {
     return !!(street && city && zipCode && country);
   };
 
-  const handleInitiatePayment = () => {
+  const handleInitiatePayment = async () => {
     if (items.length === 0) return;
 
     if (!hasBillingAddress()) {
@@ -46,23 +46,16 @@ export default function CartScreen() {
       return;
     }
 
-    const outOfStock = mockCheckStock(items);
+    setCheckingStock(true);
+    const outOfStock = await productService.checkStockAvailability(items);
+    setCheckingStock(false);
+
     if (outOfStock.length > 0) {
       setMissingItems(outOfStock);
       setStockDialogVisible(true);
     } else {
       setPaymentDialogVisible(true);
     }
-  };
-
-  const handleForcePay = () => {
-    if (!hasBillingAddress()) {
-      setStockDialogVisible(false);
-      setTimeout(() => setAddressDialogVisible(true), 200);
-      return;
-    }
-    setStockDialogVisible(false);
-    setTimeout(() => setPaymentDialogVisible(true), 200);
   };
 
   const handlePaymentSuccess = () => {
@@ -112,7 +105,12 @@ export default function CartScreen() {
           />
 
           {items.length > 0 && (
-            <CartSummary total={totalPrice()} onPay={handleInitiatePayment} onClear={clearCart} />
+            <CartSummary 
+              total={totalPrice()} 
+              onPay={handleInitiatePayment} 
+              onClear={clearCart}
+              isLoading={checkingStock}
+            />
           )}
         </>
       ) : (
@@ -123,7 +121,6 @@ export default function CartScreen() {
         visible={stockDialogVisible}
         missingItems={missingItems}
         onDismiss={() => setStockDialogVisible(false)}
-        onForcePay={handleForcePay}
       />
 
       <PaymentDialog

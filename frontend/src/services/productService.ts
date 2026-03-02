@@ -74,4 +74,26 @@ export const productService = {
       return [];
     }
   },
+
+  async checkStockAvailability(cartItems: Product[]): Promise<Product[]> {
+    try {
+      const response = await apiClient.get('/products/');
+      
+      if (!response.data) return [];
+
+      const productsMap = new Map<string, number>(
+        response.data.map((p: any) => [p.id, p.stockQuantity])
+      );
+
+      const outOfStockItems = cartItems.filter(item => {
+        const availableStock: number = productsMap.get(item.id) || 0;
+        return item.quantity > availableStock;
+      });
+
+      return outOfStockItems;
+    } catch (error) {
+      console.error('Error checking stock availability', error);
+      return [];
+    }
+  },
 };

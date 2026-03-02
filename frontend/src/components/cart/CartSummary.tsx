@@ -6,9 +6,10 @@ interface CartSummaryProps {
   total: number;
   onPay: () => void;
   onClear: () => void;
+  isLoading?: boolean;
 }
 
-export const CartSummary = ({ total, onPay, onClear }: CartSummaryProps) => {
+export const CartSummary = ({ total, onPay, onClear, isLoading = false }: CartSummaryProps) => {
   const theme = useTheme();
 
   return (
@@ -34,8 +35,10 @@ export const CartSummary = ({ total, onPay, onClear }: CartSummaryProps) => {
         onPress={onPay}
         style={{ marginBottom: 10 }}
         contentStyle={{ paddingVertical: 5 }}
+        loading={isLoading}
+        disabled={isLoading}
       >
-        Pay now
+        {isLoading ? 'Checking stock...' : 'Pay now'}
       </Button>
       <Button mode="text" onPress={onClear} textColor={theme.colors.error}>
         Empty cart
