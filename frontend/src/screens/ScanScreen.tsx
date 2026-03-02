@@ -1,6 +1,6 @@
 import { Camera, CameraView } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Vibration } from 'react-native';
+import { StyleSheet, Vibration, Dimensions } from 'react-native';
 import {
   ActivityIndicator,
   Button,
@@ -13,6 +13,10 @@ import {
 import { productService } from '@/services/productService';
 import { Product } from '@/services/productService';
 import ProductModal from '@/components/ProductModal';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const SCAN_FRAME_WIDTH = SCREEN_WIDTH * 0.85;
+const SCAN_FRAME_HEIGHT = SCREEN_HEIGHT * 0.35;
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -130,21 +134,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   scanFrame: {
-    width: 550,
-    height: 250,
-    borderWidth: 2,
+    width: SCAN_FRAME_WIDTH,
+    height: SCAN_FRAME_HEIGHT,
+    borderWidth: 3,
     borderColor: 'white',
     backgroundColor: 'transparent',
     borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   helpText: {
     color: 'white',
-    marginTop: 20,
     fontSize: 18,
     fontWeight: 'bold',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 5,
-    borderRadius: 5,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    textAlign: 'center',
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
