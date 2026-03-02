@@ -7,6 +7,7 @@ import { useUser } from '@/context/userContext';
 import { useCartStore } from '@/store/cartStore';
 import { recommendationService } from '@/services/recommendationService';
 import { Product } from '@/services/productService';
+import ProductModal from '@/components/ProductModal';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -17,6 +18,8 @@ export default function HomeScreen() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     loadRecommendations();
@@ -32,6 +35,16 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedProduct(null);
   };
 
   const dynamicStyles = {
@@ -106,7 +119,7 @@ export default function HomeScreen() {
             contentContainerStyle={styles.horizontalScrollContent}
           >
             {products.map((p) => (
-              <Card key={p.id} style={styles.card} onPress={() => console.log('Produit', p.name)}>
+              <Card key={p.id} style={styles.card} onPress={() => handleProductClick(p)}>
                 <View style={styles.cardImageContainer}>
                   <Image
                     source={{ uri: p.small_image_url || p.image_url || 'https://via.placeholder.com/140' }}
@@ -153,6 +166,8 @@ export default function HomeScreen() {
           </Card>
         </View>
       )}
+      
+      <ProductModal visible={modalVisible} product={selectedProduct} onDismiss={closeModal} />
     </ScrollView>
   );
 }
@@ -162,6 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+    flexGrow: 1,
     paddingBottom: 20,
   },
   header: {

@@ -4,8 +4,6 @@ import { StyleSheet, Vibration } from 'react-native';
 import {
   ActivityIndicator,
   Button,
-  Card,
-  Modal,
   Paragraph,
   Text,
   Dialog,
@@ -13,8 +11,8 @@ import {
   Surface,
 } from 'react-native-paper';
 import { productService } from '@/services/productService';
-import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/services/productService';
+import ProductModal from '@/components/ProductModal';
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -24,7 +22,6 @@ export default function ScanScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [notFoundDialogVisible, setNotFoundDialogVisible] = useState(false);
   const [scannedCode, setScannedCode] = useState('');
-  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -93,45 +90,7 @@ export default function ScanScreen() {
         </Surface>
       )}
 
-      <Modal
-        visible={modalVisible}
-        onDismiss={closeModal}
-        contentContainerStyle={styles.modalContent}
-      >
-        {product && (
-          <Card>
-            <Card.Cover source={{ uri: product.image_url || 'https://via.placeholder.com/150' }} />
-            <Card.Content>
-              <Surface
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Text variant="titleLarge">{product.name}</Text>
-                <Button icon="close" onPress={closeModal} compact />
-              </Surface>
-              <Text variant="bodyMedium">Brand: {product.brands || 'Unknown Brand'}</Text>
-              <Text variant="bodyMedium" style={styles.price}>
-                {product.price || 0} €
-              </Text>
-              <Text variant="bodyMedium">Nutriscore: {product.nutriscore || 'Unknown'}</Text>
-            </Card.Content>
-            <Card.Actions>
-              <Button onPress={closeModal}>Cancel</Button>
-              <Button
-                mode="contained"
-                onPress={() => {
-                  addItem(product);
-                }}
-              >
-                Add to cart
-              </Button>
-            </Card.Actions>
-          </Card>
-        )}
-      </Modal>
+      <ProductModal visible={modalVisible} product={product} onDismiss={closeModal} />
 
       <Portal>
         <Dialog
@@ -193,6 +152,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalContent: { margin: 20, backgroundColor: 'white', borderRadius: 10 },
-  price: { fontSize: 20, fontWeight: 'bold', color: 'green', marginVertical: 5 },
 });
