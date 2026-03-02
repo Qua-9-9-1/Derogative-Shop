@@ -28,6 +28,10 @@ export const cartController = {
       res.json({ message: 'Cart synchronized', cart: updatedCart });
     } catch (error: any) {
       console.error('Sync Cart Error:', error);
+      
+      if (error.message && error.message.includes('does not exist')) {
+        return res.status(404).json({ message: 'User not found', error: error.message });
+      }
       if (error.code && typeof error.code === 'string' && error.code.startsWith('P')) {
         return res.status(500).json({ message: 'Database error', error: error.message });
       }

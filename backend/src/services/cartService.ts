@@ -11,6 +11,15 @@ interface CartItemInput {
 export const cartService = {
   async syncCart(userId: string, items: CartItemInput[]) {
     return await prisma.$transaction(async (tx) => {
+      // Vérifier que l'utilisateur existe
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new Error(`User with id ${userId} does not exist`);
+      }
+
       await tx.cartItem.deleteMany({
         where: { userId },
       });
