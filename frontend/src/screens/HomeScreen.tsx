@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cartStore';
 import { recommendationService } from '@/services/recommendationService';
 import { Product } from '@/services/productService';
 import ProductModal from '@/components/ProductModal';
+import { catalogEventEmitter } from '@/services/api';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -23,6 +24,15 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadRecommendations();
+
+    const handleCatalogRefresh = () => {
+      loadRecommendations();
+    };
+    catalogEventEmitter.on('catalog:refresh', handleCatalogRefresh);
+
+    return () => {
+      catalogEventEmitter.off('catalog:refresh', handleCatalogRefresh);
+    };
   }, []);
 
   const loadRecommendations = async () => {

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { ActivityIndicator, Button, Dialog, Portal, Text, useTheme } from 'react-native-paper';
 import * as WebBrowser from 'expo-web-browser';
 import { paymentService } from '@/services/paymentService';
+import { catalogEventEmitter } from '@/services/api';
 
 interface PaymentDialogProps {
   visible: boolean;
@@ -52,6 +53,7 @@ export const PaymentDialog = ({ visible, onPaymentSuccess, onDismiss }: PaymentD
       setStatus('capturing');
       await paymentService.captureOrder(paypalOrderId);
       setStatus('success');
+      catalogEventEmitter.emit('catalog:refresh');
     } catch (error: any) {
       console.error('Capture error:', error);
       setStatus('error');

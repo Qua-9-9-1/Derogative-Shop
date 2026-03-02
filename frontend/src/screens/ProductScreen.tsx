@@ -2,6 +2,7 @@ import { Product, productService } from '@/services/productService';
 import { useCartStore } from '@/store/cartStore';
 import { useToastStore } from '@/store/toastStore';
 import React, { useEffect, useState } from 'react';
+import { catalogEventEmitter } from '@/services/api';
 import { FlatList, View, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import {
@@ -41,6 +42,15 @@ export default function ProductScreen() {
 
   useEffect(() => {
     loadProducts();
+
+    const handleCatalogRefresh = () => {
+      loadProducts();
+    };
+    catalogEventEmitter.on('catalog:refresh', handleCatalogRefresh);
+
+    return () => {
+      catalogEventEmitter.off('catalog:refresh', handleCatalogRefresh);
+    };
   }, []);
 
   useEffect(() => {

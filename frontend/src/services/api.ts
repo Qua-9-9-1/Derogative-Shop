@@ -25,6 +25,7 @@ class SimpleEventEmitter {
 }
 
 export const authEventEmitter = new SimpleEventEmitter();
+export const catalogEventEmitter = new SimpleEventEmitter();
 
 export const apiClient = axios.create({
   baseURL: config.api.baseUrl,
