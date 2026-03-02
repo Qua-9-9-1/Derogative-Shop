@@ -1,31 +1,12 @@
-import React from 'react';
-import { ScrollView, View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Text, Button, Card, Avatar, useTheme, IconButton, Surface } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { useUser } from '@/context/userContext';
 import { useCartStore } from '@/store/cartStore';
-
-const FEATURED = [
-  {
-    id: '1',
-    name: 'Avocats Bio',
-    price: 5.99,
-    img: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400',
-  },
-  {
-    id: '2',
-    name: 'Pain Artisan',
-    price: 4.5,
-    img: 'https://images.unsplash.com/photo-1585478259539-9b96c6a7f529?w=400',
-  },
-  {
-    id: '3',
-    name: 'Oeufs',
-    price: 3.25,
-    img: 'https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=400',
-  },
-];
+import { recommendationService } from '@/services/recommendationService';
+import { Product } from '@/services/productService';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -33,6 +14,25 @@ export default function HomeScreen() {
   const { userData: user } = useUser();
   const { items, totalPrice } = useCartStore();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRecommendations();
+  }, []);
+
+  const loadRecommendations = async () => {
+    try {
+      setLoading(true);
+      const data = await recommendationService.getRecommendations();
+      setProducts(data);
+    } catch (error) {
+      console.error('Failed to load recommendations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const dynamicStyles = {
     avatarBg: { backgroundColor: theme.colors.primary },
@@ -88,34 +88,49 @@ export default function HomeScreen() {
       <View style={styles.section}>
         <View style={styles.rowBetween}>
           <Text variant="titleMedium" style={styles.sectionTitle}>
-            Featured Products
+            Recommended for you
           </Text>
           <Button compact onPress={() => navigation.navigate('products')}>
             See products
           </Button>
         </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalScrollContent}
-        >
-          {FEATURED.map((p) => (
-            <Card key={p.id} style={styles.card} onPress={() => console.log('Produit', p.name)}>
-              <View style={styles.cardImageContainer}>
-                <Image source={{ uri: p.img }} style={styles.cardImage} contentFit="cover" />
-              </View>
-              <Card.Content style={styles.cardContent}>
-                <Text variant="bodyMedium" numberOfLines={1} style={styles.productName}>
-                  {p.name}
-                </Text>
-                <Text variant="bodySmall" style={dynamicStyles.priceColor}>
-                  {p.price.toFixed(2)} €
-                </Text>
-              </Card.Content>
-            </Card>
-          ))}
-        </ScrollView>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          </View>
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContent}
+          >
+            {products.map((p) => (
+              <Card key={p.id} style={styles.card} onPress={() => console.log('Produit', p.name)}>
+                <View style={styles.cardImageContainer}>
+                  <Image
+                    source={{ uri: p.small_image_url || p.image_url || 'https://via.placeholder.com/140' }}
+                    style={styles.cardImage}
+                    contentFit="cover"
+                  />
+                </View>
+                <Card.Content style={styles.cardContent}>
+                  <Text variant="bodyMedium" numberOfLines={1} style={styles.productName}>
+                    {p.name}
+                  </Text>
+                  {p.brands && (
+                    <Text variant="bodySmall" numberOfLines={1} style={styles.brandText}>
+                      {p.brands}
+                    </Text>
+                  )}
+                  <Text variant="bodySmall" style={dynamicStyles.priceColor}>
+                    {p.price ? `${p.price} €` : 'N/A'}
+                  </Text>
+                </Card.Content>
+              </Card>
+            ))}
+          </ScrollView>
+        )}
       </View>
 
       {itemCount > 0 && (
@@ -204,6 +219,15 @@ const styles = StyleSheet.create({
     width: 140,
     marginRight: 12,
     borderRadius: 12,
+  },
+  brandText: {
+    opacity: 0.6,
+    marginTop: 2,
+  },
+  loadingContainer: {
+    height: 140,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardImageContainer: {
     height: 100,
