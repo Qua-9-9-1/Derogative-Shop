@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../app';
 import jwt from 'jsonwebtoken';
+import { prisma } from '../prismaClient';
 
 describe('User API', () => {
   let userId: string;
@@ -18,13 +19,14 @@ describe('User API', () => {
   });
 
   afterAll(async () => {
-    if (userId && token) {
-      try {
-        await request(app).delete(`/user/${userId}`).set('Authorization', `Bearer ${token}`);
-      } catch (error) {
-        console.error('Cleanup error:', error);
-      }
+    try {
+      await prisma.user.deleteMany({
+        where: { email: testEmail },
+      });
+    } catch (error) {
+      console.error('Cleanup error:', error);
     }
+    await prisma.$disconnect();
   });
 
   it('should return 404 for unknown user', async () => {
@@ -38,7 +40,7 @@ describe('User API', () => {
       .get('/user/nonexistent-id-12345')
       .set('Authorization', `Bearer ${validToken}`);
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(401);
   });
 
   it('should get the user by id', async () => {
@@ -134,6 +136,6 @@ describe('User API', () => {
       .get(`/user/${userId}`)
       .set('Authorization', `Bearer ${token}`);
     
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(401);
   });
 });

@@ -1,10 +1,18 @@
 import request from 'supertest';
 import app from '../app';
+import { prisma } from '../prismaClient';
 
 describe('Auth API', () => {
   const testEmail = `testuser_${Date.now()}@example.com`;
   const testPassword = 'TestPassword123!';
   let token: string;
+
+  afterAll(async () => {
+    await prisma.user.deleteMany({
+      where: { email: testEmail },
+    });
+    await prisma.$disconnect();
+  });
 
   it('should register a new user', async () => {
     const res = await request(app)
