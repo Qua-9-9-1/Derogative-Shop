@@ -338,8 +338,22 @@ describe('ProductService', () => {
     it('should return filtered products', async () => {
       mockedApiClient.get.mockResolvedValue({
         data: [
-          { id: '1', name: 'Product 1', brand: 'Brand', stockQuantity: 5, price: 10, imageUrl: 'img' },
-          { id: '2', name: 'Product 2', brand: 'Brand2', stockQuantity: 0, price: 20, imageUrl: 'img2' },
+          {
+            id: '1',
+            name: 'Product 1',
+            brand: 'Brand',
+            stockQuantity: 5,
+            price: 10,
+            imageUrl: 'img',
+          },
+          {
+            id: '2',
+            name: 'Product 2',
+            brand: 'Brand2',
+            stockQuantity: 0,
+            price: 20,
+            imageUrl: 'img2',
+          },
         ],
       });
 

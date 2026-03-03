@@ -127,6 +127,7 @@ function MyScreen() {
 ```
 
 **Props**:
+
 ```typescript
 interface LoadingContentProps {
   message?: string;
@@ -149,6 +150,7 @@ function MyScreen() {
 ```
 
 **Props**:
+
 ```typescript
 interface ErrorContentProps {
   message: string;

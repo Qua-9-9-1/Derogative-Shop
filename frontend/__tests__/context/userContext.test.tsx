@@ -31,7 +31,7 @@ describe('UserContext', () => {
 
   it('throws error when useUser is used outside UserProvider', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     expect(() => {
       renderHook(() => useUser());
     }).toThrow('useUser must be used within UserProvider');

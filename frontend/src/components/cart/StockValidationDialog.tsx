@@ -39,7 +39,7 @@ export const StockValidationDialog = ({
           </ScrollView>
         </Dialog.Content>
         <Dialog.Actions>
-                    <Button onPress={onDismiss} mode="contained" buttonColor={theme.colors.error}>
+          <Button onPress={onDismiss} mode="contained" buttonColor={theme.colors.error}>
             Cancel
           </Button>
         </Dialog.Actions>

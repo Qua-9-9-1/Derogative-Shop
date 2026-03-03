@@ -105,9 +105,9 @@ export default function CartScreen() {
           />
 
           {items.length > 0 && (
-            <CartSummary 
-              total={totalPrice()} 
-              onPay={handleInitiatePayment} 
+            <CartSummary
+              total={totalPrice()}
+              onPay={handleInitiatePayment}
               onClear={clearCart}
               isLoading={checkingStock}
             />

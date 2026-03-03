@@ -30,7 +30,7 @@ describe('useCartStore', () => {
     act(() => {
       useCartStore.getState().addItem(mockProduct);
     });
-    
+
     const items = useCartStore.getState().items;
     expect(items.length).toBe(1);
     expect(items[0].id).toBe('1');
@@ -43,7 +43,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem(mockProduct);
       useCartStore.getState().addItem(mockProduct);
     });
-    
+
     const items = useCartStore.getState().items;
     expect(items.length).toBe(1);
     expect(items[0].quantity).toBe(2);
@@ -54,7 +54,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem(mockProduct);
       useCartStore.getState().updateQuantity('1', 5);
     });
-    
+
     const items = useCartStore.getState().items;
     expect(items[0].quantity).toBe(5);
     expect(useCartStore.getState().isDirty).toBe(true);
@@ -65,7 +65,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem(mockProduct);
       useCartStore.getState().updateQuantity('1', 0);
     });
-    
+
     const items = useCartStore.getState().items;
     expect(items.length).toBe(0);
   });
@@ -75,7 +75,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem(mockProduct);
       useCartStore.getState().updateQuantity('1', -5);
     });
-    
+
     const items = useCartStore.getState().items;
     expect(items.length).toBe(0);
   });
@@ -85,7 +85,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem(mockProduct);
       useCartStore.getState().clearCart();
     });
-    
+
     const items = useCartStore.getState().items;
     expect(items.length).toBe(0);
     expect(useCartStore.getState().isDirty).toBe(true);
@@ -93,11 +93,11 @@ describe('useCartStore', () => {
 
   it('clearCart does nothing when cart is already empty', () => {
     const initialState = useCartStore.getState();
-    
+
     act(() => {
       useCartStore.getState().clearCart();
     });
-    
+
     expect(useCartStore.getState().isDirty).toBe(false);
   });
 
@@ -107,7 +107,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem({ ...mockProduct, id: '2' });
       useCartStore.getState().updateQuantity('1', 3);
     });
-    
+
     const count = useCartStore.getState().getItemCount();
     expect(count).toBe(4);
   });
@@ -123,7 +123,7 @@ describe('useCartStore', () => {
       useCartStore.getState().addItem({ ...mockProduct, id: '2', price: 5, quantity: 5 });
       useCartStore.getState().updateQuantity('1', 2);
     });
-    
+
     const total = useCartStore.getState().totalPrice();
     expect(total).toBe(25);
   });
@@ -184,7 +184,7 @@ describe('useCartStore', () => {
 
   it('syncWithBackend handles errors gracefully', async () => {
     mockCartService.syncCart.mockRejectedValue(new Error('Sync failed'));
-    
+
     act(() => {
       useCartStore.getState().addItem(mockProduct);
     });

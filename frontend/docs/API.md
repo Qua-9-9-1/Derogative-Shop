@@ -115,122 +115,156 @@ export const serviceName = new ServiceName();
 ### AuthService (`src/services/authService.ts`)
 
 #### register
+
 ```typescript
 async register(email: string, pass: string): Promise<{ email: string } | null>
 ```
+
 **Endpoint**: `POST /auth/register`
 
 #### login
+
 ```typescript
 async login(email: string, pass: string): Promise<{ token: string } | null>
 ```
+
 **Endpoint**: `POST /auth/login`
 
 #### logout
+
 ```typescript
 async logout(): Promise<void>
 ```
+
 **Endpoint**: `POST /auth/logout`
 
 #### validateToken
+
 ```typescript
 async validateToken(): Promise<User | null>
 ```
+
 **Endpoint**: `GET /auth/me`
 
 ### UserService (`src/services/userService.ts`)
 
 #### getUserProfile
+
 ```typescript
 async getUserProfile(): Promise<User>
 ```
+
 **Endpoint**: `GET /users/profile`
 
 #### updateUserProfile
+
 ```typescript
 async updateUserProfile(data: UpdateUserProfileDto): Promise<User>
 ```
+
 **Endpoint**: `PUT /users/profile`
 
 #### updateUserPassword
+
 ```typescript
 async updateUserPassword(currentPassword: string, newPassword: string): Promise<void>
 ```
+
 **Endpoint**: `PUT /users/password`
 
 #### deleteUserAccount
+
 ```typescript
 async deleteUserAccount(): Promise<void>
 ```
+
 **Endpoint**: `DELETE /users/profile`
 
 ### ProductService (`src/services/productService.ts`)
 
 #### searchProducts
+
 ```typescript
 async searchProducts(query: string, page?: number): Promise<Product[]>
 ```
+
 **Endpoint**: `GET /products/`
 **Returns**: Array of products with `stockQuantity > 0`
 
 #### getProductByBarcode
+
 ```typescript
 async getProductByBarcode(barcode: string): Promise<Product | null>
 ```
+
 **Endpoint**: `GET /products/:barcode`
 **Returns**: Product data or null
 
 #### checkStockAvailability
+
 ```typescript
 async checkStockAvailability(cartItems: Product[]): Promise<Product[]>
 ```
+
 **Returns**: Items out of stock
 
 ### CartService (`src/services/cartService.ts`)
 
 #### getCart
+
 ```typescript
 async getCart(): Promise<CartItem[]>
 ```
+
 **Endpoint**: `GET /cart`
 **Returns**: Array of cart items
 
 #### syncCart
+
 ```typescript
 async syncCart(items: CartItem[]): Promise<void>
 ```
+
 **Endpoint**: `PUT /cart/sync`
 **Syncs** local cart with backend
 
 ### PaymentService (`src/services/paymentService.ts`)
 
 #### createOrder
+
 ```typescript
 async createOrder(items: Array<{id: string, quantity: number}>): Promise<{orderId: string, approvalUrl: string}>
 ```
+
 **Endpoint**: `POST /payments/create-order`
 **Returns**: PayPal order ID and approval URL
 
 #### captureOrder
+
 ```typescript
 async captureOrder(orderId: string): Promise<{status: string, message: string}>
 ```
+
 **Endpoint**: `POST /payments/capture-order`
 **Captures** PayPal payment
 
 #### getOrderHistory
+
 ```typescript
 async getOrderHistory(): Promise<Order[]>
 ```
+
 **Endpoint**: `GET /orders`
 **Returns**: User's order history
 
 ### RecommendationService (`src/services/recommendationService.ts`)
 
 #### getRecommendations
+
 ```typescript
 async getRecommendations(): Promise<Product[]>
 ```
+
 **Endpoint**: `GET /recommendations`
 **Returns**: Recommended products based on user history
 

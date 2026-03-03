@@ -205,4 +205,3 @@ jest.mock('expo-image', () => {
 jest.mock('expo-web-browser', () => ({
   openBrowserAsync: jest.fn(() => Promise.resolve({ type: 'cancel' })),
 }));
-

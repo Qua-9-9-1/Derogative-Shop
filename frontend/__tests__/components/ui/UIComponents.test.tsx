@@ -25,7 +25,7 @@ describe('UI Components', () => {
     it('renders with retry button', () => {
       const onRetry = jest.fn();
       const { getByText } = render(<ErrorContent message="Error" onRetry={onRetry} />);
-      
+
       expect(getByText('Error')).toBeTruthy();
     });
   });

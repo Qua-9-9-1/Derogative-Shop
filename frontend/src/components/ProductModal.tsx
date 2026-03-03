@@ -11,7 +11,12 @@ interface ProductModalProps {
   onAddToCart?: () => void;
 }
 
-export default function ProductModal({ visible, product, onDismiss, onAddToCart }: ProductModalProps) {
+export default function ProductModal({
+  visible,
+  product,
+  onDismiss,
+  onAddToCart,
+}: ProductModalProps) {
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = () => {
@@ -27,7 +32,11 @@ export default function ProductModal({ visible, product, onDismiss, onAddToCart 
   return (
     <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContent}>
       <Card>
-        <Card.Cover source={{ uri: product.image_url || product.small_image_url || 'https://via.placeholder.com/400' }} />
+        <Card.Cover
+          source={{
+            uri: product.image_url || product.small_image_url || 'https://via.placeholder.com/400',
+          }}
+        />
         <Card.Content>
           <Surface style={styles.header}>
             <View style={styles.headerLeft}>
@@ -44,7 +53,7 @@ export default function ProductModal({ visible, product, onDismiss, onAddToCart 
               {' '}
             </Button>
           </Surface>
-          
+
           <View style={styles.infoSection}>
             <Text variant="bodyLarge" style={styles.price}>
               {product.price || 0} €
@@ -66,13 +75,16 @@ export default function ProductModal({ visible, product, onDismiss, onAddToCart 
               <Text variant="titleMedium" style={styles.sectionTitle}>
                 Nutritional information (per 100g)
               </Text>
-              {Object.entries(product.nutritional_info).slice(0, 8).map(([key, value]) => (
-                value && (
-                  <Text key={key} variant="bodySmall" style={styles.nutritionItem}>
-                    • {key.replace(/_/g, ' ')}: {value}
-                  </Text>
-                )
-              ))}
+              {Object.entries(product.nutritional_info)
+                .slice(0, 8)
+                .map(
+                  ([key, value]) =>
+                    value && (
+                      <Text key={key} variant="bodySmall" style={styles.nutritionItem}>
+                        • {key.replace(/_/g, ' ')}: {value}
+                      </Text>
+                    )
+                )}
             </View>
           )}
         </Card.Content>

@@ -31,8 +31,8 @@ describe('paymentService', () => {
 
     const result = await paymentService.captureOrder('PAYPAL123');
 
-    expect(mockedApiClient.post).toHaveBeenCalledWith('/orders/capture', { 
-      paypalOrderId: 'PAYPAL123' 
+    expect(mockedApiClient.post).toHaveBeenCalledWith('/orders/capture', {
+      paypalOrderId: 'PAYPAL123',
     });
     expect(result).toEqual(mockCaptureData);
   });
@@ -45,8 +45,8 @@ describe('paymentService', () => {
 
   it('getOrderHistory returns order array', async () => {
     const mockOrders = [
-      { id: '1', total: 50.00, status: 'completed' },
-      { id: '2', total: 30.00, status: 'pending' },
+      { id: '1', total: 50.0, status: 'completed' },
+      { id: '2', total: 30.0, status: 'pending' },
     ];
     mockedApiClient.get.mockResolvedValue({ data: mockOrders } as any);
 

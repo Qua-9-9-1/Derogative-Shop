@@ -18,7 +18,7 @@ describe('userService', () => {
     mockedApiClient.get.mockResolvedValue({ data: mockUser } as any);
 
     const result = await userService.getUserProfile('1');
-    
+
     expect(mockedApiClient.get).toHaveBeenCalledWith('/user/1');
     expect(result).toEqual(mockUser);
   });
@@ -35,7 +35,7 @@ describe('userService', () => {
     mockedApiClient.put.mockResolvedValue({ data: mockResponse } as any);
 
     const result = await userService.updateUserProfile('1', profileData);
-    
+
     expect(mockedApiClient.put).toHaveBeenCalledWith('/user/1', profileData);
     expect(result).toEqual(mockResponse);
   });
@@ -50,24 +50,26 @@ describe('userService', () => {
     mockedApiClient.put.mockResolvedValue({ data: {} } as any);
 
     await userService.updateUserPassword('1', 'oldPass', 'newPass');
-    
-    expect(mockedApiClient.put).toHaveBeenCalledWith('/user/1/password', { 
-      oldPassword: 'oldPass', 
-      newPassword: 'newPass' 
+
+    expect(mockedApiClient.put).toHaveBeenCalledWith('/user/1/password', {
+      oldPassword: 'oldPass',
+      newPassword: 'newPass',
     });
   });
 
   it('updateUserPassword throws error on failure', async () => {
     mockedApiClient.put.mockRejectedValue(new Error('Password update failed'));
 
-    await expect(userService.updateUserPassword('1', 'old', 'new')).rejects.toThrow('Password update failed');
+    await expect(userService.updateUserPassword('1', 'old', 'new')).rejects.toThrow(
+      'Password update failed'
+    );
   });
 
   it('deleteUserAccount calls API correctly', async () => {
     mockedApiClient.delete.mockResolvedValue({ data: {} } as any);
 
     await userService.deleteUserAccount('1');
-    
+
     expect(mockedApiClient.delete).toHaveBeenCalledWith('/user/1');
   });
 

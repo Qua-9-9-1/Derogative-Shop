@@ -132,7 +132,9 @@ export default function HomeScreen() {
               <Card key={p.id} style={styles.card} onPress={() => handleProductClick(p)}>
                 <View style={styles.cardImageContainer}>
                   <Image
-                    source={{ uri: p.small_image_url || p.image_url || 'https://via.placeholder.com/140' }}
+                    source={{
+                      uri: p.small_image_url || p.image_url || 'https://via.placeholder.com/140',
+                    }}
                     style={styles.cardImage}
                     contentFit="cover"
                   />
@@ -176,7 +178,7 @@ export default function HomeScreen() {
           </Card>
         </View>
       )}
-      
+
       <ProductModal visible={modalVisible} product={selectedProduct} onDismiss={closeModal} />
     </ScrollView>
   );

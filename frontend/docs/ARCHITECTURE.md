@@ -114,7 +114,7 @@ services/
 export const productService = {
   async searchProducts(query: string): Promise<Product[]> {
     const response = await apiClient.get('/products/');
-    return response.data.filter(p => p.stockQuantity > 0);
+    return response.data.filter((p) => p.stockQuantity > 0);
   },
 
   async getProductByBarcode(barcode: string): Promise<Product | null> {
@@ -156,13 +156,14 @@ export const useCartStore = create<CartStore>()((set, get) => ({
   items: [],
   isDirty: false,
   addItem: (item) => {
-    const existing = get().items.find(i => i.id === item.id);
+    const existing = get().items.find((i) => i.id === item.id);
     if (existing) {
-      set({ items: get().items.map(i => 
-        i.id === item.id ? {...i, quantity: i.quantity + 1} : i
-      ), isDirty: true });
+      set({
+        items: get().items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)),
+        isDirty: true,
+      });
     } else {
-      set({ items: [...get().items, {...item, quantity: 1}], isDirty: true });
+      set({ items: [...get().items, { ...item, quantity: 1 }], isDirty: true });
     }
   },
 }));

@@ -76,9 +76,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     const existing = get().items.find((i) => i.id === item.id);
     if (existing) {
       set({
-        items: get().items.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-        ),
+        items: get().items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)),
         isDirty: true,
       });
     } else {
@@ -155,13 +153,16 @@ function CartScreen() {
   );
 }
 ```
+
       />
       <Text>Total: {total}€</Text>
       <Button title="Clear cart" onPress={clearCart} />
     </View>
-  )
+
+)
 }
-```
+
+````
 
 ### Toast Store
 
@@ -196,7 +197,7 @@ export const useToastStore = create<ToastStore>()((set, get) => ({
 
   hideToast: () => set({ visible: false, message: '' }),
 }));
-```
+````
 
 **Usage**:
 
