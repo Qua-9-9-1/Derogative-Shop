@@ -126,7 +126,7 @@ export default function UserScreen() {
     return (
       <Surface style={styles.container}>
         <ErrorContent message={contextError} />
-        <Button mode="contained" onPress={() => router.push('/login')} style={{ marginTop: 20 }}>
+        <Button mode="contained" onPress={logout} style={{ marginTop: 20 }}>
           Go to Login
         </Button>
       </Surface>
